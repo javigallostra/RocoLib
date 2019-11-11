@@ -17,15 +17,22 @@
     <link rel="stylesheet" href="../static/css/all.css" />
   </head>
   <body>
-    <div>
-      {{ wall_name }}
+    <div id="holder">
+      <div id="body">
+        <div class="container">
+          <br />
+          <div>
+            {{ wall_name }}
+          </div>
+          <img
+            id="wall-image"
+            width="400"
+            src="{{ user_image }}"
+            alt="wall section"
+          />
+        </div>
+      </div>
     </div>
-    <img
-      id="wall-image"
-      width="400"
-      src="{{ user_image }}"
-      alt="wall section"
-    />
   </body>
 </html>
 
