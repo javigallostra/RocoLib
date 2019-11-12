@@ -2,13 +2,13 @@
 <html>
   <head>
     <!-- Navigation bar title-->
-    <title>Create</title>
+    <title>Wall</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
     />
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen" />
-    <link rel="stylesheet" href="static/css/custom.css" />
+    <link href="../static/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <link rel="stylesheet" href="../static/css/custom.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -21,14 +21,15 @@
       <div id="body">
         <div class="container">
           <br />
-          <h3>Choose wall</h3>
-          <br />
-          <p>&bull;<a href="/walls/sAll"> All sections</a></p>
-          <p>&bull;<a href="/walls/s1"> Section 1</a></p>
-          <p>&bull;<a href="/walls/s2"> Section 2</a></p>
-          <p>&bull;<a href="/walls/s3"> Section 3</a></p>
-          <p>&bull;<a href="/walls/s4"> Section 4</a></p>
-          <p>&bull;<a href="/walls/s5"> Section 5</a></p>
+          <div>
+            {{ wall_name }}
+          </div>
+          <img
+            id="wall-image"
+            width="400"
+            src="{{ user_image }}"
+            alt="wall section"
+          />
         </div>
       </div>
     </div>
