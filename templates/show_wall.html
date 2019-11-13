@@ -24,6 +24,7 @@
           <div>
             {{ wall_name }}
           </div>
+          <br />
           <img
             id="wall-image"
             width="400"
@@ -31,6 +32,14 @@
             alt="wall section"
           />
           <canvas id="wall-canvas"></canvas>
+          <br />
+          <br />
+          <div>
+            <row>
+              <button>Done</button>
+              <button>Cancel</button>
+            </row>
+          </div>
         </div>
       </div>
     </div>
@@ -38,6 +47,7 @@
 </html>
 
 <script>
+  var holds = [];
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -81,5 +91,7 @@
     ctx.lineWidth = 3;
     ctx.strokeStyle = "#00ff00";
     ctx.stroke();
+    holds.push({ x: event.offsetX, y: event.offsetY });
+    console.log(holds);
   }
 </script>
