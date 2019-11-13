@@ -47,6 +47,10 @@
   cnvs.width = img.offsetWidth;
   cnvs.height = img.offsetHeight;
 
+  if (cnvs.height === 0) {
+    document.location.reload(true);
+  }
+
   var ctx = cnvs.getContext("2d");
   ctx.width = cnvs.width;
   ctx.height = cnvs.height;
