@@ -30,6 +30,7 @@
             src="{{ user_image }}"
             alt="wall section"
           />
+          <canvas id="wall-canvas"></canvas>
         </div>
       </div>
     </div>
@@ -37,18 +38,47 @@
 </html>
 
 <script>
+  var img = document.getElementById("wall-image");
+  var cnvs = document.getElementById("wall-canvas");
+
+  cnvs.style.position = "absolute";
+  cnvs.style.left = img.offsetLeft + "px";
+  cnvs.style.top = img.offsetTop + "px";
+  cnvs.width = img.offsetWidth;
+  cnvs.height = img.offsetHeight;
+
+  var ctx = cnvs.getContext("2d");
+  ctx.width = cnvs.width;
+  ctx.height = cnvs.height;
+
   document.addEventListener(
     "click",
     function(event) {
       // If the clicked element doesn't have the right selector, bail
-      if (!event.target.matches("#wall-image")) return;
+      if (
+        !(
+          event.target.matches("#wall-image") ||
+          event.target.matches("#wall-canvas")
+        )
+      )
+        return;
 
       // Don't follow the link
       event.preventDefault();
 
       // Log the clicked element in the console
       console.log(event.target);
+      Draw(event);
     },
     false
   );
+
+  function Draw(event) {
+    var ctx = cnvs.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(event.offsetX, event.offsetY, 12, 0, 2 * Math.PI, false);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#00ff00";
+    ctx.stroke();
+  }
 </script>
