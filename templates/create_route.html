@@ -48,6 +48,9 @@
 
 <script>
   var holds = [];
+  var HoldNum = 0;
+  const RADIUS = 12;
+  const MARGIN = 1;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -86,11 +89,21 @@
   function Draw(event) {
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
+    // Draw circle
     ctx.beginPath();
-    ctx.arc(event.offsetX, event.offsetY, 12, 0, 2 * Math.PI, false);
+    ctx.arc(event.offsetX, event.offsetY, RADIUS, 0, 2 * Math.PI, false);
     ctx.lineWidth = 3;
     ctx.strokeStyle = "#00ff00";
     ctx.stroke();
+    // Draw text
+    ctx.font = "18px Georgia";
+    ctx.fillStyle = "red";
+    ctx.fillText(
+      HoldNum === 0 ? 'S' : HoldNum,
+      event.offsetX + RADIUS + MARGIN,
+      event.offsetY + RADIUS + MARGIN
+    );
+    HoldNum += 1;
     holds.push({ x: event.offsetX, y: event.offsetY });
     // console.log(holds);
   }

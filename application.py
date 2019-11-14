@@ -14,7 +14,16 @@ def home():
 
 @app.route('/create')
 def create():
-    return render_template('create.html')
+    return render_template('create.html', options=request.args.get('options', ''))
+
+
+@app.route('/create_boulder')
+def create_boulder():
+    return render_template('create_boulder.html')
+
+@app.route('/create_route')
+def create_route():
+    return render_template('create_route.html')
 
 
 @app.route('/explore')
@@ -29,8 +38,12 @@ def render_about_us():
 
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section):
+    template = 'create_boulder.html' 
+    if request.args.get('options', '') == 'route':
+        template = 'create_route.html' 
+
     return render_template(
-        "show_wall.html",
+        template,
         user_image=url_for(
             'static',
             filename='{}{}.JPG'.format(WALLS_PATH, wall_section)
