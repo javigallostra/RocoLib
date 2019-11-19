@@ -21,6 +21,7 @@ def create():
 def create_boulder():
     return render_template('create_boulder.html')
 
+
 @app.route('/create_route')
 def create_route():
     return render_template('create_route.html')
@@ -38,9 +39,9 @@ def render_about_us():
 
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section):
-    template = 'create_boulder.html' 
+    template = 'create_boulder.html'
     if request.args.get('options', '') == 'route':
-        template = 'create_route.html' 
+        template = 'create_route.html'
 
     return render_template(
         template,
@@ -48,8 +49,15 @@ def wall_section(wall_section):
             'static',
             filename='{}{}.JPG'.format(WALLS_PATH, wall_section)
         ),
-        wall_name=wall_section 
+        wall_name=wall_section
     )
+
+
+@app.route('/save_boulder', methods=['GET', 'POST'])
+def save_boulder():
+    if request.method == 'POST':
+        holds = request.form.get("holds")
+        return render_template('save_boulder.html')
 
 
 @app.errorhandler(404)

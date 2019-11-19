@@ -36,7 +36,20 @@
           <br />
           <div>
             <row>
-              <button>Done</button>
+              <form
+                action="/save_boulder"
+                onsubmit="return validateForm()"
+                method="POST"
+              >
+                <input
+                  type="submit"
+                  value="Done"
+                  name="Submit"
+                  onclick="return setHolds();"
+                />
+                <input type="hidden" name="holds" id="holds-array" value="" />
+              </form>
+              <!-- <button>Done</button> -->
               <button>Cancel</button>
             </row>
           </div>
@@ -74,10 +87,8 @@
         )
       )
         return;
-
       // Don't follow the link
       event.preventDefault();
-
       // Log the clicked element in the console
       Draw(event);
     },
@@ -95,5 +106,17 @@
     ctx.stroke();
     holds.push({ x: event.offsetX, y: event.offsetY });
     // console.log(holds);
+  }
+
+  function setHolds() {
+    document.getElementById("holds-array").value = JSON.stringify(holds);
+  }
+
+  function validateForm() {
+    if (holds.length === 0) {
+      alert("Boulder cannot be empty");
+      return false;
+    }
+    return true;
   }
 </script>
