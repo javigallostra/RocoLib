@@ -21,31 +21,73 @@
       <div id="body">
         <div class="container">
           <br />
-          <h3>Save Boulder</h3>
           <br />
-          <form>
-            Boulder name:<br />
-            <input type="text" name="name" value="Name" /><br /><br />
-            Creator:<br />
-            <input type="text" name="creator" value="Creator" /><br /><br />
-            Suggested difficulty:<br />
-            <input type="radio" name="difficulty" value="free" checked />
-            Green<br />
-            <input type="radio" name="difficulty" value="follow" /> Blue<br />
-            <input type="radio" name="difficulty" value="no-feet" />
-            Yellow<br />
-            <input type="radio" name="difficulty" value="no-feet" />
-            Red<br /><br />
-            Feet:<br />
-            <input type="radio" name="feet" value="free" checked /> Free Feet<br />
-            <input type="radio" name="feet" value="follow" /> Feet Follow
-            Hands<br />
-            <input type="radio" name="feet" value="no-feet" />
-            Campus<br /><br />
-            <input type="submit" value="Submit" />
-          </form>
+          <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-sm">
+              <h3>Save Boulder</h3>
+
+              <form
+                action="/save"
+                onsubmit="return validateForm()"
+                method="POST"
+              >
+                Boulder name:<br />
+                <input
+                  id="name-field"
+                  type="text"
+                  name="name"
+                  value=""
+                /><br /><br />
+                Creator:<br />
+                <input
+                  id="creator-field"
+                  type="text"
+                  name="creator"
+                  value=""
+                /><br /><br />
+                Suggested difficulty:<br />
+                <input type="radio" name="difficulty" value="green" checked />
+                Green<br />
+                <input type="radio" name="difficulty" value="blue" />
+                Blue<br />
+                <input type="radio" name="difficulty" value="yellow" />
+                Yellow<br />
+                <input type="radio" name="difficulty" value="red" />
+                Red<br /><br />
+                Feet:<br />
+                <input type="radio" name="feet" value="free" checked /> Free
+                Feet<br />
+                <input type="radio" name="feet" value="follow" /> Feet Follow
+                Hands<br />
+                <input type="radio" name="feet" value="no-feet" />
+                Campus<br /><br />
+                <input type="submit" value="Submit" />
+                <input
+                  type="hidden"
+                  name="holds"
+                  id="holds-array"
+                  value="{{holds}}"
+                />
+              </form>
+            </div>
+            <div class="col-sm"></div>
+          </div>
         </div>
       </div>
     </div>
   </body>
 </html>
+
+<script>
+  function validateForm() {
+    if (
+      !document.getElementById("name-field").value ||
+      !document.getElementById("creator-field").value
+    ) {
+      alert("Invalid name or creator");
+      return false;
+    }
+    return true;
+  }
+</script>

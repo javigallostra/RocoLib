@@ -1,5 +1,7 @@
 import os
-from flask import Flask, render_template, request, url_for
+import json
+import ast
+from flask import Flask, render_template, request, url_for, redirect
 
 WALLS_PATH = 'images/walls/'
 
@@ -56,8 +58,21 @@ def wall_section(wall_section):
 @app.route('/save_boulder', methods=['GET', 'POST'])
 def save_boulder():
     if request.method == 'POST':
-        holds = request.form.get("holds")
-        return render_template('save_boulder.html')
+        return render_template('save_boulder.html', holds=holds)
+
+
+@app.route('/save', methods=['GET', 'POST'])
+def save():
+    if request.method == 'POST':
+        data = {}
+        for key, val in request.form.items():
+            data[key] = val
+            if key == "holds":
+                print(ast.literal_eval(val))
+                data[key] = ast.literal_eval(val)
+        with open('{}.txt'.format(data['name']), 'w') as outfile:
+            json.dump(data, outfile)
+    return redirect('/')
 
 
 @app.errorhandler(404)
