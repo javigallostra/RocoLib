@@ -3,10 +3,14 @@ import json
 import ast
 from flask import Flask, render_template, request, url_for, redirect
 
+import helpers
+
 WALLS_PATH = 'images/walls/'
 
 # create the application object
 app = Flask(__name__)
+
+BOULDERS_FILE = 'data/boulders.txt'
 
 # use decorators to link the function to a url
 @app.route('/')
@@ -34,6 +38,21 @@ def explore():
     return render_template('explore.html')
 
 
+@app.route('/explore_boulders')
+def explore_boulders():
+    data = {}
+    valid_json = helpers.make_valid_json(BOULDERS_FILE)
+    with open(valid_json, 'r') as infile:
+        data = json.load(infile)
+        print(data)
+    return render_template('explore_boulders.html', boulder_list=data['items'])
+
+
+@app.route('/explore_routes')
+def explore_routes():
+    return render_template('explore_boulders.html')
+
+
 @app.route('/about_us')
 def render_about_us():
     return render_template('about_us.html')
@@ -55,12 +74,6 @@ def wall_section(wall_section):
     )
 
 
-@app.route('/save_boulder', methods=['GET', 'POST'])
-def save_boulder():
-    if request.method == 'POST':
-        return render_template('save_boulder.html', holds=holds)
-
-
 @app.route('/save', methods=['GET', 'POST'])
 def save():
     if request.method == 'POST':
@@ -68,11 +81,17 @@ def save():
         for key, val in request.form.items():
             data[key] = val
             if key == "holds":
-                print(ast.literal_eval(val))
                 data[key] = ast.literal_eval(val)
-        with open('{}.txt'.format(data['name']), 'w') as outfile:
+        with open(BOULDERS_FILE, 'a') as outfile:
+            outfile.write(",\n")
             json.dump(data, outfile)
     return redirect('/')
+
+
+@app.route('/save_boulder', methods=['GET', 'POST'])
+def save_boulder():
+    if request.method == 'POST':
+        return render_template('save_boulder.html', holds=request.form.get('holds'))
 
 
 @app.errorhandler(404)
