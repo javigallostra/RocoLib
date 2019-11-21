@@ -91,7 +91,7 @@ def save():
 @app.route('/save_boulder', methods=['GET', 'POST'])
 def save_boulder():
     if request.method == 'POST':
-        return render_template('save_boulder.html', holds=request.form.get('holds'))
+        return render_template('save_boulder.html', holds=request.form.get('holds'), section=request.args.get('section'))
 
 
 @app.errorhandler(404)
