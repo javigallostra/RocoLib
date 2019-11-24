@@ -11,6 +11,7 @@ WALLS_PATH = 'images/walls/'
 app = Flask(__name__)
 
 BOULDERS_FILE = 'data/boulders.txt'
+BOULDERS_FILE_JSON = 'data/boulders_mod.txt'
 
 # use decorators to link the function to a url
 @app.route('/')
@@ -41,11 +42,19 @@ def explore():
 @app.route('/explore_boulders')
 def explore_boulders():
     data = {}
-    valid_json = helpers.make_valid_json(BOULDERS_FILE)
-    with open(valid_json, 'r') as infile:
+    helpers.make_valid_json(BOULDERS_FILE, BOULDERS_FILE_JSON)
+    with open(BOULDERS_FILE_JSON, 'r') as infile:
         data = json.load(infile)
-        print(data)
     return render_template('explore_boulders.html', boulder_list=data['items'])
+
+@app.route('/load_boulder')
+def laoad_boulder():
+    boulder_name = request.args.get('name')
+    with open(BOULDERS_FILE_JSON, 'r') as infile:
+        data = json.load(infile)
+        boulder = [boulder for boulder in data['items'] if boulder['name']==boulder_name]
+        # print(boulder)
+    # return render_template('load_boulder.html')
 
 
 @app.route('/explore_routes')

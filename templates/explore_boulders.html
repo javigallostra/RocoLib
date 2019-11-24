@@ -23,7 +23,8 @@
           <ul>
             {% for boulder in boulder_list %}
             <li>
-              <a href="" target="_blank">{{ boulder['name'] }}</a>
+              <!-- TODO: Add safename field to boulder -->
+              <a href="/load_boulder?name={{boulder['name']}}" target="_blank">{{ boulder['name'] }}</a>
             </li>
             {% endfor %}
           </ul>
