@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="../static/css/all.css" />
   </head>
   <body>
+    <br />
     <div id="holder">
       <div id="body">
         <div class="container">
@@ -24,7 +25,11 @@
             {% for boulder in boulder_list %}
             <li>
               <!-- TODO: Add safename field to boulder -->
-              <a href="/load_boulder?name={{boulder['name']}}" target="_blank">{{ boulder['name'] }}</a>
+              <a
+                href="/load_boulder?name={{ boulder['name'] }}"
+                target="_blank"
+                >{{ boulder["name"] }}</a
+              >
             </li>
             {% endfor %}
           </ul>
