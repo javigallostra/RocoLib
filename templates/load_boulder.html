@@ -2,7 +2,7 @@
 <html>
   <head>
     <!-- Navigation bar title-->
-    <title>Create</title>
+    <title>{{ boulder_name }}</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
@@ -22,7 +22,7 @@
         <div class="container">
           <br />
           <div>
-            {{ wall_name }}
+            {{ boulder_name }}
           </div>
           <br />
           <img
@@ -32,14 +32,6 @@
             alt="wall section"
           />
           <canvas id="wall-canvas"></canvas>
-          <br />
-          <br />
-          <div>
-            <row>
-              <button>Done</button>
-              <button>Cancel</button>
-            </row>
-          </div>
         </div>
       </div>
     </div>
@@ -48,9 +40,7 @@
 
 <script>
   var holds = [];
-  var HoldNum = 0;
   const RADIUS = 12;
-  const MARGIN = 1;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -65,46 +55,18 @@
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
   };
-  document.addEventListener(
-    "click",
-    function(event) {
-      // If the clicked element doesn't have the right selector, bail
-      if (
-        !(
-          event.target.matches("#wall-image") ||
-          event.target.matches("#wall-canvas")
-        )
-      )
-        return;
-
-      // Don't follow the link
-      event.preventDefault();
-
-      // Log the clicked element in the console
-      Draw(event);
-    },
-    false
-  );
 
   function Draw(event) {
+    var holdColor = document.querySelector('input[name="hold_type"]:checked')
+      .value;
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
     // Draw circle
     ctx.beginPath();
     ctx.arc(event.offsetX, event.offsetY, RADIUS, 0, 2 * Math.PI, false);
     ctx.lineWidth = 3;
-    ctx.strokeStyle = "#00ff00";
+    ctx.strokeStyle = holdColor;
     ctx.stroke();
-    // Draw text
-    ctx.font = "18px Georgia";
-    ctx.fillStyle = "red";
-    ctx.fillText(
-      HoldNum === 0 ? 'S' : HoldNum,
-      event.offsetX + RADIUS + MARGIN,
-      event.offsetY + RADIUS + MARGIN
-    );
-    HoldNum += 1;
-    holds.push({ x: event.offsetX, y: event.offsetY });
-    // console.log(holds);
+    holds.push({ x: event.offsetX, y: event.offsetY, color: holdColor });
   }
 </script>
