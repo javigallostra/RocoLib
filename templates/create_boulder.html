@@ -44,6 +44,8 @@
               <input type="radio" name="hold_type" value="#ff0000" />
               Top<br />
             </div>
+            <br />
+            <button onclick="undoMove()">Undo</button>
           </div>
           <br />
           <br />
@@ -109,18 +111,36 @@
   );
 
   function Draw(event) {
-    var holdColor = document.querySelector('input[name="hold_type"]:checked')
-      .value;
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
+    var holdColor = document.querySelector('input[name="hold_type"]:checked')
+      .value;
+    drawHold(ctx, event.offsetX, event.offsetY, RADIUS, holdColor, holds);
+  }
+
+  function drawHold(ctx, x, y, radius, color, holdArray) {
     // Draw circle
+    console.log(ctx);
     ctx.beginPath();
-    ctx.arc(event.offsetX, event.offsetY, RADIUS, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.lineWidth = 3;
-    ctx.strokeStyle = holdColor;
+    ctx.strokeStyle = color;
     ctx.stroke();
-    holds.push({ x: event.offsetX, y: event.offsetY, color: holdColor });
-    // console.log(holds);
+    // push to hold array
+    holdArray.push({ x: x, y: y, color: color });
+  }
+
+  function undoMove() {
+    holds.pop(); // Remove last selected hold
+    // Clear canvas
+    var cnvs = document.getElementById("wall-canvas");
+    const ctx = cnvs.getContext("2d");
+    ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+    var newHolds = [];
+    holds.forEach(hold =>
+      drawHold(ctx, hold.x, hold.y, RADIUS, hold.color, newHolds)
+    );
+    holds = newHolds;
   }
 
   function setHolds() {
