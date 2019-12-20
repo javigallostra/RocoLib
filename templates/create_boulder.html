@@ -23,8 +23,10 @@
           <br />
           <div class="row">
             <div class="col-sm">
-              <div>
-                {{ wall_name }}
+              <div style="text-align: center;">
+                <h3>
+                  Section: {{ wall_name }}
+                </h3>
               </div>
               <br />
               <img
@@ -44,29 +46,38 @@
               <input type="radio" name="hold_type" value="#ff0000" />
               Top<br />
             </div>
-            <br />
-            <button onclick="undoMove()">Undo</button>
           </div>
           <br />
           <br />
-          <div>
-            <row>
-              <form
-                action="/save_boulder?section={{wall_name}}"
-                onsubmit="return validateForm()"
-                method="POST"
-              >
-                <input
-                  type="submit"
-                  value="Done"
-                  name="Submit"
-                  onclick="return setHolds();"
-                />
-                <input type="hidden" name="holds" id="holds-array" value="" />
-              </form>
+          <div class="container">
+            <div class="row">
+              <div class="col-2">
+                <button onclick="undoMove()">Undo</button>
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-2">
+                <form
+                  action="/save_boulder?section={{wall_name}}"
+                  onsubmit="return validateForm()"
+                  method="POST"
+                >
+                  <input
+                    type="submit"
+                    value="Done"
+                    name="Submit"
+                    onclick="return setHolds();"
+                  />
+                  <input type="hidden" name="holds" id="holds-array" value="" />
+                </form>
+              </div>
               <!-- <button>Done</button> -->
-              <button>Cancel</button>
-            </row>
+              <div class="col-2">
+                <button>Cancel</button>
+              </div>
+              <div class="col-8"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -154,3 +165,11 @@
     return true;
   }
 </script>
+
+<style>
+  img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+</style>
