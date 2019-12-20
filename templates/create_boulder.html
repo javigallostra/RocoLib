@@ -104,13 +104,12 @@
         return;
       // Don't follow the link
       event.preventDefault();
-      // Log the clicked element in the console
-      Draw(event);
+      draw(event);
     },
     false
   );
 
-  function Draw(event) {
+  function draw(event) {
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
     var holdColor = document.querySelector('input[name="hold_type"]:checked')
