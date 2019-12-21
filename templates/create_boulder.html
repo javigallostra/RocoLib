@@ -38,13 +38,26 @@
               <canvas id="wall-canvas"></canvas>
             </div>
             <div class="col-sm">
-              <h3>Hold type</h3>
-              <input type="radio" name="hold_type" value="#00ff00" checked />
-              Start<br />
-              <input type="radio" name="hold_type" value="#0000ff" />
-              Normal<br />
-              <input type="radio" name="hold_type" value="#ff0000" />
-              Top<br />
+              <h5>Hold type</h5>
+              <div class="row">
+                <div class="col-4">
+                  <input
+                    type="radio"
+                    name="hold_type"
+                    value="#00ff00"
+                    checked
+                  />
+                  Start<br />
+                </div>
+                <div class="col-4">
+                  <input type="radio" name="hold_type" value="#0000ff" />
+                  Normal<br />
+                </div>
+                <div class="col-4">
+                  <input type="radio" name="hold_type" value="#ff0000" />
+                  Top<br />
+                </div>
+              </div>
             </div>
           </div>
           <br />
@@ -72,6 +85,7 @@
                   <input type="hidden" name="holds" id="holds-array" value="" />
                 </form>
               </div>
+              <div class="col-2"></div>
               <!-- <button>Done</button> -->
               <div class="col-2">
                 <button>Cancel</button>
