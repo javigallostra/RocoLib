@@ -39,7 +39,10 @@
 </html>
 
 <script>
-  var holds = [];
+  // It is important that this is wrapped in single quotes ('')
+  // The code is not working otherwise
+  var data = '{{ boulder_data | tojson | safe}}'; 
+  var boulder_data = JSON.parse(data);
   const RADIUS = 12;
   window.onload = () => {
     var img = document.getElementById("wall-image");
@@ -54,19 +57,17 @@
     var ctx = cnvs.getContext("2d");
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
+    boulder_data.holds.forEach(hold =>
+      drawHold(ctx, hold.x, hold.y, RADIUS, hold.color)
+    );
   };
 
-  function Draw(event) {
-    var holdColor = document.querySelector('input[name="hold_type"]:checked')
-      .value;
-    var cnvs = document.getElementById("wall-canvas");
-    var ctx = cnvs.getContext("2d");
+  function drawHold(ctx, x, y, radius, color) {
     // Draw circle
     ctx.beginPath();
-    ctx.arc(event.offsetX, event.offsetY, RADIUS, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.lineWidth = 3;
-    ctx.strokeStyle = holdColor;
+    ctx.strokeStyle = color;
     ctx.stroke();
-    holds.push({ x: event.offsetX, y: event.offsetY, color: holdColor });
   }
 </script>

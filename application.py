@@ -61,8 +61,11 @@ def laoad_boulder():
             'static',
             filename='{}{}.JPG'.format(WALLS_PATH, section)
         )
-        # print(boulder)
-        return render_template('load_boulder.html', boulder_name=boulder_name, wall_image=wall_image)
+        return render_template(
+            'load_boulder.html',
+            boulder_name=boulder_name,
+            wall_image=wall_image,
+            boulder_data=boulder)
     except:
         return abort(404)
 
@@ -121,4 +124,4 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=4000)
