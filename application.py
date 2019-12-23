@@ -1,9 +1,9 @@
 import os
 import json
 import ast
-from flask import Flask, render_template, request, url_for, redirect, abort
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify
 
-import helpers
+import aws_controller
 
 WALLS_PATH = 'images/walls/'
 
@@ -17,6 +17,11 @@ BOULDERS_FILE_JSON = 'data/boulders_mod.txt'
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+# @app.route('/test')
+# def test():
+#     return aws_controller.get_items()
 
 
 @app.route('/create')
@@ -41,33 +46,30 @@ def explore():
 
 @app.route('/explore_boulders')
 def explore_boulders():
-    data = {}
-    helpers.make_valid_json(BOULDERS_FILE, BOULDERS_FILE_JSON)
-    with open(BOULDERS_FILE_JSON, 'r') as infile:
-        data = json.load(infile)
-    return render_template('explore_boulders.html', boulder_list=data['items'])
+    data = json.loads(aws_controller.get_items())
+    return render_template('explore_boulders.html', boulder_list=data['Items'])
 
 
-@app.route('/load_boulder')
-def laoad_boulder():
-    boulder_name = request.args.get('name')
-    with open(BOULDERS_FILE_JSON, 'r') as infile:
-        data = json.load(infile)
-        boulder = [boulder for boulder in data['items']
-                   if boulder['name'] == boulder_name][0]
-    try:
-        section = boulder['section']
-        wall_image = url_for(
-            'static',
-            filename='{}{}.JPG'.format(WALLS_PATH, section)
-        )
-        return render_template(
-            'load_boulder.html',
-            boulder_name=boulder_name,
-            wall_image=wall_image,
-            boulder_data=boulder)
-    except:
-        return abort(404)
+@app.route('/load_boulder', methods=['GET', 'POST'])
+def load_boulder():
+    if request.method == 'POST':
+        try:
+            # boulder = request.form.get("boulder_data")
+            boulder = json.loads(request.form.get(
+                "boulder_data").replace('\'', '"'))
+            boulder_name = boulder['name']
+            section = boulder['section']
+            wall_image = url_for(
+                'static',
+                filename='{}{}.JPG'.format(WALLS_PATH, section)
+            )
+            return render_template(
+                'load_boulder.html',
+                boulder_name=boulder_name,
+                wall_image=wall_image,
+                boulder_data=boulder)
+        except:
+            return abort(404)
 
 
 @app.route('/explore_routes')
@@ -104,9 +106,7 @@ def save():
             data[key] = val
             if key == "holds":
                 data[key] = ast.literal_eval(val)
-        with open(BOULDERS_FILE, 'a') as outfile:
-            outfile.write(",\n")
-            json.dump(data, outfile)
+        aws_controller.put_item(data)
     return redirect('/')
 
 
