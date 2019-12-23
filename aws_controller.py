@@ -2,7 +2,7 @@ import boto3
 from decimal import Decimal
 import json
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', 'eu-west-3')
 b_table = dynamodb.Table('Boulders')
 
 
