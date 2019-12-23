@@ -25,11 +25,13 @@
             {% for boulder in boulder_list %}
             <li>
               <!-- TODO: Add safename field to boulder -->
-              <a
-                href="/load_boulder?name={{ boulder['name'] }}"
-                target="_blank"
-                >{{ boulder["name"] }}</a
-              >
+              <p>
+                <a href="/load_boulder?name={{ boulder['name'] }}"
+                  >{{ boulder["name"] }}</a
+                >
+                (Difficulty: {{boulder["difficulty"]}}, Section:
+                {{boulder["section"]}})
+              </p>
             </li>
             {% endfor %}
           </ul>
