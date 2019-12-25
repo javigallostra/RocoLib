@@ -44,10 +44,14 @@ def explore():
     return render_template('explore.html')
 
 
-@app.route('/explore_boulders')
+@app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders():
-    data = json.loads(aws_controller.get_items())
-    return render_template('explore_boulders.html', boulder_list=data['Items'])
+    if request.method == 'POST':
+        print(request.form.get('filters'))
+        filters = {key: val for (key, val) in json.loads(
+            request.form.get('filters')).items() if val != 'all'}
+        data = json.loads(aws_controller.get_items_filtered(filters))
+        return render_template('explore_boulders.html', boulder_list=data['Items'])
 
 
 @app.route('/load_boulder', methods=['GET', 'POST'])

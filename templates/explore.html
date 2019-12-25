@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Navigation bar title-->
     <title>Explore</title>
     <meta
@@ -21,10 +22,103 @@
       <div id="body">
         <div class="container">
           <br />
-          <p>&bull;<a href="/explore_boulders"> Explore Boulders</a></p>
+          <div class="custom-link" id="baseDiv">Choose filters</div>
+          <div id="popUpDiv">
+            <div class="row popupItem">
+              Difficulty:
+              <select id="popupSelectDiff">
+                <option value="all" selected>All</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="yellow">Yellow</option>
+                <option value="red">Red</option>
+              </select>
+            </div>
+            <div class="row popupItem">
+              Section:
+              <select id="popupSelectSection">
+                <option value="all" selected>All</option>
+                <option value="s1">s1</option>
+                <option value="s2">s2</option>
+                <option value="s3">s3</option>
+                <option value="s4">s4</option>
+                <option value="s5">s5</option>
+              </select>
+            </div>
+            <button class="popupItem" id="btnApply">Apply</button>
+          </div>
+          <br />
+              <!-- TODO: Add safename field to boulder -->
+              <form id="bForm" action="/explore_boulders" method="post">
+                <p>&bull;
+                <button
+                  type="submit"
+                  name="explore"
+                  value="explore-boulders"
+                  class="custom-link"
+                >
+                Explore Boulders
+                </button>
+              </p>
+
+          <!-- <p>&bull;<a href="/explore_boulders"> Explore Boulders</a></p> -->
           <p>&bull;<a href="/explore_routes"> Explore Routes</a></p>
         </div>
       </div>
     </div>
   </body>
 </html>
+
+<script>
+  var filters = {
+    difficulty: "all",
+    section: "all"
+  };
+  $("#baseDiv").click(function(e) {
+    $("#popUpDiv").show();
+  });
+  $("#btnApply").click(function(e) {
+    filters.difficulty = $("#popupSelectDiff").val();
+    filters.section = $("#popupSelectSection").val();
+    $("#popUpDiv").hide();
+  });
+  $("#bForm").submit( function(e) {
+      $("#form-filters").remove();
+      $("<input />").attr("type", "hidden")
+          .attr("id", "form-filters")
+          .attr("name", "filters")
+          .attr("value", JSON.stringify(filters))
+          .appendTo("#bForm");
+      return true;
+  });
+</script>
+
+<style>
+  #popUpDiv {
+    z-index: 100;
+    position: absolute;
+    background-color: rgba(123, 123, 123, 0.9);
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .popupItem {
+    z-index: 1000;
+    position: relative;
+    top: 5%;
+    left: 10%;
+  }
+  /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
+  .custom-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #007bff;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+  }
+</style>

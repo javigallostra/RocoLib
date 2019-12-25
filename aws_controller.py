@@ -26,7 +26,7 @@ def put_item(item):
 def get_items_filtered(conditions=None):
     if not conditions:
         return get_items()
-    
+
     first_expression = True
     condition = None
     for key, value in conditions.items():
@@ -38,6 +38,3 @@ def get_items_filtered(conditions=None):
     return json.dumps(b_table.scan(
         FilterExpression=condition
     ), default=decimal_default)
-
-
-print(get_items_filtered())
