@@ -21,7 +21,7 @@
       <div id="body">
         <div class="container">
           <br />
-          <div>
+          <div style="text-align: center;">
             {{ boulder_name }}
           </div>
           <br />
@@ -41,7 +41,7 @@
 <script>
   // It is important that this is wrapped in single quotes ('')
   // The code is not working otherwise
-  var data = '{{ boulder_data | tojson | safe}}'; 
+  var data = '{{ boulder_data | tojson | safe}}';
   var boulder_data = JSON.parse(data);
   const RADIUS = 12;
   window.onload = () => {
