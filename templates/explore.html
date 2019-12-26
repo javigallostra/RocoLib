@@ -25,43 +25,56 @@
           <div class="custom-link" id="baseDiv">Choose filters</div>
           <div id="popUpDiv">
             <div class="row popupItem">
-              Difficulty:
-              <select id="popupSelectDiff">
-                <option value="all" selected>All</option>
-                <option value="green">Green</option>
-                <option value="blue">Blue</option>
-                <option value="yellow">Yellow</option>
-                <option value="red">Red</option>
-              </select>
+              <div class="col">
+                Difficulty:
+              </div>
+              <div class="col">
+                <select id="popupSelectDiff">
+                  <option value="all" selected>All</option>
+                  <option value="green">Green</option>
+                  <option value="blue">Blue</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="red">Red</option>
+                </select>
+              </div>
             </div>
             <div class="row popupItem">
-              Section:
-              <select id="popupSelectSection">
-                <option value="all" selected>All</option>
-                <option value="s1">s1</option>
-                <option value="s2">s2</option>
-                <option value="s3">s3</option>
-                <option value="s4">s4</option>
-                <option value="s5">s5</option>
-              </select>
+              <div class="col">
+                Section:
+              </div>
+              <div class="col">
+                <select id="popupSelectSection">
+                  <option value="all" selected>All</option>
+                  <option value="s1">s1</option>
+                  <option value="s2">s2</option>
+                  <option value="s3">s3</option>
+                  <option value="s4">s4</option>
+                  <option value="s5">s5</option>
+                </select>
+              </div>
             </div>
-            <button class="popupItem" id="btnApply">Apply</button>
+            <br />
+            <div id="wrapper" class="row popupItem">
+              <button id="btnApply">
+                Apply
+              </button>
+            </div>
           </div>
           <br />
-              <!-- TODO: Add safename field to boulder -->
-              <form id="bForm" action="/explore_boulders" method="post">
-                <p>&bull;
-                <button
-                  type="submit"
-                  name="explore"
-                  value="explore-boulders"
-                  class="custom-link"
-                >
+          <!-- TODO: Add safename field to boulder -->
+          <form id="bForm" action="/explore_boulders" method="post">
+            <p>
+              &bull;
+              <button
+                type="submit"
+                name="explore"
+                value="explore-boulders"
+                class="custom-link"
+              >
                 Explore Boulders
-                </button>
-              </p>
-
-          <!-- <p>&bull;<a href="/explore_boulders"> Explore Boulders</a></p> -->
+              </button>
+            </p>
+          </form>
           <p>&bull;<a href="/explore_routes"> Explore Routes</a></p>
         </div>
       </div>
@@ -82,14 +95,15 @@
     filters.section = $("#popupSelectSection").val();
     $("#popUpDiv").hide();
   });
-  $("#bForm").submit( function(e) {
-      $("#form-filters").remove();
-      $("<input />").attr("type", "hidden")
-          .attr("id", "form-filters")
-          .attr("name", "filters")
-          .attr("value", JSON.stringify(filters))
-          .appendTo("#bForm");
-      return true;
+  $("#bForm").submit(function(e) {
+    $("#form-filters").remove();
+    $("<input />")
+      .attr("type", "hidden")
+      .attr("id", "form-filters")
+      .attr("name", "filters")
+      .attr("value", JSON.stringify(filters))
+      .appendTo("#bForm");
+    return true;
   });
 </script>
 
@@ -120,5 +134,9 @@
     padding: 0;
     font-family: inherit;
     font-size: inherit;
+  }
+  #wrapper {
+    display: flex;
+    justify-content: center;
   }
 </style>
