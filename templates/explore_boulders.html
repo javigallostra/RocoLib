@@ -9,6 +9,7 @@
     />
     <link href="static/bootstrap.min.css" rel="stylesheet" media="screen" />
     <link rel="stylesheet" href="static/css/custom.css" />
+    <link rel="stylesheet" href="static/css/card.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -21,31 +22,36 @@
     <div id="holder">
       <div id="body">
         <div class="container">
-          <ul>
-            {% for boulder in boulder_list %}
-            <li>
+          {% for boulder in boulder_list %}
+          <div class="card">
+            <div class="row">
+              <div
+                class="dot"
+                style="background-color: {{ boulder['difficulty'] }};"
+              ></div>
               <!-- TODO: Add safename field to boulder -->
-              <form action="/load_boulder" method="post">
-                <input
-                  type="hidden"
-                  name="boulder_data"
-                  id="holds-array"
-                  value="{{boulder}}"
-                />
-                <button
-                  type="submit"
-                  name="boulder"
-                  value="{{ boulder['name'] }}"
-                  class="btn-link"
-                >
-                  {{boulder['name']}}
-                </button>
-                (Difficulty: {{boulder["difficulty"]}}, Section:
-                {{boulder["section"]}})
-              </form>
-            </li>
-            {% endfor %}
-          </ul>
+              <div style="padding-left: 0.5rem;">
+                <form action="/load_boulder" method="post">
+                  <input
+                    type="hidden"
+                    name="boulder_data"
+                    id="holds-array"
+                    value="{{boulder}}"
+                  />
+                  <button
+                    type="submit"
+                    name="boulder"
+                    value="{{ boulder['name'] }}"
+                    class="btn-link"
+                  >
+                    <h5>{{boulder['name']}}</h5>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <p>Section: {{boulder["section"]}}</p>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
@@ -63,5 +69,18 @@
     padding: 0;
     font-family: inherit;
     font-size: inherit;
+  }
+  .dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+  }
+  .card {
+    border: 0.1em solid dimgray;
+    padding: 0.5em;
+    padding-left: 1.2em;
+    margin: 0.5em;
   }
 </style>
