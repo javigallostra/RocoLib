@@ -55,6 +55,16 @@
               </div>
             </div>
             <br />
+            <div class="row popupItem">
+              <div class="col">
+                Creator:
+              </div>
+              <div class="col">
+                <input type="text" id="popupCreator"></input>
+                </select>
+              </div>
+            </div>
+            <br />
             <div id="wrapper" class="row popupItem">
               <button id="btnApply">
                 Apply
@@ -86,7 +96,8 @@
 <script>
   var filters = {
     difficulty: "all",
-    section: "all"
+    section: "all",
+    creator: "",
   };
   $("#baseDiv").click(function(e) {
     $("#popUpDiv").show();
@@ -94,6 +105,7 @@
   $("#btnApply").click(function(e) {
     filters.difficulty = $("#popupSelectDiff").val();
     filters.section = $("#popupSelectSection").val();
+    filters.creator = $("#popupCreator").val();
     $("#popUpDiv").hide();
   });
   $("#bForm").submit(function(e) {

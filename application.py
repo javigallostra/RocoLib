@@ -6,12 +6,11 @@ from flask import Flask, render_template, request, url_for, redirect, abort, jso
 import aws_controller
 
 WALLS_PATH = 'images/walls/'
+EQUALS = ['section', 'difficulty']
+CONTAINS = ['creator']
 
 # create the application object
 app = Flask(__name__)
-
-BOULDERS_FILE = 'data/boulders.txt'
-BOULDERS_FILE_JSON = 'data/boulders_mod.txt'
 
 # use decorators to link the function to a url
 @app.route('/')
@@ -47,10 +46,10 @@ def explore():
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders():
     if request.method == 'POST':
-        print(request.form.get('filters'))
         filters = {key: val for (key, val) in json.loads(
-            request.form.get('filters')).items() if val != 'all'}
-        data = json.loads(aws_controller.get_items_filtered(filters))
+            request.form.get('filters')).items() if val not in ['all', '']}
+        print(filters)
+        data = json.loads(aws_controller.get_items_filtered(filters, EQUALS, CONTAINS))
         return render_template('explore_boulders.html', boulder_list=data['Items'])
 
 
