@@ -42,7 +42,6 @@ def get_items_filtered(conditions=None, equals=None, contains=None):
             if key in contains:
                 condition = operator.__and__(
                     condition, Key(key).begins_with(value))
-            print(key, value)
     return json.dumps(b_table.scan(
         FilterExpression=condition
     ), default=decimal_default)

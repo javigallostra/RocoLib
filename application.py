@@ -48,8 +48,8 @@ def explore_boulders():
     if request.method == 'POST':
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
-        print(filters)
-        data = json.loads(aws_controller.get_items_filtered(filters, EQUALS, CONTAINS))
+        data = json.loads(aws_controller.get_items_filtered(
+            filters, EQUALS, CONTAINS))
         return render_template('explore_boulders.html', boulder_list=data['Items'])
 
 
