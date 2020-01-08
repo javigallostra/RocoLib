@@ -29,33 +29,32 @@
                 </h3>
               </div>
               <br />
-              <img
-                id="wall-image"
-                width="400"
-                src="{{ wall_image }}"
-                alt="wall section"
-              />
+              <!-- width="400" -->
+              <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
               <canvas id="wall-canvas"></canvas>
             </div>
+            <br />
             <div class="col-sm">
-              <h5>Hold type</h5>
-              <div class="row">
-                <div class="col-4">
-                  <input
-                    type="radio"
-                    name="hold_type"
-                    value="#00ff00"
-                    checked
-                  />
-                  Start<br />
-                </div>
-                <div class="col-4">
-                  <input type="radio" name="hold_type" value="#0000ff" />
-                  Normal<br />
-                </div>
-                <div class="col-4">
-                  <input type="radio" name="hold_type" value="#ff0000" />
-                  Top<br />
+              <div style="text-align: center;">
+                <h5>Hold type</h5>
+                <div class="row">
+                  <div class="col-4">
+                    <input
+                      type="radio"
+                      name="hold_type"
+                      value="#00ff00"
+                      checked
+                    />
+                    Start<br />
+                  </div>
+                  <div class="col-4">
+                    <input type="radio" name="hold_type" value="#0000ff" />
+                    Normal<br />
+                  </div>
+                  <div class="col-4">
+                    <input type="radio" name="hold_type" value="#ff0000" />
+                    Top<br />
+                  </div>
                 </div>
               </div>
             </div>
@@ -185,5 +184,13 @@
     margin-left: auto;
     margin-right: auto;
     display: block;
+    width: 90%;
+  }
+  @media (max-width: 600px) {
+    img {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 </style>
