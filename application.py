@@ -8,6 +8,11 @@ import aws_controller
 WALLS_PATH = 'images/walls/'
 EQUALS = ['section', 'difficulty']
 CONTAINS = ['creator']
+FEET_MAPPINGS = {
+    'free': 'Free feet',
+    'follow': 'Feet follow hands',
+    'no-feet': 'Campus',
+}
 
 # create the application object
 app = Flask(__name__)
@@ -16,11 +21,6 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('home.html')
-
-
-# @app.route('/test')
-# def test():
-#     return aws_controller.get_items()
 
 
 @app.route('/create')
@@ -50,6 +50,8 @@ def explore_boulders():
             request.form.get('filters')).items() if val not in ['all', '']}
         data = json.loads(aws_controller.get_items_filtered(
             filters, EQUALS, CONTAINS))
+        for boulder in data['Items']:
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         return render_template('explore_boulders.html', boulder_list=data['Items'])
 
 
