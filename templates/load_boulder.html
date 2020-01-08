@@ -28,13 +28,16 @@
             {{ boulder_data['feet'] }}
           </div>
           <br />
-          <img
-            id="wall-image"
-            width="400"
-            src="{{ wall_image }}"
-            alt="wall section"
-          />
-          <canvas id="wall-canvas"></canvas>
+          <div>
+            <img
+              id="wall-image"
+              class="marginauto"
+              width="400"
+              src="{{ wall_image }}"
+              alt="wall section"
+            />
+            <canvas id="wall-canvas" class="marginauto"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -50,7 +53,6 @@
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
-
     cnvs.style.position = "absolute";
     cnvs.style.left = img.offsetLeft + "px";
     cnvs.style.top = img.offsetTop + "px";
@@ -74,3 +76,10 @@
     ctx.stroke();
   }
 </script>
+
+<style>
+  .marginauto {
+    margin: auto;
+    display: block;
+  }
+</style>
