@@ -149,7 +149,7 @@
     ctx.strokeStyle = color;
     ctx.stroke();
     // push to hold array
-    holdArray.push({ x: x, y: y, color: color });
+    holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color });
   }
 
   function undoMove() {
@@ -160,7 +160,7 @@
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     var newHolds = [];
     holds.forEach(hold =>
-      drawHold(ctx, hold.x, hold.y, RADIUS, hold.color, newHolds)
+      drawHold(ctx, hold.x * ctx.width, hold.y * ctx.height, RADIUS, hold.color, newHolds)
     );
     holds = newHolds;
   }
