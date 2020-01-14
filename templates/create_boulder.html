@@ -99,7 +99,7 @@
 
 <script>
   var holds = [];
-  const RADIUS = 10;
+  const RADIUS = 12 / 473;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -137,7 +137,14 @@
     var ctx = cnvs.getContext("2d");
     var holdColor = document.querySelector('input[name="hold_type"]:checked')
       .value;
-    drawHold(ctx, event.offsetX, event.offsetY, RADIUS, holdColor, holds);
+    drawHold(
+      ctx,
+      event.offsetX,
+      event.offsetY,
+      RADIUS * ctx.width,
+      holdColor,
+      holds
+    );
   }
 
   function drawHold(ctx, x, y, radius, color, holdArray) {
@@ -164,7 +171,7 @@
         ctx,
         hold.x * ctx.width,
         hold.y * ctx.height,
-        RADIUS,
+        RADIUS * ctx.width,
         hold.color,
         newHolds
       )

@@ -45,7 +45,7 @@
   // The code is not working otherwise
   var data = '{{ boulder_data | tojson | safe}}';
   var boulder_data = JSON.parse(data);
-  const RADIUS = 10;
+  const RADIUS = 12 / 473;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -59,7 +59,13 @@
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
     boulder_data.holds.forEach(hold =>
-      drawHold(ctx, hold.x * ctx.width, hold.y * ctx.height, RADIUS, hold.color)
+      drawHold(
+        ctx,
+        hold.x * ctx.width,
+        hold.y * ctx.height,
+        RADIUS * ctx.width,
+        hold.color
+      )
     );
   };
 
