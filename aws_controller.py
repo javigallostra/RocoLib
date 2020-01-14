@@ -20,6 +20,9 @@ def get_items():
 
 
 def put_item(item):
+    for hold in item['holds']:
+        hold['x'] = Decimal(str(hold['x']))
+        hold['y'] = Decimal(str(hold['y']))
     return b_table.put_item(Item=item)
 
 
