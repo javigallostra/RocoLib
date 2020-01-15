@@ -21,19 +21,15 @@
       <div id="body">
         <div class="container">
           <br />
-          <div class="row container">
-            <div class="col-sm">
-              <div style="text-align: center;">
-                <h5>{{ boulder_name }}</h5>
-              </div>
-              <div style="text-align: center;">
-                {{ boulder_data['feet'] }}
-              </div>
-              <br />
-              <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
-              <canvas id="wall-canvas" class="marginauto"></canvas>
-            </div>
+          <div style="text-align: center;">
+            <h5>{{ boulder_name }}</h5>
           </div>
+          <div style="text-align: center;">
+            {{ boulder_data['feet'] }}
+          </div>
+          <br />
+          <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
+          <canvas id="wall-canvas"></canvas>
         </div>
       </div>
     </div>
