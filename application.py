@@ -1,7 +1,7 @@
 import os
 import json
 import ast
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session
 
 import aws_controller
 
@@ -16,6 +16,9 @@ FEET_MAPPINGS = {
 
 # create the application object
 app = Flask(__name__)
+# app.config.from_pyfile('config.py')
+app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
+
 
 @app.route('/')
 def home():
@@ -51,7 +54,18 @@ def explore_boulders():
             filters, EQUALS, CONTAINS))
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+        session['boulder_filters'] = filters
+        session['boulders_list'] = data['Items']
         return render_template('explore_boulders.html', boulder_list=data['Items'])
+    if request.method == 'GET':
+        boulder_list = session.get('boulders_list', [])
+        if not boulder_list:
+            data = json.loads(aws_controller.get_items_filtered(
+                None, EQUALS, CONTAINS))
+            for boulder in data['Items']:
+                boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+                boulder_list.append(boulder)
+        return render_template('explore_boulders.html', boulder_list=boulder_list)
 
 
 @app.route('/load_boulder', methods=['GET', 'POST'])
@@ -128,4 +142,4 @@ def page_not_found(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000)
