@@ -1,7 +1,7 @@
 import os
 import json
 import ast
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 
 import aws_controller
 
@@ -18,6 +18,13 @@ FEET_MAPPINGS = {
 app = Flask(__name__)
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
+
+
+# Load favicon
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/images/favicon'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.route('/')
