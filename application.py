@@ -2,6 +2,7 @@ import os
 import json
 import ast
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
+import datetime
 
 import aws_controller
 
@@ -131,6 +132,7 @@ def save():
             data[key] = val
             if key == "holds":
                 data[key] = ast.literal_eval(val)
+        data['time'] = datetime.datetime.now().isoformat()
         aws_controller.put_item(data)
     return redirect('/')
 
