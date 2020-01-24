@@ -63,8 +63,13 @@ def explore_boulders():
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         session['boulder_filters'] = filters
-        session['boulders_list'] = data['Items']
-        return render_template('explore_boulders.html', boulder_list=data['Items'])
+        session['boulders_list'] = sorted(
+            data['Items'],
+            key=lambda x: datetime.datetime.strptime(
+                x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
+            reverse=True
+        )
+        return render_template('explore_boulders.html', boulder_list=session['boulders_list'])
     if request.method == 'GET':
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
@@ -73,6 +78,12 @@ def explore_boulders():
             for boulder in data['Items']:
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
                 boulder_list.append(boulder)
+        boulder_list = sorted(
+            boulder_list,
+            key=lambda x: datetime.datetime.strptime(
+                x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
+            reverse=True
+        )
         return render_template('explore_boulders.html', boulder_list=boulder_list)
 
 
