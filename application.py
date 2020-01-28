@@ -91,7 +91,6 @@ def explore_boulders():
 def load_boulder():
     if request.method == 'POST':
         try:
-            # boulder = request.form.get("boulder_data")
             boulder = json.loads(request.form.get(
                 "boulder_data").replace('\'', '"'))
             boulder_name = boulder['name']
