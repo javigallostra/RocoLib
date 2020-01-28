@@ -152,12 +152,20 @@ def save():
 def save_boulder():
     if request.method == 'POST':
         return render_template('save_boulder.html', holds=request.form.get('holds'), section=request.args.get('section'))
+    else:
+        abort(400)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.error('Page not found: %s', (request.path))
     return render_template('errors/404.html'), 404
+
+
+@app.errorhandler(400)
+def page_not_found(error):
+    app.logger.error('Bad request: %s', (request.path))
+    return render_template('errors/400.html'), 400
 
 
 # start the server
