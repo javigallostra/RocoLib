@@ -106,6 +106,7 @@ def load_boulder():
                 boulder_data=boulder)
         except:
             return abort(404)
+    return abort(400)
 
 
 @app.route('/explore_routes')
@@ -152,7 +153,7 @@ def save_boulder():
     if request.method == 'POST':
         return render_template('save_boulder.html', holds=request.form.get('holds'), section=request.args.get('section'))
     else:
-        abort(400)
+        return abort(400)
 
 
 @app.errorhandler(404)
