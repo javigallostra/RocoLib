@@ -7,8 +7,12 @@ import datetime
 import aws_controller
 
 WALLS_PATH = 'images/walls/'
+
+# For AWS DynamoDB querying
 EQUALS = ['section', 'difficulty']
 CONTAINS = ['creator']
+
+# Mappings of DB feet field values to friendly text to render
 FEET_MAPPINGS = {
     'free': 'Free feet',
     'follow': 'Feet follow hands',
