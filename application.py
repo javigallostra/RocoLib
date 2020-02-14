@@ -63,7 +63,7 @@ def explore_boulders():
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
         data = json.loads(aws_controller.get_items_filtered(
-            filters, EQUALS, CONTAINS))
+            aws_controller.BOULDERS_TABLE, filters, EQUALS, CONTAINS))
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         session['boulder_filters'] = filters
@@ -77,8 +77,8 @@ def explore_boulders():
     if request.method == 'GET':
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
-            data = json.loads(aws_controller.get_items_filtered(
-                None, EQUALS, CONTAINS))
+            data = json.loads(aws_controller.get_items_filtered(aws_controller.BOULDERS_TABLE,
+                                                                None, EQUALS, CONTAINS))
             for boulder in data['Items']:
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
                 boulder_list.append(boulder)
@@ -148,7 +148,7 @@ def save():
             if key == "holds":
                 data[key] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        aws_controller.put_item(data)
+        aws_controller.put_item(aws_controller.BOULDERS_TABLE, data)
     return redirect('/')
 
 
