@@ -71,14 +71,18 @@
                 </select>
               </div>
             </div>
-            <br />
-            <div id="wrapper" class="row popupItem">
-              <button id="btnApply">
-                Apply
-              </button>
+            <br /><br />
+            <div class="row popupItem">
+              <div class="col"></div>
+              <div class="col">
+                <button id="btnApply">
+                  Apply
+                </button>
+              </div>
+              <div class="col"></div>
             </div>
           </div>
-          <br />
+          <hr/>
           <!-- TODO: Add safename field to boulder -->
           <form id="bForm" action="/explore_boulders" method="post">
             <p>
@@ -129,21 +133,21 @@
 
 <style>
   #popUpDiv {
-    z-index: 100;
+    z-index: 10;
     position: absolute;
     background-color: rgba(123, 123, 123, 0.95);
     color: white;
     display: none;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -3%;
+    left: 0%;
+    width: 97vw;
+    height: 95vh;
   }
   .popupItem {
-    z-index: 1000;
+    z-index: 100;
     position: relative;
-    top: 5%;
-    left: 10%;
+    padding-left: 3%;
+    padding-top: 1%;
   }
   /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
   .custom-link {
@@ -155,9 +159,5 @@
     padding: 0;
     font-family: inherit;
     font-size: inherit;
-  }
-  #wrapper {
-    display: flex;
-    justify-content: center;
   }
 </style>
