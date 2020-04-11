@@ -29,33 +29,31 @@
                 </h3>
               </div>
               <br />
-              <img
-                id="wall-image"
-                width="400"
-                src="{{ wall_image }}"
-                alt="wall section"
-              />
+              <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
               <canvas id="wall-canvas"></canvas>
             </div>
+            <br />
             <div class="col-sm">
-              <h5>Hold type</h5>
-              <div class="row">
-                <div class="col-4">
-                  <input
-                    type="radio"
-                    name="hold_type"
-                    value="#00ff00"
-                    checked
-                  />
-                  Start<br />
-                </div>
-                <div class="col-4">
-                  <input type="radio" name="hold_type" value="#0000ff" />
-                  Normal<br />
-                </div>
-                <div class="col-4">
-                  <input type="radio" name="hold_type" value="#ff0000" />
-                  Top<br />
+              <div style="text-align: center;">
+                <h5>Hold type</h5>
+                <div class="row">
+                  <div class="col-4">
+                    <input
+                      type="radio"
+                      name="hold_type"
+                      value="#00ff00"
+                      checked
+                    />
+                    Start<br />
+                  </div>
+                  <div class="col-4">
+                    <input type="radio" name="hold_type" value="#0000ff" />
+                    Normal<br />
+                  </div>
+                  <div class="col-4">
+                    <input type="radio" name="hold_type" value="#ff0000" />
+                    Top<br />
+                  </div>
                 </div>
               </div>
             </div>
@@ -101,7 +99,7 @@
 
 <script>
   var holds = [];
-  const RADIUS = 12;
+  const RADIUS = 15 / 473;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -139,7 +137,14 @@
     var ctx = cnvs.getContext("2d");
     var holdColor = document.querySelector('input[name="hold_type"]:checked')
       .value;
-    drawHold(ctx, event.offsetX, event.offsetY, RADIUS, holdColor, holds);
+    drawHold(
+      ctx,
+      event.offsetX,
+      event.offsetY,
+      RADIUS * ctx.width,
+      holdColor,
+      holds
+    );
   }
 
   function drawHold(ctx, x, y, radius, color, holdArray) {
@@ -151,7 +156,7 @@
     ctx.strokeStyle = color;
     ctx.stroke();
     // push to hold array
-    holdArray.push({ x: x, y: y, color: color });
+    holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color });
   }
 
   function undoMove() {
@@ -162,7 +167,14 @@
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     var newHolds = [];
     holds.forEach(hold =>
-      drawHold(ctx, hold.x, hold.y, RADIUS, hold.color, newHolds)
+      drawHold(
+        ctx,
+        hold.x * ctx.width,
+        hold.y * ctx.height,
+        RADIUS * ctx.width,
+        hold.color,
+        newHolds
+      )
     );
     holds = newHolds;
   }
@@ -185,5 +197,13 @@
     margin-left: auto;
     margin-right: auto;
     display: block;
+    width: 90%;
+  }
+  @media (max-width: 600px) {
+    img {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 </style>

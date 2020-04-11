@@ -36,37 +36,37 @@
             </div>
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
           </div>
-          {% for boulder in boulder_list %}
+          {% for route in routes_list %}
           <div class="card">
             <div class="row">
               <div
                 class="dot"
-                style="background-color: {{ boulder['difficulty'] }};"
+                style="background-color: {{ route['difficulty'] }};"
               ></div>
               <!-- TODO: Add safename field to boulder -->
               <div style="padding-left: 0.5rem;">
-                <form action="/load_boulder" method="post">
+                <form action="/load_route" method="post">
                   <input
                     type="hidden"
-                    name="boulder_data"
+                    name="route_data"
                     id="holds-array"
-                    value="{{boulder}}"
+                    value="{{route}}"
                   />
                   <button
                     type="submit"
-                    name="boulder"
-                    value="{{ boulder['name'] }}"
+                    name="route"
+                    value="{{ route['name'] }}"
                     class="btn-link"
                   >
-                    <h5>{{boulder['name']}}</h5>
+                    <h5>{{route['name']}}</h5>
                   </button>
                 </form>
               </div>
             </div>
             <ul>
-              <li>Section: {{boulder["section"]}}</li>
-              <li>Creator: {{boulder["creator"]}}</li>
-              <li>Feet: {{boulder["feet"]}}</li>
+              <li>Section: {{route["section"]}}</li>
+              <li>Creator: {{route["creator"]}}</li>
+              <li>Feet: {{route["feet"]}}</li>
             </ul>
           </div>
           {% endfor %}

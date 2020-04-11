@@ -1,26 +1,40 @@
 import os
 import json
 import ast
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
+import datetime
 
 import aws_controller
 
 WALLS_PATH = 'images/walls/'
+
+# For AWS DynamoDB querying
 EQUALS = ['section', 'difficulty']
 CONTAINS = ['creator']
 
+# Mappings of DB feet field values to friendly text to render
+FEET_MAPPINGS = {
+    'free': 'Free feet',
+    'follow': 'Feet follow hands',
+    'no-feet': 'Campus',
+}
+
 # create the application object
 app = Flask(__name__)
+# app.config.from_pyfile('config.py')
+app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 
-# use decorators to link the function to a url
+
+# Load favicon
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/images/favicon'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
-
-
-# @app.route('/test')
-# def test():
-#     return aws_controller.get_items()
 
 
 @app.route('/create')
@@ -49,15 +63,38 @@ def explore_boulders():
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
         data = json.loads(aws_controller.get_items_filtered(
-            filters, EQUALS, CONTAINS))
-        return render_template('explore_boulders.html', boulder_list=data['Items'])
+            aws_controller.BOULDERS_TABLE, filters, EQUALS, CONTAINS))
+        for boulder in data['Items']:
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+        session['boulder_filters'] = filters
+        session['boulders_list'] = sorted(
+            data['Items'],
+            key=lambda x: datetime.datetime.strptime(
+                x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
+            reverse=True
+        )
+        return render_template('explore_boulders.html', boulder_list=session['boulders_list'])
+    if request.method == 'GET':
+        boulder_list = session.get('boulders_list', [])
+        if not boulder_list:
+            data = json.loads(aws_controller.get_items_filtered(aws_controller.BOULDERS_TABLE,
+                                                                None, EQUALS, CONTAINS))
+            for boulder in data['Items']:
+                boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+                boulder_list.append(boulder)
+        boulder_list = sorted(
+            boulder_list,
+            key=lambda x: datetime.datetime.strptime(
+                x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
+            reverse=True
+        )
+        return render_template('explore_boulders.html', boulder_list=boulder_list)
 
 
 @app.route('/load_boulder', methods=['GET', 'POST'])
 def load_boulder():
     if request.method == 'POST':
         try:
-            # boulder = request.form.get("boulder_data")
             boulder = json.loads(request.form.get(
                 "boulder_data").replace('\'', '"'))
             boulder_name = boulder['name']
@@ -73,6 +110,7 @@ def load_boulder():
                 boulder_data=boulder)
         except:
             return abort(404)
+    return abort(400)
 
 
 @app.route('/explore_routes')
@@ -109,7 +147,8 @@ def save():
             data[key] = val
             if key == "holds":
                 data[key] = ast.literal_eval(val)
-        aws_controller.put_item(data)
+        data['time'] = datetime.datetime.now().isoformat()
+        aws_controller.put_item(aws_controller.BOULDERS_TABLE, data)
     return redirect('/')
 
 
@@ -117,6 +156,8 @@ def save():
 def save_boulder():
     if request.method == 'POST':
         return render_template('save_boulder.html', holds=request.form.get('holds'), section=request.args.get('section'))
+    else:
+        return abort(400)
 
 
 @app.errorhandler(404)
@@ -125,6 +166,12 @@ def page_not_found(error):
     return render_template('errors/404.html'), 404
 
 
+@app.errorhandler(400)
+def page_not_found(error):
+    app.logger.error('Bad request: %s', (request.path))
+    return render_template('errors/400.html'), 400
+
+
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000)
