@@ -5,9 +5,14 @@ import json
 import operator
 
 
-dynamodb = boto3.resource('dynamodb', 'eu-west-3')
-BOULDERS_TABLE = dynamodb.Table('Boulders')
-ROUTES_TABLE = dynamodb.Table('Routes')
+def get_db_boulders_table():
+    dynamodb = boto3.resource('dynamodb', 'eu-west-3')
+    return dynamodb.Table('Boulders')
+
+
+def get_db_routes_table():
+    dynamodb = boto3.resource('dynamodb', 'eu-west-3')
+    ROUTES_TABLE = dynamodb.Table('Routes')
 
 
 def decimal_default(obj):
