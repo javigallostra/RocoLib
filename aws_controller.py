@@ -12,7 +12,7 @@ def get_db_boulders_table():
 
 def get_db_routes_table():
     dynamodb = boto3.resource('dynamodb', 'eu-west-3')
-    ROUTES_TABLE = dynamodb.Table('Routes')
+    return dynamodb.Table('Routes')
 
 
 def decimal_default(obj):
