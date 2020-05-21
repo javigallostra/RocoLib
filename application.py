@@ -34,10 +34,28 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+def get_wall_path():
+    if session.get('wall', ''):
+        return '/' + session['wall']
+    else:
+        return '/sancu'
 
-@app.route('/')
+def get_wall():
+    if session.get('wall', ''):
+        return session['wall']
+    else:
+        return 'sancu'    
+
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html')
+    if request.method == 'POST':
+        session['wall'] = request.form.get('wall')
+    
+    print(get_wall())
+    return render_template(
+        'home.html',
+        walls=firebase_controller.get_walls(),
+        selected=get_wall())
 
 
 @app.route('/create')
@@ -66,6 +84,7 @@ def explore_boulders():
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
         data = firebase_controller.get_boulders_filtered(
+                wall=get_wall_path(),
                 conditions=filters,
                 equals=EQUALS,
                 contains=CONTAINS
@@ -84,6 +103,7 @@ def explore_boulders():
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
             data = firebase_controller.get_boulders_filtered(
+                    wall=get_wall_path(),
                     conditions=None,
                     equals=EQUALS,
                     contains=CONTAINS
@@ -110,7 +130,7 @@ def load_boulder():
             section = boulder['section']
             wall_image = url_for(
                 'static',
-                filename='{}{}.JPG'.format(WALLS_PATH, section)
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, get_wall(), section)
             )
             return render_template(
                 'load_boulder.html',
@@ -142,7 +162,7 @@ def wall_section(wall_section):
         template,
         wall_image=url_for(
             'static',
-            filename='{}{}.JPG'.format(WALLS_PATH, wall_section)
+            filename='{}{}/{}.JPG'.format(WALLS_PATH, get_wall(), wall_section)
         ),
         wall_name=wall_section
     )
@@ -157,7 +177,7 @@ def save():
             if key == "holds":
                 data[key] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        firebase_controller.put_boulder(data)
+        firebase_controller.put_boulder(data, wall=get_wall_path())
     return redirect('/')
 
 
