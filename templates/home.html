@@ -23,9 +23,9 @@
           <br />
           <label>Gym: </label>
           <form action="/" method="POST">
-            <select onchange="this.form.submit()" name="wall" id="wall">
-              {% for wall in walls %}
-              <option value="{{ wall['value'] }}" {% if wall['value']==selected %} selected {% endif %} >{{ wall['name'] }}</option>
+            <select onchange="this.form.submit()" name="gym" id="gym">
+              {% for gym in gyms %}
+              <option value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
               {% endfor %}
             </select>
           </form>
