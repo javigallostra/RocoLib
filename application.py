@@ -34,15 +34,35 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+def get_gym_path():
+    if session.get('gym', ''):
+        return '/' + session['gym']
+    else:
+        return '/sancu'
 
-@app.route('/')
+def get_gym():
+    if session.get('gym', ''):
+        return session['gym']
+    else:
+        return 'sancu'    
+
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html')
+    if request.method == 'POST':
+        session['gym'] = request.form.get('gym')
+    return render_template(
+        'home.html',
+        gyms=firebase_controller.get_gyms(),
+        selected=get_gym())
 
 
 @app.route('/create')
 def create():
-    return render_template('create.html', options=request.args.get('options', ''))
+    return render_template(
+        'create.html',
+        walls=firebase_controller.get_gym_walls(get_gym()),
+        options=request.args.get('options', '')
+    )
 
 
 @app.route('/create_boulder')
@@ -57,7 +77,7 @@ def create_route():
 
 @app.route('/explore')
 def explore():
-    return render_template('explore.html')
+    return render_template('explore.html', walls=firebase_controller.get_gym_walls(get_gym()))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
@@ -66,6 +86,7 @@ def explore_boulders():
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
         data = firebase_controller.get_boulders_filtered(
+                gym=get_gym_path(),
                 conditions=filters,
                 equals=EQUALS,
                 contains=CONTAINS
@@ -84,6 +105,7 @@ def explore_boulders():
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
             data = firebase_controller.get_boulders_filtered(
+                    gym=get_gym_path(),
                     conditions=None,
                     equals=EQUALS,
                     contains=CONTAINS
@@ -110,7 +132,7 @@ def load_boulder():
             section = boulder['section']
             wall_image = url_for(
                 'static',
-                filename='{}{}.JPG'.format(WALLS_PATH, section)
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), section)
             )
             return render_template(
                 'load_boulder.html',
@@ -142,7 +164,7 @@ def wall_section(wall_section):
         template,
         wall_image=url_for(
             'static',
-            filename='{}{}.JPG'.format(WALLS_PATH, wall_section)
+            filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall_section)
         ),
         wall_name=wall_section
     )
@@ -157,7 +179,7 @@ def save():
             if key == "holds":
                 data[key] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        firebase_controller.put_boulder(data)
+        firebase_controller.put_boulder(data, gym=get_gym_path())
     return redirect('/')
 
 

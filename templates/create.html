@@ -23,12 +23,9 @@
           <br />
           <h3>Choose wall</h3>
           <br />
-          <p>&bull;<a href="/walls/sAll?options={{options}}"> All sections</a></p>
-          <p>&bull;<a href="/walls/s1?options={{options}}"> Section 1</a></p>
-          <p>&bull;<a href="/walls/s2?options={{options}}"> Section 2</a></p>
-          <p>&bull;<a href="/walls/s3?options={{options}}"> Section 3</a></p>
-          <p>&bull;<a href="/walls/s4?options={{options}}"> Section 4</a></p>
-          <p>&bull;<a href="/walls/s5?options={{options}}"> Section 5</a></p>
+          {% for wall in walls %}
+          <p>&bull;<a href="/walls/{{ wall['image'] }}?options={{options}}"> {{ wall["name"] }}</a></p>
+          {% endfor %}
         </div>
       </div>
     </div>

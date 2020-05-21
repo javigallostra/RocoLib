@@ -12,7 +12,16 @@ from firebase_admin import db
 
 rocolib_path = 'rocolib.json'
 
-def get_walls():
+def get_gym_walls(gym=None):
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(rocolib_path)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://rocolib.firebaseio.com'
+        })
+    return db.reference(gym).child('walls').get()
+
+
+def get_gyms():
     if not firebase_admin._apps:
         cred = credentials.Certificate(rocolib_path)
         firebase_admin.initialize_app(cred, {
@@ -20,42 +29,42 @@ def get_walls():
         })
     return db.reference('walls').get()
 
-def get_connection(wall='/sancu'):
+def get_connection(gym='/sancu'):
     # Create connection
     if not firebase_admin._apps:
         cred = credentials.Certificate(rocolib_path)
         firebase_admin.initialize_app(cred, {
             'databaseURL' : 'https://rocolib.firebaseio.com'
         })
-    return db.reference(wall)
+    return db.reference(gym)
 
-def get_boulders(wall='/sancu'):
-    collection = get_connection(wall)
+def get_boulders(gym='/sancu'):
+    collection = get_connection(gym)
     raw_data = collection.child('boulders').get()
     boulder_data = {'Items': [val for key, val in raw_data.items()]}
     return boulder_data
 
-def get_routes(wall='/sancu'):
-    collection = get_connection(wall)
+def get_routes(gym='/sancu'):
+    collection = get_connection(gym)
     raw_data = collection.child('routes').get()
     route_data = {'Items': [val for key, val in raw_data.items()]}
     return route_data
 
-def put_boulder(boulder_data, wall='/sancu'):
-    collection = get_connection(wall)
+def put_boulder(boulder_data, gym='/sancu'):
+    collection = get_connection(gym)
     return collection.child('boulders').push(boulder_data)
 
-def put_route(route_data, wall='/sancu'):
-    collection = get_connection(wall)
+def put_route(route_data, gym='/sancu'):
+    collection = get_connection(gym)
     return collection.child('routes').push(route_data)
 
-def get_boulders_filtered(wall='/sancu', conditions=None, equals=None, contains=None):
+def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, contains=None):
     # if there are no conditions, return everything
     if not conditions:
-        return get_boulders(wall)
+        return get_boulders(gym)
     
     # if there are conditions, apply filters
-    collection = get_connection(wall).child('boulders')
+    collection = get_connection(gym).child('boulders')
     fb_data = None
     for key, value in conditions.items():
         if key in equals:
@@ -76,4 +85,4 @@ def get_boulders_filtered(wall='/sancu', conditions=None, equals=None, contains=
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
     
 if __name__ == '__main__':
-    print(get_walls())
+    print(get_gym_walls('/sancu'))

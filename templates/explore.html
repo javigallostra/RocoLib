@@ -53,11 +53,9 @@
               <div class="col">
                 <select id="popupSelectSection">
                   <option value="all" selected>All</option>
-                  <option value="s1">s1</option>
-                  <option value="s2">s2</option>
-                  <option value="s3">s3</option>
-                  <option value="s4">s4</option>
-                  <option value="s5">s5</option>
+                  {% for wall in walls %}
+                  <option value="{{ wall['image'] }}">{{ wall['name'] }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
