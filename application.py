@@ -118,7 +118,7 @@ def load_boulder():
 
 @app.route('/explore_routes')
 def explore_routes():
-    return render_template('explore_boulders.html')
+    return render_template('explore_routes.html')
 
 
 @app.route('/about_us')
