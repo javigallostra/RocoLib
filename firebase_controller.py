@@ -12,6 +12,14 @@ from firebase_admin import db
 
 rocolib_path = 'rocolib.json'
 
+def get_walls():
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(rocolib_path)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://rocolib.firebaseio.com'
+        })
+    return db.reference('walls').get()
+
 def get_connection(wall='/sancu'):
     # Create connection
     if not firebase_admin._apps:
@@ -67,3 +75,5 @@ def get_boulders_filtered(wall='/sancu', conditions=None, equals=None, contains=
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
     
+if __name__ == '__main__':
+    print(get_walls())
