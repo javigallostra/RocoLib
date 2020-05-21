@@ -25,7 +25,7 @@
           <form action="/" method="POST">
             <select onchange="this.form.submit()" name="wall" id="wall">
               {% for wall in walls %}
-              <option value="{{ wall }}" {% if wall==selected %} selected {% endif %} >{{ wall }}</option>
+              <option value="{{ wall['value'] }}" {% if wall['value']==selected %} selected {% endif %} >{{ wall['name'] }}</option>
               {% endfor %}
             </select>
           </form>
