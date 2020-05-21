@@ -60,7 +60,7 @@ def home():
 def create():
     return render_template(
         'create.html',
-        walls=firebase_controller.get_gym_walls(get_gym()) ,
+        walls=firebase_controller.get_gym_walls(get_gym()),
         options=request.args.get('options', '')
     )
 
@@ -77,7 +77,7 @@ def create_route():
 
 @app.route('/explore')
 def explore():
-    return render_template('explore.html')
+    return render_template('explore.html', walls=firebase_controller.get_gym_walls(get_gym()))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
