@@ -36,6 +36,13 @@
             </div>
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
           </div>
+          {% if not boulder_list %}
+          <br/>
+          <br/>
+          <div class="d-flex justify-content-center">
+            <h5>No boulders matching the specified criteria</h5>
+          </div>
+          {% endif %}
           {% for boulder in boulder_list %}
           <div class="card">
             <div class="row">
