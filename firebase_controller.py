@@ -60,9 +60,9 @@ def get_boulders_filtered(wall='/sancu', conditions=None, equals=None, contains=
     to_be_removed = []
     for key, val in conditions.items():
         for b_key, b_val in fb_data.items():
-            if key in contains and val not in b_val[key]:
+            if key in contains and val.lowercase() not in b_val[key].lowercase():
                 to_be_removed.append(b_key)
-            elif key in equals and val != b_val[key]:
+            elif key in equals and val.lowercase() != b_val[key].lowercase():
                 to_be_removed.append(b_key)
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
