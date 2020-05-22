@@ -46,6 +46,28 @@ def get_gym():
     else:
         return 'sancu'    
 
+def get_stats():
+    gyms = firebase_controller.get_gyms()
+    total_gyms = len(gyms)
+    total_boulders = 0
+    total_routes = 0
+    for gym in gyms:
+        try:
+            total_boulders += len(firebase_controller.get_boulders(gym['value'])['Items'])
+        except:
+            pass
+        try:
+            total_routes += len(firebase_controller.get_routes(gym['value'])['Items'])
+        except:
+            pass
+    
+    return {
+        'Boulders': total_boulders,
+        'Routes': total_routes,
+        'Walls': total_gyms
+    }
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
@@ -53,7 +75,8 @@ def home():
     return render_template(
         'home.html',
         gyms=firebase_controller.get_gyms(),
-        selected=get_gym())
+        selected=get_gym(),
+        stats=get_stats())
 
 
 @app.route('/create')

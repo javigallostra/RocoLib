@@ -21,7 +21,12 @@
       <div id="body">
         <div class="container">
           <br />
-          <label>Gym: </label>
+          <div class="row">
+            <div class="col-sm-12 m-auto text-center">
+              <h3>Rocolib</h3>
+            </div>
+          </div>
+          <label>Select Gym: </label>
           <form action="/" method="POST">
             <select onchange="this.form.submit()" name="gym" id="gym">
               {% for gym in gyms %}
@@ -34,8 +39,45 @@
           <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
           <p>&bull;<a href=""> Create Route (Coming soon)</a></p>
           <p>&bull;<a href="/explore"> Explore</a></p>
+          <hr />
+          <section class="module stats" id="counter"> 
+            <div class="container">
+              <div class="row">
+                <div class="col-sm-12 m-auto text-center">
+                  <h4>Stats</h4>
+                </div>
+              </div>
+              <div class="row">
+                {% for key, val in stats.items() %}
+                <div class="col-sm-4 text-center">
+                  <div class="counter pt-3">
+                    <div class="number"> <span class="count">{{ val }}</span></div>
+                    <div class="title mx-auto">{{ key }}</div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div> 
+          </section>
         </div>
       </div>
     </div>
   </body>
 </html>
+
+<style>
+.stats {
+  padding: 10px 0 10px 0;
+}
+.stats .counter .number {
+  color: #BAC176;
+  font-size: 3rem;
+  font-weight: 300;
+}
+.stats .counter .title {
+  max-width: 200px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: bold;
+}
+</style>
