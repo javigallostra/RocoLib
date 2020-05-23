@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Navigation bar title-->
     <title>Explore</title>
     <meta
@@ -37,13 +38,12 @@
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
           </div>
           {% if not boulder_list %}
-          <br/>
-          <br/>
+          <br />
+          <br />
           <div class="d-flex justify-content-center">
             <h5>No boulders matching the specified criteria</h5>
           </div>
-          {% endif %}
-          {% for boulder in boulder_list %}
+          {% endif %} {% for boulder in boulder_list %}
           <div class="card">
             <div class="row">
               <div
@@ -74,6 +74,30 @@
               <li>Section: {{boulder["section"]}}</li>
               <li>Creator: {{boulder["creator"]}}</li>
               <li>Feet: {{boulder["feet"]}}</li>
+              <li>
+                <div class="container">
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-lg-12 d-flex justify-content-left">
+                      <div class="star-rating-fixed">
+                        <span class="fa fa-star" data-rating="1"></span>
+                        <span class="fa fa-star" data-rating="2"></span>
+                        <span class="fa fa-star" data-rating="3"></span>
+                        <span class="fa fa-star" data-rating="4"></span>
+                        <span class="fa fa-star" data-rating="5"></span>
+                        <input
+                          type="hidden"
+                          name="boulder_rating"
+                          class="rating-value"
+                          value="{{ boulder.get('rating', 0) }}"
+                        />
+                      </div>
+                      <p style="margin-left: 10px; margin-top: 0px;">
+                        {{ boulder.get('raters', 0) }} ratings
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
           {% endfor %}
@@ -82,6 +106,24 @@
     </div>
   </body>
 </html>
+
+<script>
+var SetRatingStar = function () {
+  return $star_rating.each(function () {
+    if (
+      parseInt($star_rating.siblings("input.rating-value").val()) >=
+      parseInt($(this).data("rating"))
+    ) {
+      return $(this).removeClass("fa").removeClass("fa-star").addClass("fas").addClass("fa-star");
+    } else {
+      return $(this).removeClass("fas").removeClass("fa-star").addClass("fa").addClass("fa-star");
+    }
+  });
+};
+
+SetRatingStar();
+$(document).ready(function () {});
+</script>
 
 <style>
   /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
@@ -108,4 +150,8 @@
     padding-left: 1.2em;
     margin: 0.5em;
   }
+  .star-rating-fixed .fas {
+    color: yellow;
+  }
+
 </style>
