@@ -81,9 +81,15 @@ def home():
 
 @app.route('/create')
 def create():
+    walls = firebase_controller.get_gym_walls(get_gym())
+    for wall in walls:
+        wall['image_path'] = url_for(
+            'static',
+            filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall['image'])
+        )
     return render_template(
         'create.html',
-        walls=firebase_controller.get_gym_walls(get_gym()),
+        walls=walls,
         options=request.args.get('options', '')
     )
 

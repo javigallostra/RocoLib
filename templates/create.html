@@ -22,12 +22,173 @@
         <div class="container">
           <br />
           <h3>Choose wall</h3>
-          <br />
           {% for wall in walls %}
-          <p>&bull;<a href="/walls/{{ wall['image'] }}?options={{options}}"> {{ wall["name"] }}</a></p>
+          <br />
+          <div class="container">
+            <p>
+              &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
+                {{ wall["name"] }}</a
+              >
+            </p>
+            <img
+              id="{{ wall['image'] }}-img"
+              class="thumbnail"
+              src="{{ wall['image_path'] }}"
+              alt="Preview"
+            />
+            <!-- The Modal -->
+            <div id="{{ wall['image'] }}-modal" class="modal">
+              <!-- The Close Button -->
+              <span class="{{ wall['image'] }}-close close">&times;</span>
+              <!-- Modal Content (The Image) -->
+              <img id="{{ wall['image'] }}" />
+              <!-- Modal Caption (Image Text) -->
+              <div class="modal-caption" id="{{ wall['image'] }}-caption"></div>
+            </div>
+          </div>
+          <!-- JS -->
+          <script>
+            // Get the modal
+            var modal = document.getElementById("{{ wall['image'] }}-modal");
+
+            // Get the image and insert it inside the modal - use its "alt" text as a caption
+            var img = document.getElementById("{{ wall['image'] }}-img");
+
+            var modalImg = document.getElementById("{{ wall['image'] }}");
+
+            var captionText = document.getElementById(
+              "{{ wall['image'] }}-caption"
+            );
+            img.onclick = function () {
+              modal.style.display = "block";
+              modalImg.src = this.src;
+              console.log(this);
+              if (this.width >= this.height) {
+                modalImg.className = "";
+                modalImg.classList.add("modal-content-landscape");
+              } else {
+                modalImg.className = "";
+                modalImg.classList.add("modal-content-portrait");
+              }
+              captionText.innerHTML = this.alt;
+            };
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName(
+              "{{ wall['image'] }}-close"
+            )[0];
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
+              modal.style.display = "none";
+            };
+          </script>
           {% endfor %}
         </div>
       </div>
     </div>
   </body>
 </html>
+
+<style>
+  .thumbnail {
+    border: 1px solid #ddd; /* Gray border */
+    border-radius: 4px; /* Rounded border */
+    padding: 5px; /* Some padding */
+    width: 150px; /* Set a small width */
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  /* Add a hover effect (blue shadow) */
+  .thumbnail:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+    opacity: 0.7;
+  }
+
+  /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+  }
+
+  /* Modal Content (Image) */
+  .modal-content-landscape {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 600px;
+  }
+
+  .modal-content-portrait {
+    margin: auto;
+    display: block;
+    height: 80%;
+    max-height: 500px;
+  }
+
+  /* Caption of Modal Image (Image Text) - Same Width as the Image */
+  .modal-caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+  }
+
+  /* Add Animation - Zoom in the Modal */
+  .modal-content,
+  .modal-caption {
+    animation-name: zoom;
+    animation-duration: 0.6s;
+  }
+
+  @keyframes zoom {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* The Close Button */
+  .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* 100% Image Width on Smaller Screens */
+  @media only screen and (max-width: 700px) {
+    .modal-content-landscape {
+      width: 100%;
+    }
+    .modal-content-portrait {
+      height: 100%;
+    }
+  }
+</style>
