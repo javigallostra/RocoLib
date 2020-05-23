@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Navigation bar title-->
     <title>{{ boulder_name }}</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
     />
-    <link href="../static/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <link rel="stylesheet" href="../static/bootstrap.min.css" media="screen" />
     <link rel="stylesheet" href="../static/css/custom.css" />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
     />
     <!-- Development -->
     <link rel="stylesheet" href="../static/css/all.css" />
@@ -45,6 +46,26 @@
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
           <canvas id="wall-canvas"></canvas>
         </div>
+        <br />
+        <div class="container">
+          <div class="row d-flex justify-content-center">
+            <div class="col-lg-12 d-flex justify-content-center">
+              <div class="star-rating">
+                <span class="fa fa-star" data-rating="1"></span>
+                <span class="fa fa-star" data-rating="2"></span>
+                <span class="fa fa-star" data-rating="3"></span>
+                <span class="fa fa-star" data-rating="4"></span>
+                <span class="fa fa-star" data-rating="5"></span>
+                <input
+                  type="hidden"
+                  name="boulder_rating"
+                  class="rating-value"
+                  value="2.56"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
@@ -68,7 +89,7 @@
     var ctx = cnvs.getContext("2d");
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
-    boulder_data.holds.forEach(hold =>
+    boulder_data.holds.forEach((hold) =>
       drawHold(
         ctx,
         hold.x * ctx.width,
@@ -87,6 +108,29 @@
     ctx.strokeStyle = color;
     ctx.stroke();
   }
+
+  var $star_rating = $(".star-rating .fa");
+
+  var SetRatingStar = function () {
+    return $star_rating.each(function () {
+      if (
+        parseInt($star_rating.siblings("input.rating-value").val()) >=
+        parseInt($(this).data("rating"))
+      ) {
+        return $(this).removeClass("fa").removeClass("fa-star").addClass("fas").addClass("fa-star");
+      } else {
+        return $(this).removeClass("fas").removeClass("fa-star").addClass("fa").addClass("fa-star");
+      }
+    });
+  };
+
+  $star_rating.on("click", function () {
+    $star_rating.siblings("input.rating-value").val($(this).data("rating"));
+    return SetRatingStar();
+  });
+
+  SetRatingStar();
+  $(document).ready(function () {});
 </script>
 
 <style>
@@ -102,5 +146,14 @@
       margin-left: auto;
       margin-right: auto;
     }
+  }
+
+  .star-rating {
+    line-height: 32px;
+    font-size: 1.25em;
+  }
+
+  .star-rating .fas {
+    color: yellow;
   }
 </style>
