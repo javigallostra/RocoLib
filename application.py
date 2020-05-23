@@ -70,12 +70,14 @@ def get_stats():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    gyms = firebase_controller.get_gyms()
     if request.method == 'POST':
         session['gym'] = request.form.get('gym')
     return render_template(
         'home.html',
-        gyms=firebase_controller.get_gyms(),
+        gyms=gyms,
         selected=get_gym(),
+        current_gym=[gym['name'] for gym in gyms if gym['value']==get_gym()][0],
         stats=get_stats())
 
 

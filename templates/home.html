@@ -26,11 +26,18 @@
               <h3>Rocolib</h3>
             </div>
           </div>
+          <div class="row">
+            <div class="container">
+              <h5>Current Gym: </h5>
+              <p>{{ current_gym }}</p>
+            </div>
+          </div>
+          <br />
           <label>Select Gym: </label>
           <form action="/" method="POST">
             <select onchange="this.form.submit()" name="gym" id="gym">
               {% for gym in gyms %}
-              <option value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
+              <option onclick="this.form.submit()" value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
               {% endfor %}
             </select>
           </form>

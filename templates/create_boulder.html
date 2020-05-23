@@ -63,7 +63,7 @@
           <div class="container">
             <div class="row">
               <div class="col-2">
-                <button onclick="undoMove()">Undo</button>
+                <button class="btn btn-outline-dark" onclick="undoMove()">Undo</button>
               </div>
             </div>
             <br />
@@ -75,6 +75,7 @@
                   method="POST"
                 >
                   <input
+                    class="btn btn-outline-dark"
                     type="submit"
                     value="Done"
                     name="Submit"
@@ -84,9 +85,8 @@
                 </form>
               </div>
               <div class="col-2"></div>
-              <!-- <button>Done</button> -->
               <div class="col-2">
-                <button>Cancel</button>
+                <a href="/" class="btn btn-outline-dark">Cancel</a>
               </div>
               <div class="col-8"></div>
             </div>
