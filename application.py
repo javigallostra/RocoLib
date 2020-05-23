@@ -224,7 +224,7 @@ def wall_section(wall_section):
 @app.route('/save', methods=['GET', 'POST'])
 def save():
     if request.method == 'POST':
-        data = {'rating': 0}
+        data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
             data[key] = val
             if key == "holds":
