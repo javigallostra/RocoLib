@@ -58,6 +58,16 @@ def put_route(route_data, gym='/sancu'):
     collection = get_connection(gym)
     return collection.child('routes').push(route_data)
 
+
+def get_boulder_by_name(gym=None, name=None):
+    # if there are conditions, apply filters
+    collection = get_connection(gym).child('boulders')
+    return collection.order_by_child('name').equal_to(name).get()
+
+def update_boulder_by_id(gym=None, boulder_id=None, data=None):
+    collection = get_connection(gym).child('boulders/{}'.format(boulder_id))
+    collection.set(data)
+
 def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, contains=None):
     # if there are no conditions, return everything
     if not conditions:

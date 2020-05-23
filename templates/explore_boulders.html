@@ -79,17 +79,11 @@
                   <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 d-flex justify-content-left">
                       <div class="star-rating-fixed">
-                        <span class="fa fa-star" data-rating="1"></span>
-                        <span class="fa fa-star" data-rating="2"></span>
-                        <span class="fa fa-star" data-rating="3"></span>
-                        <span class="fa fa-star" data-rating="4"></span>
-                        <span class="fa fa-star" data-rating="5"></span>
-                        <input
-                          type="hidden"
-                          name="boulder_rating"
-                          class="rating-value"
-                          value="{{ boulder.get('rating', 0) }}"
-                        />
+                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"></span>
                       </div>
                       <p style="margin-left: 10px; margin-top: 0px;">
                         {{ boulder.get('raters', 0) }} ratings
@@ -106,24 +100,6 @@
     </div>
   </body>
 </html>
-
-<script>
-var SetRatingStar = function () {
-  return $star_rating.each(function () {
-    if (
-      parseInt($star_rating.siblings("input.rating-value").val()) >=
-      parseInt($(this).data("rating"))
-    ) {
-      return $(this).removeClass("fa").removeClass("fa-star").addClass("fas").addClass("fa-star");
-    } else {
-      return $(this).removeClass("fas").removeClass("fa-star").addClass("fa").addClass("fa-star");
-    }
-  });
-};
-
-SetRatingStar();
-$(document).ready(function () {});
-</script>
 
 <style>
   /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */

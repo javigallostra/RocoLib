@@ -152,6 +152,26 @@ def explore_boulders():
         )
         return render_template('explore_boulders.html', boulder_list=boulder_list)
 
+@app.route('/rate_boulder', methods=['POST'])
+def rate_boulder():
+    if request.method == 'POST':
+        boulder_name = request.form.get('boulder_name')
+        boulder_rating = request.form.get('boulder_rating')
+        boulder = firebase_controller.get_boulder_by_name(
+            gym=get_gym_path(),
+            name=boulder_name
+        )
+        for key, val in boulder.items():
+            # Update stats
+            val['rating'] = (val['rating'] * val['raters'] + int(boulder_rating)) / (val['raters'] + 1)
+            val['raters'] += 1
+            firebase_controller.update_boulder_by_id(
+                gym=get_gym_path(),
+                boulder_id=key,
+                data=val)
+    
+    return redirect('/explore')
+
 
 @app.route('/load_boulder', methods=['GET', 'POST'])
 def load_boulder():
