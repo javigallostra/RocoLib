@@ -260,7 +260,7 @@ def page_not_found(error):
 
 
 @app.errorhandler(400)
-def page_not_found(error):
+def bad_request(error):
     app.logger.error('Bad request: %s', (request.path))
     return render_template('errors/400.html'), 400
 
