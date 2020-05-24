@@ -11,6 +11,7 @@ colorama==0.4.1
 docutils==0.15.2
 firebase-admin==4.3.0
 Flask==1.1.1
+Flask-Caching==1.8.0
 flask-dynamo==0.1.2
 google-api-core==1.17.0
 google-api-python-client==1.8.3
