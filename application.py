@@ -1,8 +1,9 @@
 import os
 import json
 import ast
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 import datetime
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
+from flask_caching import Cache
 
 import firebase_controller
 
@@ -23,7 +24,15 @@ FEET_MAPPINGS = {
 app = Flask(__name__)
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
+def make_cache_key_boulder(*args, **kwargs):
+    path = request.path
+    form = str(hash(frozenset(request.form.items())))
+    return (path + form).encode('utf-8')
+
+def make_cache_key_create():
+    return (request.path + get_gym()).encode('utf-8')
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -82,6 +91,7 @@ def home():
 
 
 @app.route('/create')
+@cache.cached(timeout=60*60, key_prefix=make_cache_key_create)
 def create():
     walls = firebase_controller.get_gym_walls(get_gym())
     for wall in walls:
@@ -174,6 +184,7 @@ def rate_boulder():
 
 
 @app.route('/load_boulder', methods=['GET', 'POST'])
+@cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder():
     if request.method == 'POST':
         try:
