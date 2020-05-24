@@ -68,6 +68,11 @@
                 </div>
               </div>
             </div>
+            <div class="row d-flex justify-content-center">
+              <div class="col-lg-12 d-flex justify-content-center">
+                <button onclick="$('#bForm').submit();" class="btn btn-outline-dark">Submit</button>
+              </div>
+            </div>
         </div>
         <br />
       </div>
@@ -132,7 +137,9 @@
     $star_rating.siblings("form").children("input.rating-value").val($(this).data("rating"));
     // Update ratings
     SetRatingStar();
-    $("#bForm").submit(function(e) {
+  });
+
+  $("#bForm").submit(function(e) {
       $("<input />")
       .attr("type", "hidden")
       .attr("id", "boulder-name")
@@ -141,8 +148,6 @@
       .appendTo("#bForm");
       return true;
     });
-    $("#bForm").submit();
-  });
 
   SetRatingStar();
   $(document).ready(function () {});
