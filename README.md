@@ -1,6 +1,6 @@
 # RocoLib
 
-Web App to create and share bouldering routes of a climbing gym.
+Web App to create and share boulders & routes of a climbing gym.
 
 Previews at:
 
