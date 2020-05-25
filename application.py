@@ -9,7 +9,7 @@ import firebase_controller
 
 WALLS_PATH = 'images/walls/'
 
-# For AWS DynamoDB querying
+# For DB querying
 EQUALS = ['section', 'difficulty']
 CONTAINS = ['creator']
 
