@@ -91,7 +91,7 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
                 to_be_removed.append(b_key)
             elif key in equals and val.lower() != b_val[key].lower():
                 to_be_removed.append(b_key)
-            elif key in ranged and (int(b_val[key]) < int(val)-1 or  int(b_val[key]) > int(val)):
+            elif key in ranged and (int(b_val[key]) < int(val)-0.5 or  int(b_val[key]) > int(val)+0.5):
                 to_be_removed.append(b_key)
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
