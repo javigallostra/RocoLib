@@ -11,6 +11,7 @@ WALLS_PATH = 'images/walls/'
 
 # For DB querying
 EQUALS = ['section', 'difficulty']
+RANGE = ['rating']
 CONTAINS = ['creator']
 
 # Mappings of DB feet field values to friendly text to render
@@ -130,6 +131,7 @@ def explore_boulders():
                 gym=get_gym_path(),
                 conditions=filters,
                 equals=EQUALS,
+                ranged=RANGE,
                 contains=CONTAINS
             )
         for boulder in data['Items']:

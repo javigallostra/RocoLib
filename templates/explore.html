@@ -62,6 +62,22 @@
             <br />
             <div class="row popupItem">
               <div class="col">
+                Rating:
+              </div>
+              <div class="col">
+                <select id="popupSelectRating">
+                  <option value="0" selected>0 stars</option>
+                  <option value="1">1 star</option>
+                  <option value="2">2 stars</option>
+                  <option value="3">3 stars</option>
+                  <option value="4">4 stars</option>
+                  <option value="5">5 stars</option>
+                </select>
+              </div>
+            </div>
+            <br />
+            <div class="row popupItem">
+              <div class="col">
                 Creator:
               </div>
               <div class="col">
@@ -116,6 +132,7 @@
     filters.difficulty = $("#popupSelectDiff").val();
     filters.section = $("#popupSelectSection").val();
     filters.creator = $("#popupCreator").val();
+    filters.rating = $("#popupSelectRating").val();
     // $("#popUpDiv").hide();
     $("#bForm").submit()
   });

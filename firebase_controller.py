@@ -68,7 +68,7 @@ def update_boulder_by_id(gym=None, boulder_id=None, data=None):
     collection = get_connection(gym).child('boulders/{}'.format(boulder_id))
     collection.set(data)
 
-def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, contains=None):
+def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=None, contains=None):
     # if there are no conditions, return everything
     if not conditions:
         return get_boulders(gym)
@@ -90,6 +90,9 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, contains=N
             if key in contains and val.lower() not in b_val[key].lower():
                 to_be_removed.append(b_key)
             elif key in equals and val.lower() != b_val[key].lower():
+                to_be_removed.append(b_key)
+            elif key in ranged and (int(val) < int(b_val[key])-1 or int(val) > int(b_val[key])):
+                print(b_val)
                 to_be_removed.append(b_key)
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
