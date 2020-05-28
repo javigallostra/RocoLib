@@ -37,6 +37,18 @@
             </div>
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
           </div>
+          <div class="row text-left">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">Sort by:</div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
+              <select id="sortCriteria">
+                <option value="date-recent" selected>Creation Date (newest first)</option>
+                <option value="rating">Rating</option>
+                <option value="difficulty">Difficulty</option>
+                <option value="section">Wall Section</option>
+                <option value="date-oldest">Creation Date (oldest first)</option>
+              </select>
+            </div>
+          </div>
           {% if not boulder_list %}
           <br />
           <br />
