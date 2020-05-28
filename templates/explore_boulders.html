@@ -141,11 +141,16 @@
   }
 
   $("#sortCriteria").on("change", function () {
-    var field = this.value;
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
-    var a = '{"boulders": ' + boulders + "}";
-    console.log(JSON.parse(a));
+    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+    // Sort data
+    if (this.value === "date-recent") {
+    } else if (this.value === "difficulty") {
+    } else if (this.value === "section") {
+    } else if (this.value === "rating") {
+    } else if (this.value === "date-oldest") {
+    }
   });
 </script>
 
