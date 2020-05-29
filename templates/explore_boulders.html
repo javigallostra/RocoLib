@@ -146,11 +146,33 @@
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     // Sort data
     if (this.value === "date-recent") {
+      function sortBoulders(a, b) {
+        var dateA = Date.parse(a["time"]);
+        var dateB = Date.parse(b["time"]);
+        return (dateB - dateA);
+      }
     } else if (this.value === "difficulty") {
+      function sortBoulders(a, b) {
+        var difficulties = ["green", "blue", "yellow", "red"];
+        return difficulties.indexOf(a["difficulty"]) - difficulties.indexOf(b["difficulty"]);
+      }
     } else if (this.value === "section") {
+      function sortBoulders(a, b) {
+        return (a["section"] > b["section"]) ? 1 : ((b["section"] > a["section"]) ? -1 : 0);
+      }
     } else if (this.value === "rating") {
+      function sortBoulders(a, b) {
+        return (b["rating"] - a["rating"]); 
+      }
     } else if (this.value === "date-oldest") {
+      function sortBoulders(a, b) {
+        var dateA = Date.parse(a["time"]);
+        var dateB = Date.parse(b["time"]);
+        return (dateA - dateB);
+      }
     }
+    boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
+    // console.log(boulders_data["boulders"]);
   });
 </script>
 
