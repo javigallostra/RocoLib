@@ -142,6 +142,12 @@
     return string.split(search).join(replace);
   }
 
+  $("#sortAscending").on("change", function () {
+    var list = $("#bouldersList");
+    var listItems = list.children('div');
+    list.append(listItems.get().reverse());
+  });
+
   $("#sortCriteria").on("change", function () {
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
@@ -175,6 +181,10 @@
       }
     }
     boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
+
+    if ($("#sortAscending").val() == "increasing") {
+      boulders_data["boulders"].reverse();
+    }
 
     boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
