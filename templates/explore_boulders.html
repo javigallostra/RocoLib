@@ -49,8 +49,8 @@
                 <option value="section">Wall Section</option>
               </select>
               <select id="sortAscending">
-                <option value="date-recent" selected>Increasing</option>
-                <option value="rating">Decreasing</option>
+                <option value="increasing">Increasing</option>
+                <option value="decreasing" selected>Decreasing</option>
               </select>
             </div>
           </div>
@@ -155,7 +155,7 @@
       }
     } else if (this.value === "difficulty") {
       function sortBoulders(a, b) {
-        var difficulties = ["green", "blue", "yellow", "red"];
+        var difficulties = ["red", "yellow", "blue", "green"];
         return (
           difficulties.indexOf(a["difficulty"]) -
           difficulties.indexOf(b["difficulty"])
@@ -172,12 +172,6 @@
     } else if (this.value === "rating") {
       function sortBoulders(a, b) {
         return b["rating"] - a["rating"];
-      }
-    } else if (this.value === "date-oldest") {
-      function sortBoulders(a, b) {
-        var dateA = Date.parse(a["time"]);
-        var dateB = Date.parse(b["time"]);
-        return dateA - dateB;
       }
     }
     boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
