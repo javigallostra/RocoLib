@@ -163,9 +163,9 @@
       }
     } else if (this.value === "section") {
       function sortBoulders(a, b) {
-        return a["section"] > b["section"]
+        return a["section"] < b["section"]
           ? 1
-          : b["section"] > a["section"]
+          : b["section"] < a["section"]
           ? -1
           : 0;
       }
