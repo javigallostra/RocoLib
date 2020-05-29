@@ -4,6 +4,7 @@ import ast
 import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
+from werkzeug import secure_filename
 
 import firebase_controller
 
@@ -136,6 +137,7 @@ def explore_boulders():
             )
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+            boulder['safe_name'] = secure_filename(boulder['name'])
         session['boulder_filters'] = filters
         session['boulders_list'] = sorted(
             data['Items'],
@@ -155,6 +157,7 @@ def explore_boulders():
                 )
             for boulder in data['Items']:
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+                boulder['safe_name'] = secure_filename(boulder['name'])
                 boulder_list.append(boulder)
         boulder_list = sorted(
             boulder_list,
