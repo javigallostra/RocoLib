@@ -43,15 +43,14 @@
             </div>
             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
               <select id="sortCriteria">
-                <option value="date-recent" selected
-                  >Creation Date (newest first)</option
-                >
+                <option value="date-recent" selected>Creation Date</option>
                 <option value="rating">Rating</option>
                 <option value="difficulty">Difficulty</option>
                 <option value="section">Wall Section</option>
-                <option value="date-oldest"
-                  >Creation Date (oldest first)</option
-                >
+              </select>
+              <select id="sortAscending">
+                <option value="date-recent" selected>Increasing</option>
+                <option value="rating">Decreasing</option>
               </select>
             </div>
           </div>
@@ -183,11 +182,13 @@
     }
     boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
 
-    boulders_data["boulders"].forEach(boulder => {
+    boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
-      $('#bouldersList').find('#' + boulder['safe_name']).each(function () {
-        $(this).parent().append(this);
-      });
+      $("#bouldersList")
+        .find("#" + boulder["safe_name"])
+        .each(function () {
+          $(this).parent().append(this);
+        });
     });
   });
 </script>
