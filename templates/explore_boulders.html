@@ -90,7 +90,11 @@
                 </div>
               </div>
               <ul>
-                <li>Section: {{boulder["section"]}}</li>
+                {%- for wall in walls_list -%}
+                {%- if  wall['image'] == boulder['section'] -%}
+                <li>Section: {{ wall['name'] }}</li>
+                {%- endif -%}
+                {% endfor %}
                 <li>Creator: {{boulder["creator"]}}</li>
                 <li>Feet: {{boulder["feet"]}}</li>
                 <li>

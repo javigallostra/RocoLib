@@ -126,10 +126,11 @@ def explore():
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders():
     if request.method == 'POST':
+        gym_path = get_gym_path()
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
         data = firebase_controller.get_boulders_filtered(
-                gym=get_gym_path(),
+                gym=gym_path,
                 conditions=filters,
                 equals=EQUALS,
                 ranged=RANGE,
@@ -145,12 +146,18 @@ def explore_boulders():
                 x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
             reverse=True
         )
-        return render_template('explore_boulders.html', boulder_list=session['boulders_list'])
+        gym_walls = firebase_controller.get_gym_walls(gym_path)
+        return render_template(
+            'explore_boulders.html',
+            boulder_list=session['boulders_list'],
+            walls_list=gym_walls
+        )
     if request.method == 'GET':
+        gym_path = get_gym_path()
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
             data = firebase_controller.get_boulders_filtered(
-                    gym=get_gym_path(),
+                    gym=gym_path,
                     conditions=None,
                     equals=EQUALS,
                     contains=CONTAINS
@@ -165,7 +172,12 @@ def explore_boulders():
                 x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
             reverse=True
         )
-        return render_template('explore_boulders.html', boulder_list=boulder_list)
+        gym_walls = firebase_controller.get_gym_walls(gym_path)
+        return render_template(
+            'explore_boulders.html',
+            boulder_list=boulder_list,
+            walls_list=gym_walls
+        )
 
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder():
