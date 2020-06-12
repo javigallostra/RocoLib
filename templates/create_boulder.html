@@ -21,6 +21,21 @@
       <div id="body">
         <div class="container">
           <br />
+          <div class="row text-center">
+            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
+              <div class="row text-center">
+                <div class="col">
+                  <p><a href="/">Home</a></p>
+                </div>
+                <div class="col">
+                  <p><a href="/create?options=boulder">Back</a></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+          </div>
+          <br />
           <div class="row">
             <div class="col-sm">
               <div style="text-align: center;">
@@ -63,7 +78,9 @@
           <div class="container">
             <div class="row">
               <div class="col-2">
-                <button class="btn btn-outline-dark" onclick="undoMove()">Undo</button>
+                <button class="btn btn-outline-dark" onclick="undoMove()">
+                  Undo
+                </button>
               </div>
             </div>
             <br />
@@ -116,7 +133,7 @@
   };
   document.addEventListener(
     "click",
-    function(event) {
+    function (event) {
       // If the clicked element doesn't have the right selector, bail
       if (
         !(
@@ -166,7 +183,7 @@
     const ctx = cnvs.getContext("2d");
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
     var newHolds = [];
-    holds.forEach(hold =>
+    holds.forEach((hold) =>
       drawHold(
         ctx,
         hold.x * ctx.width,
