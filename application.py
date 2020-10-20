@@ -4,7 +4,7 @@ import ast
 import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 import firebase_controller
 
