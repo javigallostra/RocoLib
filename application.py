@@ -87,7 +87,7 @@ def get_stats():
     return {
         'Boulders': total_boulders,
         'Routes': total_routes,
-        'Walls': total_gyms
+        'Gyms': total_gyms
     }
 
 
