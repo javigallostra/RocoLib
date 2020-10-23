@@ -23,20 +23,28 @@ Would like to help? PRs are welcome!
 
 ## Captures
 
+#### Home
+
 <p align="center" style="text-align:center;">
 <img src="/extras/images/home.JPG"><br>
 Home
 </p>
+
+#### Explore problems
 
 <p align="center" style="text-align:center;">
 <img src="/extras/images/explore.JPG"><br>
 Explore Boulders
 </p>
 
+#### Create problems
+
 <p align="center" style="text-align:center;">
 <img src="/extras/images/create.jpg"><br>
 Create Boulders
 </p>
+
+#### Load problems
 
 <p align="center" style="text-align:center;">
 <img src="/extras/images/view.jpg"><br>
