@@ -85,7 +85,8 @@
   // The code is not working otherwise
   var data = '{{ boulder_data | tojson | safe}}';
   var boulder_data = JSON.parse(data);
-  const RADIUS = 15 / 473;
+  const RADIUS = boulder_data.radius;
+  // const RADIUS = 15 / 473;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");

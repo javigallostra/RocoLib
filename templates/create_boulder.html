@@ -116,7 +116,7 @@
 
 <script>
   var holds = [];
-  const RADIUS = 15 / 473;
+  //const RADIUS = 15 / 473;
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -158,7 +158,7 @@
       ctx,
       event.offsetX,
       event.offsetY,
-      RADIUS * ctx.width,
+      '{{ radius }}' * ctx.width,
       holdColor,
       holds
     );
@@ -188,7 +188,7 @@
         ctx,
         hold.x * ctx.width,
         hold.y * ctx.height,
-        RADIUS * ctx.width,
+        '{{ radius }}' * ctx.width,
         hold.color,
         newHolds
       )
