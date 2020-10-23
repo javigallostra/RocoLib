@@ -29,6 +29,17 @@ def get_gyms():
         })
     return db.reference('walls').get()
 
+def get_walls_radius_all():
+    gyms = get_gyms()
+    walls = [[get_gym_walls(gym['value']), gym['value']] for gym in gyms]
+    walls_with_radius = {}
+    for walls_list in walls:
+        walls_with_radius = {
+            **walls_with_radius,
+            **{ walls_list[-1]+'/'+wall['image']: wall['radius'] for wall in walls_list[0] }
+        }
+    return walls_with_radius
+
 def get_connection(gym='/sancu'):
     # Create connection
     if not firebase_admin._apps:
@@ -98,3 +109,4 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
     
 if __name__ == '__main__':
     print(get_gym_walls('/sancu'))
+    print(get_walls_radius_all())

@@ -57,6 +57,18 @@ def get_gym():
     else:
         return 'sancu'    
 
+def get_gym_from_gym_path(gym_path):
+    return gym_path[1:]
+
+def get_wall_radius(wall_path=None):
+    """
+    wall path is expected to be: 'gym/wall'
+    """
+    if session.get('walls_radius', ''):
+        return session['walls_radius'][wall_path]
+    else:
+        return firebase_controller.get_walls_radius_all()[wall_path]
+
 def get_stats():
     gyms = firebase_controller.get_gyms()
     total_gyms = len(gyms)
@@ -139,6 +151,7 @@ def explore_boulders():
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
+            boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
         session['boulder_filters'] = filters
         session['boulders_list'] = sorted(
             data['Items'],
@@ -165,6 +178,7 @@ def explore_boulders():
             for boulder in data['Items']:
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
                 boulder['safe_name'] = secure_filename(boulder['name'])
+                boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
                 boulder_list.append(boulder)
         boulder_list = sorted(
             boulder_list,
@@ -236,6 +250,8 @@ def render_about_us():
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section):
     template = 'create_boulder.html'
+    if not session.get('walls_radius', ''):
+        session['walls_radius'] = firebase_controller.get_walls_radius_all()
     if request.args.get('options', '') == 'route':
         template = 'create_route.html'
 
@@ -245,7 +261,8 @@ def wall_section(wall_section):
             'static',
             filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall_section)
         ),
-        wall_name=wall_section
+        wall_name=wall_section,
+        radius=get_wall_radius(get_gym()+'/'+wall_section)
     )
 
 
