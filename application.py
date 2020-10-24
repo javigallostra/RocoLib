@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, url_for, redirect, abort, jso
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
 
-import firebase_controller
+import db.firebase_controller as firebase_controller
 
 WALLS_PATH = 'images/walls/'
 
