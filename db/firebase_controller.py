@@ -12,30 +12,25 @@ from firebase_admin import db
 
 rocolib_path = 'rocolib.json'
 
-def get_gym_walls(gym=None):
+def init_db_connection():
     if not firebase_admin._apps:
         cred = credentials.Certificate(rocolib_path)
         firebase_admin.initialize_app(cred, {
             'databaseURL' : 'https://rocolib.firebaseio.com'
         })
+
+def get_gym_walls(gym=None):
+    init_db_connection()
     return db.reference(gym).child('walls').get()
 
 def get_gym_section_name(gym=None, section=None):
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(rocolib_path)
-        firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://rocolib.firebaseio.com'
-        })
+    init_db_connection()
     gym_walls = db.reference(gym).child('walls').get()
     name = [wall['name'] for wall in gym_walls if wall['image'] == section]
     return name[0] if len(name)>=1 else ""
 
 def get_gyms():
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(rocolib_path)
-        firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://rocolib.firebaseio.com'
-        })
+    init_db_connection()
     return db.reference('walls').get()
 
 def get_walls_radius_all():
@@ -51,11 +46,7 @@ def get_walls_radius_all():
 
 def get_connection(gym='/sancu'):
     # Create connection
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(rocolib_path)
-        firebase_admin.initialize_app(cred, {
-            'databaseURL' : 'https://rocolib.firebaseio.com'
-        })
+    init_db_connection()
     return db.reference(gym)
 
 def get_boulders(gym='/sancu'):
