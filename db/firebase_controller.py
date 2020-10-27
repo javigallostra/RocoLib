@@ -20,6 +20,15 @@ def get_gym_walls(gym=None):
         })
     return db.reference(gym).child('walls').get()
 
+def get_gym_section_name(gym=None, section=None):
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(rocolib_path)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL' : 'https://rocolib.firebaseio.com'
+        })
+    gym_walls = db.reference(gym).child('walls').get()
+    name = [wall['name'] for wall in gym_walls if wall['image'] == section]
+    return name[0] if len(name)>=1 else ""
 
 def get_gyms():
     if not firebase_admin._apps:

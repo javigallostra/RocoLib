@@ -261,7 +261,7 @@ def wall_section(wall_section):
             'static',
             filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall_section)
         ),
-        wall_name=wall_section,
+        wall_name=firebase_controller.get_gym_section_name(get_gym(), wall_section),
         radius=get_wall_radius(get_gym()+'/'+wall_section)
     )
 
