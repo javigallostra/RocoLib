@@ -300,10 +300,11 @@ def save_boulder():
     else:
         return abort(400)
 
-@login_required
+# route decorator should be the outermost decorator
 @app.route('/add_gym', methods=['GET', 'POST'])
+@login_required
 def add_gym():
-    redirect(url_for('home'))
+    return render_template('add_new_gym.html')
 
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
