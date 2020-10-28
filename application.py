@@ -5,7 +5,7 @@ import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from models import users, User, get_user
+from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -47,10 +47,8 @@ def make_cache_key_create():
 # user loading callback
 @login_manager.user_loader
 def load_user(user_id):
-    for user in users:
-        if user.id == int(user_id):
-            return user
-    return None
+    return User.get_by_id(int(user_id))
+    
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -314,7 +312,7 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = get_user(form.email.data)
+        user = User.get_user_by_email(form.email.data)
         if user is not None and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')

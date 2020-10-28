@@ -10,6 +10,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+# rocolib_path = '../rocolib.json' # For testing
 rocolib_path = 'rocolib.json'
 
 def init_db_connection():
@@ -158,13 +159,18 @@ def save_user(user_data=None):
     collection = get_connection("users")
     return collection.push(user_data)
 
-def get_user_by_id(id=None):
-    pass
+def get_user_data_by_id(user_id=None):
+    user = get_connection("users").order_by_child('id').equal_to(user_id).get()
+    user_matches = [u for u in user.values()] # this should only return one match
+    return user_matches[0] if user_matches else None
 
-def get_user_by_email(email=None):
-    pass
+def get_user_data_by_email(email=None):
+    user = get_connection("users").order_by_child('email').equal_to(email).get()
+    user_matches = [u for u in user.values()] # this should only return one match
+    return user_matches[0] if user_matches else None
 
 if __name__ == '__main__':
     # testing
     print(get_gym_walls('/sancu'))
     print(get_walls_radius_all())
+    print(get_user_data_by_email("test@test.com"))

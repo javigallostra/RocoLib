@@ -4,16 +4,22 @@ from db import firebase_controller
 
 class User(UserMixin):
 
-    def __init__(self, id, name, email, password, is_admin=False):
-        self.id = id
-        self.name = name
-        self.email = email
-        self.password = generate_password_hash(password)
-        self.is_admin = is_admin
+    # def __init__(self, id, name, email, password, is_admin=False):
+    def __init__(self, *initial_data, **kwargs):
+        self.id = None
+        self.name = None
+        self.email = None
+        self.password = None
+        self.is_admin = None
+
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+            for key in kwargs:
+                setattr(self, key, kwargs[key])
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
-
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -23,12 +29,18 @@ class User(UserMixin):
         firebase_controller.save_user(self.__dict__)
 
     @staticmethod
-    def get_by_id(id):
-        return firebase_controller.get_user_by_id(id)
+    def get_by_id(user_id):
+        user_data = firebase_controller.get_user_data_by_id(user_id)
+        if not user_data:
+            return None 
+        return User(user_data)
 
     @staticmethod
-    def get_by_email(email):
-        return firebase_controller.get_user_by_email(email=email).first()
+    def get_user_by_email(email):
+        user_data = firebase_controller.get_user_data_by_email(email=email)
+        if not user_data:
+            return None 
+        return User(user_data)
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
