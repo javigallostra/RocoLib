@@ -154,5 +154,6 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
     
 if __name__ == '__main__':
+    # testing
     print(get_gym_walls('/sancu'))
     print(get_walls_radius_all())
