@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- Navigation bar title-->
-    <title>{{ boulder_name }}</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
-    />
-    <link rel="stylesheet" href="../static/bootstrap.min.css" media="screen" />
-    <link rel="stylesheet" href="../static/css/custom.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
-    />
-    <!-- Development -->
-    <link rel="stylesheet" href="../static/css/all.css" />
-  </head>
-  <body>
+{% extends "base_template.html" %}
+
+{% block title %}{{ boulder_name }}{% endblock %}
+
+{% block content %}
     <br />
     <div id="holder">
       <div id="body">
@@ -77,8 +62,6 @@
         <br />
       </div>
     </div>
-  </body>
-</html>
 
 <script>
   // It is important that this is wrapped in single quotes ('')
@@ -153,7 +136,9 @@
   SetRatingStar();
   $(document).ready(function () {});
 </script>
+{% endblock %}
 
+{% block styles %}
 <style>
   img {
     margin-left: auto;
@@ -184,5 +169,5 @@
       font-size: 0.8em;
     }
   }
-
 </style>
+{% endblock %}

@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Navigation bar title-->
-    <title>Create</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
-    />
-    <link href="../static/bootstrap.min.css" rel="stylesheet" media="screen" />
-    <link rel="stylesheet" href="../static/css/custom.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
-    />
-    <!-- Development -->
-    <link rel="stylesheet" href="../static/css/all.css" />
-  </head>
-  <body>
+{% extends "base_template.html" %}
+
+{% block title %}Create{% endblock %}
+
+{% block content %}
     <div id="holder">
       <div id="body">
         <div class="container">
@@ -108,3 +94,4 @@
     // console.log(holds);
   }
 </script>
+{% endblock %}
