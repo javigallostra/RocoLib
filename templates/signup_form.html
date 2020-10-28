@@ -3,6 +3,7 @@
 {% block title %}Sign up{% endblock %}
 
 {% block content %}
+<div class="container" style="margin-top: 1rem;">
     {% if error %}
         <p style="color: red;"><strong>Error:</strong> {{ error }}
     {% endif %}
@@ -33,4 +34,5 @@
             {{ form.submit() }}
         </div>
     </form>
+</div>
 {% endblock %}

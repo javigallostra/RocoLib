@@ -47,8 +47,7 @@ def make_cache_key_create():
 # user loading callback
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_by_id(int(user_id))
-    
+    return User.get_by_id(user_id)
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -326,20 +325,26 @@ def show_signup_form():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = SignupForm()
+    error = None
     if form.validate_on_submit():
         name = form.name.data
         email = form.email.data
         password = form.password.data
-        # Creamos el usuario y lo guardamos
-        user = User(len(users) + 1, name, email, password)
-        users.append(user)
-        # Dejamos al usuario logueado
-        login_user(user, remember=True)
-        next_page = request.args.get('next', None)
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('home')
-        return redirect(next_page)
-    return render_template("signup_form.html", form=form)
+        user = User.get_user_by_email(email)
+        if user is not None:
+            error = f'El email {email} ya está siendo utilizado por otro usuario'
+        else:
+            # Creamos el usuario y lo guardamos
+            user = User(name=name, email=email)
+            user.set_password(password)
+            user.save()
+            # Dejamos al usuario logueado
+            login_user(user, remember=True)
+            next_page = request.args.get('next', None)
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
+    return render_template("signup_form.html", form=form, error=error)
 
 @app.route('/logout')
 def logout():

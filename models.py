@@ -1,3 +1,4 @@
+import uuid 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import firebase_controller
@@ -10,13 +11,13 @@ class User(UserMixin):
         self.name = None
         self.email = None
         self.password = None
-        self.is_admin = None
+        self.is_admin = False
 
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
-            for key in kwargs:
-                setattr(self, key, kwargs[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -26,6 +27,8 @@ class User(UserMixin):
 
     def save(self):
         # TODO: check if user already exists
+        if not self.id:
+            self.id = str(uuid.uuid1())
         firebase_controller.save_user(self.__dict__)
 
     @staticmethod
