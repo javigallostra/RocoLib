@@ -4,6 +4,7 @@ import ast
 import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
+from flask_login import LoginManager
 from werkzeug.utils import secure_filename
 
 import db.firebase_controller as firebase_controller
@@ -27,6 +28,7 @@ app = Flask(__name__)
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+login_manager = LoginManager(app)
 
 def make_cache_key_boulder(*args, **kwargs):
     path = request.path
