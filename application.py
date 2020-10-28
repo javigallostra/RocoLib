@@ -5,7 +5,7 @@ import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from models import users, User, get_user
+from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -47,10 +47,7 @@ def make_cache_key_create():
 # user loading callback
 @login_manager.user_loader
 def load_user(user_id):
-    for user in users:
-        if user.id == int(user_id):
-            return user
-    return None
+    return User.get_by_id(user_id)
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -314,7 +311,7 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = get_user(form.email.data)
+        user = User.get_user_by_email(form.email.data)
         if user is not None and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
@@ -328,20 +325,26 @@ def show_signup_form():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = SignupForm()
+    error = None
     if form.validate_on_submit():
         name = form.name.data
         email = form.email.data
         password = form.password.data
-        # Creamos el usuario y lo guardamos
-        user = User(len(users) + 1, name, email, password)
-        users.append(user)
-        # Dejamos al usuario logueado
-        login_user(user, remember=True)
-        next_page = request.args.get('next', None)
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('home')
-        return redirect(next_page)
-    return render_template("signup_form.html", form=form)
+        user = User.get_user_by_email(email)
+        if user is not None:
+            error = f'El email {email} ya está siendo utilizado por otro usuario'
+        else:
+            # Creamos el usuario y lo guardamos
+            user = User(name=name, email=email)
+            user.set_password(password)
+            user.save()
+            # Dejamos al usuario logueado
+            login_user(user, remember=True)
+            next_page = request.args.get('next', None)
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
+    return render_template("signup_form.html", form=form, error=error)
 
 @app.route('/logout')
 def logout():
