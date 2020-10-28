@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Navigation bar title-->
+    <title>{% block title %}{% endblock %}</title>
+    <meta
+      name="viewport"
+        content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
+    />
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
+    />
+    <!-- Development -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
+</head>
+<body>
+<div>
+    <ul class="user-info">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        {% if current_user.is_anonymous %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li> | </li>
+            <li><a href="{{ url_for('show_signup_form') }}">Sign up</a></li>
+        {% else %}
+            <li>{{ current_user.name }}</li>
+            <li> | </li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+</div>
+{% block content %}{% endblock %}
+</body>
+</html>
+
+<style>
+.user-info {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.user-info li {
+    display: inline-block;
+    margin: 0;
+    padding: 0 10px 0 0;
+}
+</style>
+{% block styles %}{% endblock %}
