@@ -153,6 +153,17 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
     
+## User related functions
+def save_user(user_data=None):
+    collection = get_connection("users")
+    return collection.push(user_data)
+
+def get_user_by_id(id=None):
+    pass
+
+def get_user_by_email(email=None):
+    pass
+
 if __name__ == '__main__':
     # testing
     print(get_gym_walls('/sancu'))
