@@ -33,7 +33,6 @@ app = Flask(__name__)
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
-login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
 def make_cache_key_boulder(*args, **kwargs):
