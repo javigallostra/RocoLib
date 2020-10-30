@@ -334,7 +334,7 @@ def show_signup_form():
         password = form.password.data
         user = User.get_user_by_email(email)
         if user is not None:
-            error = f'El email {email} ya está siendo utilizado por otro usuario'
+            error = f'The email {email} is already registered'
         else:
             # Creamos el usuario y lo guardamos
             user = User(name=name, email=email)
@@ -352,6 +352,12 @@ def show_signup_form():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+# User related
+@app.route('/tick_list')
+def tick_list():
+    return redirect(url_for('home'))
+
 
 @app.errorhandler(404)
 def page_not_found(error):
