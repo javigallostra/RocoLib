@@ -59,11 +59,13 @@
               </div>
             </div>
             {% if not current_user.is_anonymous %}
-            <div class="row d-flex justify-content-center">
-              <li><a href="{{ url_for('home') }}">Add to Tick List</a></li>
-              <li> | </li>
-              <li><a href="{{ url_for('home') }}">Done!</a></li>
-            </div>
+              <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
+                <ul class="user-info">
+                  <li><a href="{{ url_for('home') }}">Add to Tick List</a></li>
+                  <li> | </li>
+                  <li><a href="{{ url_for('home') }}">Done!</a></li>
+                </ul>
+              </div>
             {% endif %}
         </div>
         <br />
