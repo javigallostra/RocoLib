@@ -356,7 +356,7 @@ def logout():
 # User related
 @app.route('/tick_list')
 def tick_list():
-    return redirect(url_for('home'))
+    return render_template('tick_list.html')
 
 
 @app.errorhandler(404)
