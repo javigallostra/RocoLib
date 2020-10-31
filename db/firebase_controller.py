@@ -106,6 +106,9 @@ def put_route(route_data, gym='/sancu'):
     return collection.child('routes').push(route_data)
 
 
+def get_ticklist_boulder(boulder=None):
+    return get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
+
 def get_boulder_by_name(gym=None, name=None):
     """
     Given a boulder name and a Gym, return the boulder data
@@ -172,5 +175,13 @@ def get_user_data_by_email(email=None):
 if __name__ == '__main__':
     # testing
     print(get_gym_walls('/sancu'))
+
     print(get_walls_radius_all())
+    
     print(get_user_data_by_email("test@test.com"))
+
+    class A:
+        def __init__(self, iden, gym):
+            self.iden = iden
+            self.gym = gym
+    print(get_ticklist_boulder(A('-M7qNHz4uLQKcgK-8Nmv','sancu')))
