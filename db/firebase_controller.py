@@ -107,8 +107,10 @@ def put_route(route_data, gym='/sancu'):
 
 
 def get_ticklist_boulder(boulder=None):
-    return get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
-
+    boulder_data = get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
+    boulder_data['gym'] = boulder.gym
+    return boulder_data
+    
 def get_boulder_by_name(gym=None, name=None):
     """
     Given a boulder name and a Gym, return the boulder data

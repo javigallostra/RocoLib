@@ -235,10 +235,12 @@ def load_boulder():
                 "boulder_data").replace('\'', '"'))
             boulder_name = boulder['name']
             section = boulder['section']
+            gym = boulder['gym'] if boulder.get('gym', None) else get_gym()
             wall_image = url_for(
                 'static',
-                filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), section)
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, gym, section)
             )
+            print(boulder)
             return render_template(
                 'load_boulder.html',
                 boulder_name=boulder_name,
@@ -354,9 +356,22 @@ def logout():
 
 # User related
 @app.route('/tick_list')
+@login_required
 def tick_list():
-    return render_template('tick_list.html')
-
+    boulder_list = [
+        firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
+    ]
+    for boulder in boulder_list:
+        boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+        boulder['safe_name'] = secure_filename(boulder['name'])
+        boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
+    return render_template(
+        'tick_list.html', 
+        boulder_list = boulder_list,
+        walls_list = [
+            {"image": section} for section in set([problem.section for problem in current_user.ticklist])
+        ]
+    )
 
 @app.errorhandler(404)
 def page_not_found(error):

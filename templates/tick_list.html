@@ -3,7 +3,209 @@
 {% block title %}Tick List{% endblock %}
 
 {% block content %}
-<div class="container">
-    This is your personal tick list
-</div>
+    <br />
+    <div id="holder">
+      <div id="body">
+        <div class="container">
+          <div class="row text-left">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+              Sort by:
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
+              <select id="sortCriteria">
+                <option value="date-recent" selected>Creation Date</option>
+                <option value="rating">Rating</option>
+                <option value="difficulty">Difficulty</option>
+                <option value="section">Wall Section</option>
+              </select>
+              <select id="sortAscending">
+                <option value="increasing">Increasing</option>
+                <option value="decreasing" selected>Decreasing</option>
+              </select>
+            </div>
+          </div>
+          {% if not boulder_list %}
+          <br />
+          <br />
+          <div class="d-flex justify-content-center">
+            <h5>No boulders in ticklist</h5>
+          </div>
+          {% endif %}
+          <div id="bouldersList">
+            {% for boulder in boulder_list %}
+            <div class="card" id="{{ boulder['name'] }}">
+              <div class="row">
+                <div
+                  class="dot"
+                  style="background-color: {{ boulder['difficulty'] }};"
+                ></div>
+                <!-- TODO: Add safename field to boulder -->
+                <div style="padding-left: 0.5rem;">
+                  <form action="/load_boulder" method="post">
+                    <input
+                      type="hidden"
+                      name="boulder_data"
+                      id="holds-array"
+                      value="{{boulder}}"
+                    />
+                    <button
+                      type="submit"
+                      name="boulder"
+                      value="{{ boulder['name'] }}"
+                      class="btn-link"
+                    >
+                      <h5>{{boulder['name']}}</h5>
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <ul>
+                {%- for wall in walls_list -%}
+                {%- if  wall['image'] == boulder['section'] -%}
+                <li>Section: {{ wall['name'] }}</li>
+                {%- endif -%}
+                {% endfor %}
+                <li>Creator: {{boulder["creator"]}}</li>
+                <li>Feet: {{boulder["feet"]}}</li>
+                <li>
+                  <div class="container">
+                    <div class="row d-flex justify-content-left">
+                      <div class="col-lg-12 d-flex justify-content-left">
+                        <div class="star-rating-fixed">
+                          <span
+                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"
+                          ></span>
+                          <span
+                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"
+                          ></span>
+                          <span
+                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"
+                          ></span>
+                          <span
+                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"
+                          ></span>
+                          <span
+                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"
+                          ></span>
+                        </div>
+                        <p style="margin-left: 10px; margin-top: 0px;">
+                          {{ boulder.get('raters', 0) }} ratings
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+  function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
+  function replaceAll(string, search, replace) {
+    return string.split(search).join(replace);
+  }
+
+  $("#sortAscending").on("change", function () {
+    var list = $("#bouldersList");
+    var listItems = list.children('div');
+    list.append(listItems.get().reverse());
+  });
+
+  $("#sortCriteria").on("change", function () {
+    // Some hackery to turn data into valid JS JSON
+    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
+    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+    // Sort data
+    if (this.value === "date-recent") {
+      function sortBoulders(a, b) {
+        var dateA = Date.parse(a["time"]);
+        var dateB = Date.parse(b["time"]);
+        return dateB - dateA;
+      }
+    } else if (this.value === "difficulty") {
+      function sortBoulders(a, b) {
+        var difficulties = ["red", "yellow", "blue", "green"];
+        return (
+          difficulties.indexOf(a["difficulty"]) -
+          difficulties.indexOf(b["difficulty"])
+        );
+      }
+    } else if (this.value === "section") {
+      function sortBoulders(a, b) {
+        return a["section"] < b["section"]
+          ? 1
+          : b["section"] < a["section"]
+          ? -1
+          : 0;
+      }
+    } else if (this.value === "rating") {
+      function sortBoulders(a, b) {
+        return b["rating"] - a["rating"];
+      }
+    }
+    boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
+
+    if ($("#sortAscending").val() == "increasing") {
+      boulders_data["boulders"].reverse();
+    }
+
+    boulders_data["boulders"].forEach((boulder) => {
+      // Reorder divs according to criteria
+      $("#bouldersList")
+        .find("#" + boulder["safe_name"])
+        .each(function () {
+          $(this).parent().append(this);
+        });
+    });
+  });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
+  .btn-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #007bff;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+  }
+  .dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+  }
+  .card {
+    border: 0.1em solid dimgray;
+    padding: 0.5em;
+    padding-left: 1.2em;
+    margin: 0.5em;
+  }
+  .star-rating-fixed .fas {
+    color: yellow;
+  }
+
+  @media (max-width: 600px) {
+    .star-rating-fixed {
+      line-height: 15px;
+      font-size: 0.8em;
+      margin-top: 4px;
+    }
+  }
+</style>
 {% endblock %}
