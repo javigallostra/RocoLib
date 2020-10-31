@@ -375,12 +375,14 @@ def tick_list():
 
 @app.errorhandler(404)
 def page_not_found(error):
+    # pylint: disable=no-member
     app.logger.error('Page not found: %s', (request.path))
     return render_template('errors/404.html'), 404
 
 
 @app.errorhandler(400)
 def bad_request(error):
+    # pylint: disable=no-member
     app.logger.error('Bad request: %s', (request.path))
     return render_template('errors/400.html'), 400
 
