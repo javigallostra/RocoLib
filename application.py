@@ -5,7 +5,7 @@ import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from models import User
+from models import User, TickListProblem
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -241,6 +241,8 @@ def load_boulder():
             boulder_name = boulder['name']
             section = boulder['section']
             gym = boulder['gym'] if boulder.get('gym', None) else get_gym()
+            if not boulder.get('gym', None):
+                boulder['gym'] = gym
             wall_image = url_for(
                 'static',
                 filename='{}{}/{}.JPG'.format(WALLS_PATH, gym, section)
@@ -378,6 +380,34 @@ def tick_list():
         ]
     )
 
+# User related
+@app.route('/add_to_tick_list', methods=['POST'])
+@login_required
+def add_to_tick_list():
+    if request.method == 'POST':
+        # needed values: gym, id, section, is_done
+        boulder = {
+            "gym": request.form.get("gym"),
+            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
+            "is_done": False,
+            "section": request.form.get("section")
+        }
+        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
+        boulder_list = [
+            firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
+        ]
+        for boulder in boulder_list:
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+            boulder['safe_name'] = secure_filename(boulder['name'])
+            boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
+        return render_template(
+            'tick_list.html', 
+            boulder_list = boulder_list,
+            walls_list = [
+                {"image": section} for section in set([problem.section for problem in current_user.ticklist])
+            ]
+        )
+
 @app.errorhandler(404)
 def page_not_found(error):
     # pylint: disable=no-member
@@ -394,4 +424,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

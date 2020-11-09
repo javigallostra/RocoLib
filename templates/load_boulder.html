@@ -55,6 +55,7 @@
                       name="gym"
                       value="{{ boulder_data['gym'] }}"
                     />
+                  </form>
                 </div>
               </div>
             </div>
@@ -66,7 +67,36 @@
             {% if not current_user.is_anonymous %}
               <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
                 <ul class="user-info">
-                  <li><a href="{{ url_for('home') }}">Add to Tick List</a></li>
+                  <li>          <!-- TODO: Add safename field to boulder -->
+                    <form id="addForm" action="/add_to_tick_list" method="post">
+                      <p>
+                        &bull;
+                        <button
+                          type="submit"
+                          name="add_boulder_to_tick_list"
+                          value="add-boulder"
+                          class="custom-link"
+                        >
+                          Add to ticklist!
+                        </button>
+                        <!-- Required fields -->
+                        <input
+                          type="hidden"
+                          name="gym"
+                          value="{{ boulder_data['gym'] }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="section"
+                          value="{{ boulder_data['section'] }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="name"
+                          value="{{ boulder_data['name'] }}"
+                        />
+                      </p>
+                    </form></li>
                   <li> | </li>
                   <li><a href="{{ url_for('home') }}">Done!</a></li>
                 </ul>
@@ -175,6 +205,18 @@
 
   .star-rating .fas {
     color: yellow;
+  }
+
+  /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
+  .custom-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #007bff;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
   }
 
   @media (max-width: 600px) {

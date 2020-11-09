@@ -73,6 +73,15 @@ def get_connection(gym='/sancu'):
     init_db_connection()
     return db.reference(gym)
 
+def get_users_connection():
+    """
+    Connect to DB and return data for specified gym
+    or default, if none is provided
+    """
+    # Create connection
+    init_db_connection()
+    return db.reference("/users")
+
 def get_boulders(gym='/sancu'):
     """
     Get the whole list of boulders for the specified gym
@@ -97,6 +106,21 @@ def put_boulder(boulder_data, gym='/sancu'):
     """
     collection = get_connection(gym)
     return collection.child('boulders').push(boulder_data)
+
+def put_boulder_in_ticklist(boulder_data, user_id):
+    """
+    Store a new boulder in the user's ticklist
+    """
+    collection = get_users_connection()
+    user = collection.order_by_child('id').equal_to(user_id).get()
+    # get ticklist
+    ticklist = list(user.values())[0]['ticklist']
+    # check if problem is already there
+    if boulder_data['iden'] in [p['iden'] for p in ticklist]:
+        return
+    ticklist.append(boulder_data)
+    collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
+    return ticklist
 
 def put_route(route_data, gym='/sancu'):
     """
