@@ -117,7 +117,7 @@ def put_boulder_in_ticklist(boulder_data, user_id):
     ticklist = list(user.values())[0]['ticklist']
     # check if problem is already there
     if boulder_data['iden'] in [p['iden'] for p in ticklist]:
-        return
+        return ticklist
     ticklist.append(boulder_data)
     collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
     return ticklist
