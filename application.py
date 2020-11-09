@@ -72,6 +72,10 @@ def get_gym():
 def get_gym_from_gym_path(gym_path):
     return gym_path[1:]
 
+def get_path_from_gym_name(gym_name):
+    return f'/{gym_name}'
+
+
 def get_wall_radius(wall_path=None):
     """
     wall path is expected to be: 'gym/wall'
@@ -210,8 +214,9 @@ def rate_boulder():
     if request.method == 'POST':
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
+        gym = request.form.get('gym') if request.form.get('gym', None) else get_gym()
         boulder = firebase_controller.get_boulder_by_name(
-            gym=get_gym_path(),
+            gym=gym,
             name=boulder_name
         )
         for key, val in boulder.items():
@@ -219,7 +224,7 @@ def rate_boulder():
             val['rating'] = (val['rating'] * val['raters'] + int(boulder_rating)) / (val['raters'] + 1)
             val['raters'] += 1
             firebase_controller.update_boulder_by_id(
-                gym=get_gym_path(),
+                gym=get_path_from_gym_name(gym),
                 boulder_id=key,
                 data=val)
     
@@ -389,4 +394,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
