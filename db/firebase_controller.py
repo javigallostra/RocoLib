@@ -49,6 +49,16 @@ def get_gyms():
     init_db_connection()
     return db.reference('walls').get()
 
+def get_gym_pretty_name(gym):
+    init_db_connection()
+    data = db.reference('walls').order_by_child('value').equal_to(gym).get()
+    return list(data.values())[0]['name']
+
+def get_wall_name(gym_name, wall_section):
+    init_db_connection()
+    data = db.reference(gym_name).child('walls').order_by_child('image').equal_to(wall_section).get()
+    return list(data.values())[0]['name']
+
 def get_walls_radius_all():
     """
     Get the list of all radius used to paint the 
@@ -200,14 +210,16 @@ def get_user_data_by_email(email=None):
 
 if __name__ == '__main__':
     # testing
-    print(get_gym_walls('/sancu'))
+    # print(get_gym_walls('/sancu'))
 
-    print(get_walls_radius_all())
+    # print(get_walls_radius_all())
     
-    print(get_user_data_by_email("test@test.com"))
+    # print(get_user_data_by_email("test@test.com"))
 
-    class A:
-        def __init__(self, iden, gym):
-            self.iden = iden
-            self.gym = gym
-    print(get_ticklist_boulder(A('-M7qNHz4uLQKcgK-8Nmv','sancu')))
+    # class A:
+    #     def __init__(self, iden, gym):
+    #         self.iden = iden
+    #         self.gym = gym
+    # print(get_ticklist_boulder(A('-M7qNHz4uLQKcgK-8Nmv','sancu')))
+
+    print(get_wall_name("sancu", "s5"))

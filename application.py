@@ -368,16 +368,23 @@ def tick_list():
     boulder_list = [
         firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
     ]
+    unique_sections = dict()
+    walls_list = []
     for boulder in boulder_list:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
         boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
+        if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
+            unique_sections[boulder['gym']] = boulder['section']
+            walls_list.append({
+                "gym_name": firebase_controller.get_gym_pretty_name(boulder['gym']),
+                "image": boulder['section'], 
+                "name": firebase_controller.get_wall_name(boulder['gym'], boulder['section'])
+            })
     return render_template(
         'tick_list.html', 
         boulder_list = boulder_list,
-        walls_list = [
-            {"image": section} for section in set([problem.section for problem in current_user.ticklist])
-        ]
+        walls_list = walls_list
     )
 
 # User related
@@ -424,4 +431,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

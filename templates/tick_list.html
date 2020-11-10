@@ -62,7 +62,7 @@
               <ul>
                 {%- for wall in walls_list -%}
                 {%- if  wall['image'] == boulder['section'] -%}
-                <li>Section: {{ wall['name'] }}</li>
+                <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
                 {%- endif -%}
                 {% endfor %}
                 <li>Creator: {{boulder["creator"]}}</li>
