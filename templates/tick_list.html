@@ -12,13 +12,13 @@
               Sort by:
             </div>
             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
-              <select id="sortCriteria">
+              <select id="sortTickListCriteria">
                 <option value="date-recent" selected>Creation Date</option>
                 <option value="rating">Rating</option>
                 <option value="difficulty">Difficulty</option>
                 <option value="section">Wall Section</option>
               </select>
-              <select id="sortAscending">
+              <select id="sortTickListAscending">
                 <option value="increasing">Increasing</option>
                 <option value="decreasing" selected>Decreasing</option>
               </select>
@@ -31,9 +31,9 @@
             <h5>No boulders in ticklist</h5>
           </div>
           {% endif %}
-          <div id="bouldersList">
+          <div id="tickList">
             {% for boulder in boulder_list %}
-            <div class="card" id="{{ boulder['name'] }}">
+            <div class="card" id="{{ boulder['safe_name'] }}">
               <div class="row">
                 <div
                   class="dot"
@@ -114,13 +114,13 @@
     return string.split(search).join(replace);
   }
 
-  $("#sortAscending").on("change", function () {
-    var list = $("#bouldersList");
+  $("#sortTickListAscending").on("change", function () {
+    var list = $("#tickList");
     var listItems = list.children('div');
     list.append(listItems.get().reverse());
   });
 
-  $("#sortCriteria").on("change", function () {
+  $("#sortTickListCriteria").on("change", function () {
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
@@ -157,10 +157,9 @@
     if ($("#sortAscending").val() == "increasing") {
       boulders_data["boulders"].reverse();
     }
-
     boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
-      $("#bouldersList")
+      $("#tickList")
         .find("#" + boulder["safe_name"])
         .each(function () {
           $(this).parent().append(this);
