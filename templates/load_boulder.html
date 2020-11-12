@@ -68,7 +68,7 @@
               <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
                 <ul class="user-info">
                   <li>          <!-- TODO: Add safename field to boulder -->
-                    <form id="addForm" action="/add_to_tick_list" method="post">
+                    <form id="addForm" action="/tick_list" method="post">
                       <p>
                         &bull;
                         <button
@@ -96,9 +96,45 @@
                           value="{{ boulder_data['name'] }}"
                         />
                       </p>
-                    </form></li>
+                    </form>
+                  </li>
                   <li> | </li>
-                  <li><a href="{{ url_for('home') }}">Done!</a></li>
+                  <li>
+                    <form id="markAsDoneForm" action="/tick_list" method="post">
+                      <p>
+                        &bull;
+                        <button
+                          type="submit"
+                          name="mark_boulder_as_done"
+                          value="done"
+                          class="custom-link"
+                        >
+                          Done!
+                        </button>
+                        <!-- Required fields -->
+                        <input
+                          type="hidden"
+                          name="is_done"
+                          value="true"
+                        />
+                        <input
+                          type="hidden"
+                          name="gym"
+                          value="{{ boulder_data['gym'] }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="section"
+                          value="{{ boulder_data['section'] }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="name"
+                          value="{{ boulder_data['name'] }}"
+                        />
+                      </p>
+                    </form>
+                  </li>
                 </ul>
               </div>
             {% endif %}

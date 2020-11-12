@@ -362,12 +362,23 @@ def logout():
     return redirect(url_for('home'))
 
 # User related
-@app.route('/tick_list')
+@app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list():
+    if request.method == 'POST':
+        # needed values: gym, id, section, is_done
+        boulder = {
+            "gym": request.form.get("gym"),
+            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
+            "is_done": True if request.form.get("is_done", "") else False,
+            "section": request.form.get("section")
+        }
+        # update user's ticklist
+        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
+        # get boulders in ticklist and extra required values
     boulder_list = [
-        firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
-    ]
+            firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
+        ]
     unique_sections = dict()
     walls_list = []
     for boulder in boulder_list:
@@ -386,34 +397,6 @@ def tick_list():
         boulder_list = boulder_list,
         walls_list = walls_list
     )
-
-# User related
-@app.route('/add_to_tick_list', methods=['POST'])
-@login_required
-def add_to_tick_list():
-    if request.method == 'POST':
-        # needed values: gym, id, section, is_done
-        boulder = {
-            "gym": request.form.get("gym"),
-            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
-            "is_done": False,
-            "section": request.form.get("section")
-        }
-        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
-        boulder_list = [
-            firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
-        ]
-        for boulder in boulder_list:
-            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-            boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
-        return render_template(
-            'tick_list.html', 
-            boulder_list = boulder_list,
-            walls_list = [
-                {"image": section} for section in set([problem.section for problem in current_user.ticklist])
-            ]
-        )
 
 @app.errorhandler(404)
 def page_not_found(error):

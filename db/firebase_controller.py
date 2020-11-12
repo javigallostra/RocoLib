@@ -119,16 +119,27 @@ def put_boulder(boulder_data, gym='/sancu'):
 
 def put_boulder_in_ticklist(boulder_data, user_id):
     """
-    Store a new boulder in the user's ticklist
+    Store a new boulder in the user's ticklist or change its
+    is_done status
     """
     collection = get_users_connection()
     user = collection.order_by_child('id').equal_to(user_id).get()
     # get ticklist
     ticklist = list(user.values())[0]['ticklist']
     # check if problem is already there
-    if boulder_data['iden'] in [p['iden'] for p in ticklist]:
+    boulder = list(filter(lambda x: x['iden']==boulder_data['iden'], ticklist))
+    # nothing changed, boulder already in ticklist and no status change
+    if boulder and boulder[0]['is_done'] == boulder_data['is_done']:
         return ticklist
-    ticklist.append(boulder_data)
+    # boulder is in ticklist but is_done has changed:
+    elif boulder and boulder[0]['is_done'] != boulder_data['is_done']:
+        for index, t_boulder in enumerate(ticklist):
+            if t_boulder['iden'] == boulder_data['iden']:
+                ticklist[index]['is_done'] = boulder_data['is_done']
+    # boulder is not in ticklist, add to ticklist
+    else:
+        ticklist.append(boulder_data)
+    # update user's ticklist and return it 
     collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
     return ticklist
 
