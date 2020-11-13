@@ -157,6 +157,9 @@
   $("#sortTickListCriteria").on("change", function () {
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
+    boulders = replaceAll(boulders, 'True', 'true');
+    boulders = replaceAll(boulders, 'False', 'false');
+    
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     // Sort data
     if (this.value === "date-recent") {
