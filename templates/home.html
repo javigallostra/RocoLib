@@ -21,9 +21,15 @@
       <div id="body">
         <div class="container">
           <br />
-          <div class="row">
+          <div class="row mb-3">
             <div class="col-sm-12 m-auto text-center">
-              <h3>RocoLib</h3>
+              <img
+                id="logo-img"
+                title="Create problems on any climbing wall"
+                src="{{ url_for('static', filename='images/logo/logo_large.png') }}"
+                alt="Create problems on any climbing wall"
+            />
+              <!-- <h3>RocoLib</h3> -->
             </div>
           </div>
           <div class="row">
@@ -86,5 +92,17 @@
   font-size: 1.25rem;
   line-height: 1.2;
   font-weight: bold;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+  #logo-img {
+    max-width: 70%;
+  }
+}
+@media only screen and (min-width: 701px) {
+  #logo-img {
+    max-width: 40%;
+  }
 }
 </style>
