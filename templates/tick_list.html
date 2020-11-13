@@ -24,6 +24,18 @@
               </select>
             </div>
           </div>
+          <div class="row text-left">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+              Show:
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
+              <select id="hideDone">
+                <option value="all" selected>All</option>
+                <option value="todo">To Do</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+          </div>
           {% if not boulder_list %}
           <br />
           <br />
@@ -33,7 +45,7 @@
           {% endif %}
           <div id="tickList">
             {% for boulder in boulder_list %}
-            <div class="card" id="{{ boulder['safe_name'] }}">
+            <div class="card" id="{{ boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
               <div class="row">
                 <div
                   class="dot"
@@ -113,6 +125,28 @@
   function replaceAll(string, search, replace) {
     return string.split(search).join(replace);
   }
+
+  $("#hideDone").on("change", function () {
+    var list = $("#tickList");
+    var listItems = list.children('div');
+    listItems.each(
+      function(index) {
+        var item = listItems[index];
+        item.removeAttribute('hidden');
+        if ($("#hideDone")[0].value === "all") {
+          return;
+        // hide done
+        } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True"){
+          item.setAttribute("hidden", true);
+          return;
+        // hide to do
+        } else if ($("#hideDone")[0].value === "todo" && item.getAttribute("data-done") === "True") {
+          item.setAttribute("hidden", true);
+          return;
+        }
+      }
+    );
+  });
 
   $("#sortTickListAscending").on("change", function () {
     var list = $("#tickList");

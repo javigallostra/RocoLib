@@ -154,6 +154,7 @@ def put_route(route_data, gym='/sancu'):
 def get_ticklist_boulder(boulder=None):
     boulder_data = get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
     boulder_data['gym'] = boulder.gym
+    boulder_data['is_done'] = boulder.is_done
     return boulder_data
     
 def get_boulder_by_name(gym=None, name=None):
