@@ -40,18 +40,22 @@
           </div>
           <hr />
           <label>Select Gym: </label>
-          <form action="/" method="POST">
-            <select onchange="this.form.submit()" name="gym" id="gym">
-              {% for gym in gyms %}
-              <option onclick="this.form.submit()" value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
-              {% endfor %}
-            </select>
-          </form>
+          <div class="form-group row" style="margin: inherit;">
+            <form action="/" method="POST">
+              <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
+                {% for gym in gyms %}
+                <option onclick="this.form.submit()" value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </div>
           <br />
-          <p>&bull;<a href="/create?options=boulder"> Create Boulder</a></p>
-          <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
-          <p>&bull;<a href=""> Create Route (Coming soon)</a></p>
-          <p>&bull;<a href="/explore"> Explore</a></p>
+          <div>
+            <p>&bull;<a href="/create?options=boulder"> Create Boulder</a></p>
+            <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
+            <p>&bull;<a href=""> Create Route (Coming soon)</a></p>
+            <p>&bull;<a href="/explore"> Explore</a></p>
+          </div>
           <hr />
           <section class="module stats" id="counter"> 
             <div class="container">

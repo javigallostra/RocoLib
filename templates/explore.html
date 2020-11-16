@@ -32,69 +32,74 @@
           <div class="custom-link" id="baseDiv">Choose filters</div>
           <div id="popUpDiv">
             <div class="row popupItem">
-              <div class="col">
+              <div class="col-4 col-md-1 mt-1">
                 Difficulty:
               </div>
-              <div class="col">
-                <select id="popupSelectDiff">
-                  <option value="all" selected>All</option>
-                  <option value="green">Green</option>
-                  <option value="blue">Blue</option>
-                  <option value="yellow">Yellow</option>
-                  <option value="red">Red</option>
-                </select>
+              <div class="col-6 col-md-4 mr-3">
+                <div class="form-group">
+                  <select class="form-control" id="popupSelectDiff">
+                    <option value="all" selected>All</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="red">Red</option>
+                  </select>
+                </div>
               </div>
             </div>
             <br />
             <div class="row popupItem">
-              <div class="col">
+              <div class="col-4 col-md-1 mt-1">
                 Section:
               </div>
-              <div class="col">
-                <select id="popupSelectSection">
-                  <option value="all" selected>All</option>
-                  {% for wall in walls %}
-                  <option value="{{ wall['image'] }}">{{ wall['name'] }}</option>
-                  {% endfor %}
-                </select>
+              <div class="col-6 col-md-4 mr-3">
+                <div class="form-group">
+                  <select class="form-control" id="popupSelectSection">
+                    <option value="all" selected>All</option>
+                    {% for wall in walls %}
+                    <option value="{{ wall['image'] }}">{{ wall['name'] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
             </div>
             <br />
             <div class="row popupItem">
-              <div class="col">
+              <div class="col-4 col-md-1 mt-1">
                 Rating:
               </div>
-              <div class="col">
-                <select id="popupSelectRating">
-                  <option value="all" selected>All</option>
-                  <option value="0">0 stars</option>
-                  <option value="1">1 star</option>
-                  <option value="2">2 stars</option>
-                  <option value="3">3 stars</option>
-                  <option value="4">4 stars</option>
-                  <option value="5">5 stars</option>
-                </select>
+              <div class="col-6 col-md-4 mr-3">
+                <div class="form-group">
+                  <select class="form-control" id="popupSelectRating">
+                    <option value="all" selected>All</option>
+                    <option value="0">0 stars</option>
+                    <option value="1">1 star</option>
+                    <option value="2">2 stars</option>
+                    <option value="3">3 stars</option>
+                    <option value="4">4 stars</option>
+                    <option value="5">5 stars</option>
+                  </select>
+                </div>
               </div>
             </div>
             <br />
             <div class="row popupItem">
-              <div class="col">
+              <div class="col-4 col-md-1 mt-1">
                 Creator:
               </div>
-              <div class="col">
-                <input type="text" id="popupCreator"></input>
-                </select>
+              <div class="col-6 col-md-4 mr-3">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="popupCreator"></input>
+                </div>
               </div>
             </div>
             <br /><br />
             <div class="row popupItem">
-              <div class="col"></div>
-              <div class="col">
-                <button id="btnApply">
+              <div class="col-12 col-md-6" style="display: grid; justify-content: center;">
+                <button id="btnApply" class="btn btn-light">
                   Apply
                 </button>
               </div>
-              <div class="col"></div>
             </div>
           </div>
           <hr/>
