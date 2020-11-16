@@ -22,20 +22,22 @@
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
           </div>
           <div class="row text-left">
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1 mb-1">
               Sort by:
             </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
-              <select id="sortCriteria">
-                <option value="date-recent" selected>Creation Date</option>
-                <option value="rating">Rating</option>
-                <option value="difficulty">Difficulty</option>
-                <option value="section">Wall Section</option>
-              </select>
-              <select id="sortAscending">
-                <option value="increasing">Increasing</option>
-                <option value="decreasing" selected>Decreasing</option>
-              </select>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <div class="form-group row" style="margin: inherit; padding: inherit;">
+                <select class="form-control col-6 col-md-4 mr-3" id="sortCriteria">
+                  <option value="date-recent" selected>Creation Date</option>
+                  <option value="rating">Rating</option>
+                  <option value="difficulty">Difficulty</option>
+                  <option value="section">Wall Section</option>
+                </select>
+                <select class="form-control col-4" id="sortAscending">
+                  <option value="increasing">Increasing</option>
+                  <option value="decreasing" selected>Decreasing</option>
+                </select>
+              </div>
             </div>
           </div>
           {% if not boulder_list %}
