@@ -10,6 +10,13 @@ import db.firebase_controller as firebase_controller
 
 WALLS_PATH = 'images/walls/'
 
+BOULDER_COLOR_MAP = {
+    'green': "#2CC990",
+    'blue': "#2C82C9",
+    'yellow': "#EEE657",
+    'red': "#FC6042"
+}
+
 # For DB querying
 EQUALS = ['section', 'difficulty']
 RANGE = ['rating']
@@ -152,6 +159,7 @@ def explore_boulders():
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
             boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
+            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
         session['boulder_filters'] = filters
         session['boulders_list'] = sorted(
             data['Items'],
@@ -179,6 +187,7 @@ def explore_boulders():
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
                 boulder['safe_name'] = secure_filename(boulder['name'])
                 boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
+                boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
                 boulder_list.append(boulder)
         boulder_list = sorted(
             boulder_list,
