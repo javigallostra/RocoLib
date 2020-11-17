@@ -116,10 +116,20 @@
 
 <script>
   var holds = [];
-  //const RADIUS = 15 / 473;
+  var dragok = false;
+  var wasDragged = false;
+
+  var startX;
+  var startY;
+
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
+
+    // listen for mouse events
+    cnvs.onmousedown = myDown;
+    cnvs.onmouseup = myUp;
+    cnvs.onmousemove = myMove;
 
     cnvs.style.position = "absolute";
     cnvs.style.left = img.offsetLeft + "px";
@@ -131,23 +141,6 @@
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
   };
-  document.addEventListener(
-    "click",
-    function (event) {
-      // If the clicked element doesn't have the right selector, bail
-      if (
-        !(
-          event.target.matches("#wall-image") ||
-          event.target.matches("#wall-canvas")
-        )
-      )
-        return;
-      // Don't follow the link
-      event.preventDefault();
-      draw(event);
-    },
-    false
-  );
 
   function draw(event) {
     var cnvs = document.getElementById("wall-canvas");
@@ -166,14 +159,137 @@
 
   function drawHold(ctx, x, y, radius, color, holdArray) {
     // Draw circle
-    console.log(ctx);
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.lineWidth = 3;
     ctx.strokeStyle = color;
     ctx.stroke();
     // push to hold array
-    holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color });
+    holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
+  }
+
+  // clear the canvas
+  function clear() {
+      var cnvs = document.getElementById("wall-canvas");
+      var ctx = cnvs.getContext("2d");
+      ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+  }
+
+  // redraw the scene
+  function drawAll() {
+    clear();
+    var cnvs = document.getElementById("wall-canvas");
+    var ctx = cnvs.getContext("2d");
+    // redraw each rect in the holds array
+    for (var i = 0; i < holds.length; i++) {
+        var hold = holds[i];
+        ctx.beginPath();
+        ctx.arc(hold.x*ctx.width, hold.y*ctx.height, hold.radius, 0, 2 * Math.PI, false);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = hold.color;
+        ctx.stroke();
+    }
+  }
+
+  // handle mousedown events
+  function myDown(e) {
+
+    // tell the browser we're handling this mouse event
+    e.preventDefault();
+    e.stopPropagation();
+
+    // get the current mouse position
+    var mx = parseInt(e.offsetX);
+    var my = parseInt(e.offsetY);
+
+    var cnvs = document.getElementById("wall-canvas");
+    const ctx = cnvs.getContext("2d");
+
+    // test each hold marker to see if mouse is inside
+    dragok = false;
+    for (var i = 0; i < holds.length; i++) {
+      var h = holds[i];
+      if (((mx - h.x*ctx.width)**2 + (my - h.y*ctx.height)**2) < h.radius**2) {
+          // if yes, set that hold marker isDragging=true
+          dragok = true;
+          h.isDragging = true;
+      }
+    }
+    // save the current mouse position
+    startX = mx;
+    startY = my;
+  }
+
+
+  // handle mouseup events
+  function myUp(e) {
+
+    // tell the browser we're handling this mouse event
+    e.preventDefault();
+    e.stopPropagation();
+
+    // clear all the dragging flags
+    for (var i = 0; i < holds.length; i++) {
+      holds[i].isDragging = false;
+    }
+    // If we are not dragging anything
+    if (!dragok) {
+      // If the clicked element doesn't have the right selector, bail
+      if (
+        !(
+            e.target.matches("#wall-image") ||
+            e.target.matches("#wall-canvas")
+          )
+      ) return;
+      // Don't follow the link
+      // event.preventDefault();
+      draw(e);
+    }
+    // Clear global drag flag
+    dragok = false;
+    return;
+  }
+
+
+  // handle mouse moves
+  function myMove(e) {
+    // if we're dragging anything...
+    if (dragok) {
+
+      // tell the browser we're handling this mouse event
+      e.preventDefault();
+      e.stopPropagation();
+
+      // get the current mouse position
+      var mx = parseInt(e.offsetX);
+      var my = parseInt(e.offsetY);
+
+      // calculate the distance the mouse has moved
+      // since the last mousemove
+      var cnvs = document.getElementById("wall-canvas");
+      const ctx = cnvs.getContext("2d");
+
+      var dx = (mx - startX)/ctx.width;
+      var dy = (my - startY)/ctx.height;
+
+      // move each hold marker that isDragging 
+      // by the distance the mouse has moved
+      // since the last mousemove
+      for (var i = 0; i < holds.length; i++) {
+          var hold = holds[i];
+          if (hold.isDragging) {
+              hold.x += dx;
+              hold.y += dy;
+          }
+      }
+
+      // redraw the scene with the new hold marker positions
+      drawAll();
+
+      // reset the starting mouse position for the next mousemove
+      startX = mx;
+      startY = my;
+    }
   }
 
   function undoMove() {
@@ -197,6 +313,10 @@
   }
 
   function setHolds() {
+    // Avoid storing unnecessary data
+    for (var i = 0; i < holds.length; i++) {
+      delete holds[i].radius;
+    }
     document.getElementById("holds-array").value = JSON.stringify(holds);
   }
 
