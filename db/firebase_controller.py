@@ -143,6 +143,19 @@ def put_boulder_in_ticklist(boulder_data, user_id):
     collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
     return ticklist
 
+def delete_boulder_in_ticklist(boulder_data, user_id):
+    """
+    Delete the selected problem from the user's ticklist
+    """
+    collection = get_users_connection()
+    user = collection.order_by_child('id').equal_to(user_id).get()
+    # get ticklist
+    ticklist = list(user.values())[0]['ticklist']
+    # remove problem from list
+    filtered_list = list(filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
+    collection.child(f'{list(user.keys())[0]}/ticklist').set(filtered_list)
+    return ticklist
+
 def put_route(route_data, gym='/sancu'):
     """
     Store a new route for the specified gym

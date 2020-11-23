@@ -406,6 +406,20 @@ def tick_list():
         walls_list = walls_list
     )
 
+@app.route('/delete_ticklist_problem', methods=['POST'])
+def delete_ticklist_problem():
+    if request.method == 'POST':
+        # needed values: gym, id, section, is_done
+        boulder = {
+            "gym": request.form.get("gym"),
+            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
+            "is_done": True if request.form.get("is_done", "") else False,
+            "section": request.form.get("section")
+        }
+        # update user's ticklist
+        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)]
+    return redirect(url_for('tick_list'))
+
 @app.errorhandler(404)
 def page_not_found(error):
     # pylint: disable=no-member

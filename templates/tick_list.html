@@ -71,9 +71,21 @@
                   </form>
                 </div>
                 <div style="display: flex; justify-content: flex-end; flex-grow: 1;">
-                  <button class="btn" style="margin-right: 0.5rem;">
-                    <i class="far fa-trash-alt fa-lg" style="vertical-align: top;"></i>
-                  </button>
+                  <form action="/delete_ticklist_problem" method="post">
+                      <input
+                        type="hidden"
+                        name="boulder_data"
+                        id="holds-array"
+                        value="{{boulder}}"
+                    />
+                    <button
+                      type="submit"
+                      name="boulder"
+                      class="btn"
+                      value="{{ boulder['name'] }}" class="btn" style="margin-right: 0.5rem;">
+                      <i class="far fa-trash-alt fa-lg" style="vertical-align: top;"></i>
+                    </button>
+                  </form>
                 </div>
               </div>
               <ul>
