@@ -10,6 +10,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+# rocolib_path = '../rocolib.json' # For testing
 rocolib_path = 'rocolib.json'
 
 def init_db_connection():
@@ -48,6 +49,16 @@ def get_gyms():
     init_db_connection()
     return db.reference('walls').get()
 
+def get_gym_pretty_name(gym):
+    init_db_connection()
+    data = db.reference('walls').order_by_child('value').equal_to(gym).get()
+    return list(data.values())[0]['name']
+
+def get_wall_name(gym_name, wall_section):
+    init_db_connection()
+    data = db.reference(gym_name).child('walls').order_by_child('image').equal_to(wall_section).get()
+    return list(data.values())[0]['name']
+
 def get_walls_radius_all():
     """
     Get the list of all radius used to paint the 
@@ -71,6 +82,15 @@ def get_connection(gym='/sancu'):
     # Create connection
     init_db_connection()
     return db.reference(gym)
+
+def get_users_connection():
+    """
+    Connect to DB and return data for specified gym
+    or default, if none is provided
+    """
+    # Create connection
+    init_db_connection()
+    return db.reference("/users")
 
 def get_boulders(gym='/sancu'):
     """
@@ -97,6 +117,45 @@ def put_boulder(boulder_data, gym='/sancu'):
     collection = get_connection(gym)
     return collection.child('boulders').push(boulder_data)
 
+def put_boulder_in_ticklist(boulder_data, user_id):
+    """
+    Store a new boulder in the user's ticklist or change its
+    is_done status
+    """
+    collection = get_users_connection()
+    user = collection.order_by_child('id').equal_to(user_id).get()
+    # get ticklist
+    ticklist = list(user.values())[0]['ticklist']
+    # check if problem is already there
+    boulder = list(filter(lambda x: x['iden']==boulder_data['iden'], ticklist))
+    # nothing changed, boulder already in ticklist and no status change
+    if boulder and boulder[0]['is_done'] == boulder_data['is_done']:
+        return ticklist
+    # boulder is in ticklist but is_done has changed:
+    elif boulder and boulder[0]['is_done'] != boulder_data['is_done']:
+        for index, t_boulder in enumerate(ticklist):
+            if t_boulder['iden'] == boulder_data['iden']:
+                ticklist[index]['is_done'] = boulder_data['is_done']
+    # boulder is not in ticklist, add to ticklist
+    else:
+        ticklist.append(boulder_data)
+    # update user's ticklist and return it 
+    collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
+    return ticklist
+
+def delete_boulder_in_ticklist(boulder_data, user_id):
+    """
+    Delete the selected problem from the user's ticklist
+    """
+    collection = get_users_connection()
+    user = collection.order_by_child('id').equal_to(user_id).get()
+    # get ticklist
+    ticklist = list(user.values())[0]['ticklist']
+    # remove problem from list
+    filtered_list = list(filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
+    collection.child(f'{list(user.keys())[0]}/ticklist').set(filtered_list)
+    return ticklist
+
 def put_route(route_data, gym='/sancu'):
     """
     Store a new route for the specified gym
@@ -105,6 +164,12 @@ def put_route(route_data, gym='/sancu'):
     return collection.child('routes').push(route_data)
 
 
+def get_ticklist_boulder(boulder=None):
+    boulder_data = get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
+    boulder_data['gym'] = boulder.gym
+    boulder_data['is_done'] = boulder.is_done
+    return boulder_data
+    
 def get_boulder_by_name(gym=None, name=None):
     """
     Given a boulder name and a Gym, return the boulder data
@@ -153,7 +218,33 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
 
     return {'Items': [val for key, val in fb_data.items() if key not in to_be_removed]}
     
+## User related functions
+def save_user(user_data=None):
+    collection = get_connection("users")
+    return collection.push(user_data)
+
+def get_user_data_by_id(user_id=None):
+    user = get_connection("users").order_by_child('id').equal_to(user_id).get()
+    user_matches = [u for u in user.values()] # this should only return one match
+    return user_matches[0] if user_matches else None
+
+def get_user_data_by_email(email=None):
+    user = get_connection("users").order_by_child('email').equal_to(email).get()
+    user_matches = [u for u in user.values()] # this should only return one match
+    return user_matches[0] if user_matches else None
+
 if __name__ == '__main__':
     # testing
-    print(get_gym_walls('/sancu'))
-    print(get_walls_radius_all())
+    # print(get_gym_walls('/sancu'))
+
+    # print(get_walls_radius_all())
+    
+    # print(get_user_data_by_email("test@test.com"))
+
+    # class A:
+    #     def __init__(self, iden, gym):
+    #         self.iden = iden
+    #         self.gym = gym
+    # print(get_ticklist_boulder(A('-M7qNHz4uLQKcgK-8Nmv','sancu')))
+
+    print(get_wall_name("sancu", "s5"))

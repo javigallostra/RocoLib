@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Navigation bar title-->
-    <title>Explore</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
-    />
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
-    <link rel="stylesheet" href="static/css/card.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
-    />
-    <!-- Development -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
-  </head>
-  <body>
+{% extends "base_template.html" %}
+
+{% block title %}Explore{% endblock %}
+
+{% block content %}
     <br />
     <div id="holder">
       <div id="body">
@@ -73,9 +58,9 @@
         </div>
       </div>
     </div>
-  </body>
-</html>
+{% endblock %}
 
+{% block styles %}
 <style>
   /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
   .btn-link {
@@ -102,3 +87,4 @@
     margin: 0.5em;
   }
 </style>
+{% endblock %}

@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- Navigation bar title-->
-    <title>Home</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
-    />
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
-    />
-    <!-- Development -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
-  </head>
-  <body>
+{% extends "base_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
     <div id="holder">
       <div id="body">
         <div class="container">
@@ -26,7 +12,7 @@
               <img
                 id="logo-img"
                 title="Create problems on any climbing wall"
-                src="{{ url_for('static', filename='images/logo/logo_large.png') }}"
+                src="{{ url_for('static', filename='images/logo/logo_large_2.PNG') }}"
                 alt="Create problems on any climbing wall"
             />
               <!-- <h3>RocoLib</h3> -->
@@ -79,15 +65,15 @@
         </div>
       </div>
     </div>
-  </body>
-</html>
+{% endblock %}
 
+{% block styles %}
 <style>
 .stats {
   padding: 10px 0 10px 0;
 }
 .stats .counter .number {
-  color: #BAC176;
+  color: #1789DA;
   font-size: 3rem;
   font-weight: 300;
 }
@@ -109,4 +95,6 @@
     max-width: 40%;
   }
 }
+
 </style>
+{% endblock %}

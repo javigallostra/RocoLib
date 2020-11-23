@@ -1,59 +1,55 @@
 {% extends "base_template.html" %}
 
-{% block title %}Explore{% endblock %}
+{% block title %}Tick List{% endblock %}
 
 {% block content %}
     <br />
     <div id="holder">
       <div id="body">
         <div class="container">
-          <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/explore">Back</a></p>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
           <div class="row text-left">
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1 mb-1">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
               Sort by:
             </div>
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-              <div class="form-group row" style="margin: inherit; padding: inherit;">
-                <select class="form-control col-6 col-md-4 mr-3" id="sortCriteria">
-                  <option value="date-recent" selected>Creation Date</option>
-                  <option value="rating">Rating</option>
-                  <option value="difficulty">Difficulty</option>
-                  <option value="section">Wall Section</option>
-                </select>
-                <select class="form-control col-4" id="sortAscending">
-                  <option value="increasing">Increasing</option>
-                  <option value="decreasing" selected>Decreasing</option>
-                </select>
-              </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
+              <select id="sortTickListCriteria">
+                <option value="date-recent" selected>Creation Date</option>
+                <option value="rating">Rating</option>
+                <option value="difficulty">Difficulty</option>
+                <option value="section">Wall Section</option>
+              </select>
+              <select id="sortTickListAscending">
+                <option value="increasing">Increasing</option>
+                <option value="decreasing" selected>Decreasing</option>
+              </select>
+            </div>
+          </div>
+          <div class="row text-left">
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+              Show:
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 pl-4">
+              <select id="hideDone">
+                <option value="all" selected>All</option>
+                <option value="todo">To Do</option>
+                <option value="done">Done</option>
+              </select>
             </div>
           </div>
           {% if not boulder_list %}
           <br />
           <br />
           <div class="d-flex justify-content-center">
-            <h5>No boulders matching the specified criteria</h5>
+            <h5>No boulders in ticklist</h5>
           </div>
           {% endif %}
-          <div id="bouldersList">
+          <div id="tickList">
             {% for boulder in boulder_list %}
-            <div class="card" id="{{ boulder['safe_name'] }}">
+            <div class="card" id="{{ boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
               <div class="row">
                 <div
                   class="dot"
-                  style="background-color: {{ boulder['color'] }};"
+                  style="background-color: {{ boulder['difficulty'] }};"
                 ></div>
                 <!-- TODO: Add safename field to boulder -->
                 <div style="padding-left: 0.5rem;">
@@ -74,11 +70,28 @@
                     </button>
                   </form>
                 </div>
+                <div style="display: flex; justify-content: flex-end; flex-grow: 1;">
+                  <form action="/delete_ticklist_problem" method="post">
+                      <input
+                        type="hidden"
+                        name="boulder_data"
+                        id="holds-array"
+                        value="{{boulder}}"
+                    />
+                    <button
+                      type="submit"
+                      name="name"
+                      class="btn"
+                      value="{{ boulder['name'] }}" class="btn" style="margin-right: 0.5rem;">
+                      <i class="far fa-trash-alt fa-lg" style="vertical-align: top;"></i>
+                    </button>
+                  </form>
+                </div>
               </div>
               <ul>
                 {%- for wall in walls_list -%}
                 {%- if  wall['image'] == boulder['section'] -%}
-                <li>Section: {{ wall['name'] }}</li>
+                <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
                 {%- endif -%}
                 {% endfor %}
                 <li>Creator: {{boulder["creator"]}}</li>
@@ -130,15 +143,40 @@
     return string.split(search).join(replace);
   }
 
-  $("#sortAscending").on("change", function () {
-    var list = $("#bouldersList");
+  $("#hideDone").on("change", function () {
+    var list = $("#tickList");
+    var listItems = list.children('div');
+    listItems.each(
+      function(index) {
+        var item = listItems[index];
+        item.removeAttribute('hidden');
+        if ($("#hideDone")[0].value === "all") {
+          return;
+        // hide done
+        } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True"){
+          item.setAttribute("hidden", true);
+          return;
+        // hide to do
+        } else if ($("#hideDone")[0].value === "todo" && item.getAttribute("data-done") === "True") {
+          item.setAttribute("hidden", true);
+          return;
+        }
+      }
+    );
+  });
+
+  $("#sortTickListAscending").on("change", function () {
+    var list = $("#tickList");
     var listItems = list.children('div');
     list.append(listItems.get().reverse());
   });
 
-  $("#sortCriteria").on("change", function () {
+  $("#sortTickListCriteria").on("change", function () {
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
+    boulders = replaceAll(boulders, 'True', 'true');
+    boulders = replaceAll(boulders, 'False', 'false');
+    
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     // Sort data
     if (this.value === "date-recent") {
@@ -173,10 +211,9 @@
     if ($("#sortAscending").val() == "increasing") {
       boulders_data["boulders"].reverse();
     }
-
     boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
-      $("#bouldersList")
+      $("#tickList")
         .find("#" + boulder["safe_name"])
         .each(function () {
           $(this).parent().append(this);
@@ -198,9 +235,6 @@
     padding: 0;
     font-family: inherit;
     font-size: inherit;
-  }
-  .btn-link:hover {
-    text-decoration: underline;
   }
   .dot {
     height: 25px;
