@@ -16,10 +16,10 @@ import db.firebase_controller as firebase_controller
 WALLS_PATH = 'images/walls/'
 
 BOULDER_COLOR_MAP = {
-    'green': "#2CC990",
-    'blue': "#2C82C9",
-    'yellow': "#EEE657",
-    'red': "#FC6042"
+    'green': '#2CC990',
+    'blue': '#2C82C9',
+    'yellow': '#EEE657',
+    'red': '#FC6042'
 }
 
 # For DB querying
@@ -40,7 +40,7 @@ app = Flask(__name__)
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
-login_manager.login_view = "login"
+login_manager.login_view = 'login'
 
 def make_cache_key_boulder(*args, **kwargs):
     path = request.path
@@ -246,7 +246,7 @@ def load_boulder():
     if request.method == 'POST':
         try:
             boulder = json.loads(request.form.get(
-                "boulder_data").replace('\'', '"'))
+                'boulder_data').replace('\'', '"'))
             boulder_name = boulder['name']
             section = boulder['section']
             gym = boulder['gym'] if boulder.get('gym', None) else get_gym()
@@ -302,7 +302,7 @@ def save():
         data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
             data[key] = val
-            if key == "holds":
+            if key == 'holds':
                 data[key] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
         firebase_controller.put_boulder(data, gym=get_gym_path())
@@ -338,7 +338,7 @@ def login():
             return redirect(next_page)
     return render_template('login_form.html', form=form)
 
-@app.route("/signup/", methods=["GET", "POST"])
+@app.route('/signup/', methods=['GET', 'POST'])
 def show_signup_form():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -362,7 +362,7 @@ def show_signup_form():
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('home')
             return redirect(next_page)
-    return render_template("signup_form.html", form=form, error=error)
+    return render_template('signup_form.html', form=form, error=error)
 
 @app.route('/logout')
 def logout():
@@ -376,10 +376,10 @@ def tick_list():
     if request.method == 'POST':
         # needed values: gym, id, section, is_done
         boulder = {
-            "gym": request.form.get("gym"),
-            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
-            "is_done": True if request.form.get("is_done", "") else False,
-            "section": request.form.get("section")
+            'gym': request.form.get('gym'),
+            'iden': list(firebase_controller.get_boulder_by_name(request.form.get('gym'), request.form.get('name')).keys())[0],
+            'is_done': True if request.form.get('is_done', '') else False,
+            'section': request.form.get('section')
         }
         # update user's ticklist
         current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
@@ -396,9 +396,9 @@ def tick_list():
         if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
             unique_sections[boulder['gym']] = boulder['section']
             walls_list.append({
-                "gym_name": firebase_controller.get_gym_pretty_name(boulder['gym']),
-                "image": boulder['section'], 
-                "name": firebase_controller.get_wall_name(boulder['gym'], boulder['section'])
+                'gym_name': firebase_controller.get_gym_pretty_name(boulder['gym']),
+                'image': boulder['section'], 
+                'name': firebase_controller.get_wall_name(boulder['gym'], boulder['section'])
             })
     return render_template(
         'tick_list.html', 
@@ -410,11 +410,17 @@ def tick_list():
 def delete_ticklist_problem():
     if request.method == 'POST':
         # needed values: gym, id, section, is_done
+        boulder_data = json.loads(
+            dict(request.form)['boulder_data']
+            .replace('\'', '"')
+            .replace('True', 'true')
+            .replace('False', 'false')
+        )
         boulder = {
-            "gym": request.form.get("gym"),
-            "iden": list(firebase_controller.get_boulder_by_name(request.form.get("gym"), request.form.get("name")).keys())[0],
-            "is_done": True if request.form.get("is_done", "") else False,
-            "section": request.form.get("section")
+            'gym': boulder_data.get('gym'),
+            'iden': list(firebase_controller.get_boulder_by_name(boulder_data.get('gym'), request.form.get('name')).keys())[0],
+            's_done': boulder_data.get('is_done'),
+            'section': boulder_data.get('section')
         }
         # update user's ticklist
         current_user.ticklist = [TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)]
@@ -436,4 +442,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
