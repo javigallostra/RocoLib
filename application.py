@@ -256,7 +256,6 @@ def load_boulder():
                 'static',
                 filename='{}{}/{}.JPG'.format(WALLS_PATH, gym, section)
             )
-            print(boulder)
             return render_template(
                 'load_boulder.html',
                 boulder_name=boulder_name,
