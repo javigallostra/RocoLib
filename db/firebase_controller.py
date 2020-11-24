@@ -122,20 +122,22 @@ def put_boulder_in_ticklist(boulder_data, user_id):
     Store a new boulder in the user's ticklist or change its
     is_done status
     """
+    IS_DONE = 'is_done'
+    IDEN = 'iden'
     collection = get_users_connection()
     user = collection.order_by_child('id').equal_to(user_id).get()
     # get ticklist
     ticklist = list(user.values())[0].get('ticklist', [])
     # check if problem is already there
-    boulder = list(filter(lambda x: x['iden']==boulder_data['iden'], ticklist))
+    boulder = list(filter(lambda x: x[IDEN]==boulder_data[IDEN], ticklist))
     # nothing changed, boulder already in ticklist and no status change
-    if boulder and boulder[0]['is_done'] == boulder_data['is_done']:
+    if boulder and boulder[0][IS_DONE] == boulder_data[IS_DONE]:
         return ticklist
     # boulder is in ticklist but is_done has changed:
-    elif boulder and boulder[0]['is_done'] != boulder_data['is_done']:
+    elif boulder and boulder[0][IS_DONE] != boulder_data[IS_DONE]:
         for index, t_boulder in enumerate(ticklist):
-            if t_boulder['iden'] == boulder_data['iden']:
-                ticklist[index]['is_done'] = boulder_data['is_done']
+            if t_boulder[IDEN] == boulder_data[IDEN]:
+                ticklist[index][IS_DONE] = boulder_data[IS_DONE]
     # boulder is not in ticklist, add to ticklist
     else:
         ticklist.append(boulder_data)
@@ -152,7 +154,7 @@ def delete_boulder_in_ticklist(boulder_data, user_id):
     # get ticklist
     ticklist = list(user.values())[0]['ticklist']
     # remove problem from list
-    filtered_list = list(filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
+    filtered_list = list(filter(lambda x: x[IDEN] != boulder_data[IDEN], ticklist))
     collection.child(f'{list(user.keys())[0]}/ticklist').set(filtered_list)
     return ticklist
 
@@ -167,7 +169,7 @@ def put_route(route_data, gym='/sancu'):
 def get_ticklist_boulder(boulder=None):
     boulder_data = get_connection(boulder.gym).child('boulders/{}'.format(boulder.iden)).get()
     boulder_data['gym'] = boulder.gym
-    boulder_data['is_done'] = boulder.is_done
+    boulder_data[IS_DONE] = boulder.is_done
     return boulder_data
     
 def get_boulder_by_name(gym=None, name=None):
