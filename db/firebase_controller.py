@@ -125,7 +125,7 @@ def put_boulder_in_ticklist(boulder_data, user_id):
     collection = get_users_connection()
     user = collection.order_by_child('id').equal_to(user_id).get()
     # get ticklist
-    ticklist = list(user.values())[0]['ticklist']
+    ticklist = list(user.values())[0].get('ticklist', [])
     # check if problem is already there
     boulder = list(filter(lambda x: x['iden']==boulder_data['iden'], ticklist))
     # nothing changed, boulder already in ticklist and no status change
