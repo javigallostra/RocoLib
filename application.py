@@ -113,6 +113,12 @@ def get_stats():
         'Gyms': total_gyms
     }
 
+def load_boulder_from_request(request):
+    return json.loads(
+                request.form.get('boulder_data')
+                .replace('\'', '"')
+                .replace('True', 'true')
+                .replace('False', 'false'))
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -245,8 +251,7 @@ def rate_boulder():
 def load_boulder():
     if request.method == 'POST':
         try:
-            boulder = json.loads(request.form.get(
-                'boulder_data').replace('\'', '"'))
+            boulder = load_boulder_from_request(request)
             boulder_name = boulder['name']
             section = boulder['section']
             gym = boulder['gym'] if boulder.get('gym', None) else get_gym()
@@ -410,12 +415,7 @@ def tick_list():
 def delete_ticklist_problem():
     if request.method == 'POST':
         # needed values: gym, id, section, is_done
-        boulder_data = json.loads(
-            dict(request.form)['boulder_data']
-            .replace('\'', '"')
-            .replace('True', 'true')
-            .replace('False', 'false')
-        )
+        boulder_data = load_boulder_from_request(request)
         boulder = {
             'gym': boulder_data.get('gym'),
             'iden': list(firebase_controller.get_boulder_by_name(boulder_data.get('gym'), request.form.get('name')).keys())[0],
