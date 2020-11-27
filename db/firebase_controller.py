@@ -118,6 +118,7 @@ def put_boulder(boulder_data, gym='/sancu'):
     return collection.child('boulders').push(boulder_data)
 
 def put_boulder_in_ticklist(boulder_data, user_id):
+    # TODO: split in two functions
     """
     Store a new boulder in the user's ticklist or change its
     is_done status

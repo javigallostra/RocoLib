@@ -398,6 +398,7 @@ def tick_list():
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
         boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
+        boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
         if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
             unique_sections[boulder['gym']] = boulder['section']
             walls_list.append({
