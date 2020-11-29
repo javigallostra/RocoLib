@@ -388,7 +388,7 @@ def tick_list():
         }
         # update user's ticklist
         current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
-        # get boulders in ticklist and extra required values
+    # get boulders in ticklist and extra required values
     boulder_list = [
             firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
         ]

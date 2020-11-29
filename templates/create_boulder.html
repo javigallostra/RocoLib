@@ -300,6 +300,7 @@
     // Avoid storing unnecessary data
     for (var i = 0; i < holds.length; i++) {
       delete holds[i].radius;
+      delete holds[i].isDragging;
     }
     document.getElementById("holds-array").value = JSON.stringify(holds);
   }
