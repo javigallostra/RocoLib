@@ -3,7 +3,8 @@ import urllib.parse
 import json
 import math
 
-from datetime import date
+from datetime import date, datetime
+
 import re
 
 import firebase_admin
@@ -139,9 +140,13 @@ def put_boulder_in_ticklist(boulder_data, user_id):
         for index, t_boulder in enumerate(ticklist):
             if t_boulder[IDEN] == boulder_data[IDEN]:
                 ticklist[index][IS_DONE] = boulder_data[IS_DONE]
+                ticklist[index]['date_climbed'] = datetime.today().strftime('%Y-%m-%d')
     # boulder is not in ticklist, add to ticklist
     else:
+        if boulder_data[IS_DONE] == True:
+            boulder_data['date_climbed'] = datetime.today().strftime('%Y-%m-%d')
         ticklist.append(boulder_data)
+    print(boulder_data)
     # update user's ticklist and return it 
     collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
     return ticklist

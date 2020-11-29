@@ -2,6 +2,7 @@ import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import firebase_controller
+from datetime import datetime
 
 TICKLIST = "ticklist"
 
@@ -67,6 +68,7 @@ class TickListProblem():
         self.gym = None
         self.section = None
         self.is_done = False
+        self.date_climbed = None
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
@@ -75,6 +77,7 @@ class TickListProblem():
 
     def tick_problem(self):
         self.is_done = True
+        self.date_climbed = datetime.today().strftime('%Y-%m-%d')
     
     def serialize(self):
         return self.__dict__
