@@ -42,11 +42,6 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-def make_cache_key_boulder(*args, **kwargs):
-    path = request.path
-    form = str(hash(frozenset(request.form.items())))
-    return (path + form).encode('utf-8')
-
 def make_cache_key_create():
     return (request.path + get_gym()).encode('utf-8')
 
@@ -243,11 +238,11 @@ def rate_boulder():
                 boulder_id=key,
                 data=val)
     
-    return redirect('/explore')
+    return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
 
 
 @app.route('/load_boulder', methods=['GET', 'POST'])
-@cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
+# @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder():
     if request.method == 'POST':
         try:
@@ -268,6 +263,30 @@ def load_boulder():
                 boulder_data=boulder)
         except:
             return abort(404)
+    elif request.method == 'GET':
+        try:
+            boulder = list(firebase_controller.get_boulder_by_name(
+                gym=request.args.get("gym"), 
+                name=request.args.get("name")
+            ).values())[0]
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+            boulder['safe_name'] = secure_filename(boulder['name'])
+            boulder['radius'] = get_wall_radius(get_gym_from_gym_path(f'/{request.args.get("gym")}') + '/' + boulder['section'])
+            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+            boulder_name = boulder['name']
+            section = boulder['section']
+            wall_image = url_for(
+                'static',
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, request.args.get("gym"), section)
+            )
+            return render_template(
+                'load_boulder.html',
+                boulder_name=boulder_name,
+                wall_image=wall_image,
+                boulder_data=boulder)
+        except:
+            return abort(404)
+
     return abort(400)
 
 
