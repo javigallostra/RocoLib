@@ -162,7 +162,7 @@ def delete_boulder_in_ticklist(boulder_data, user_id):
     # remove problem from list
     filtered_list = list(filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
     collection.child(f'{list(user.keys())[0]}/ticklist').set(filtered_list)
-    return ticklist
+    return filtered_list
 
 def put_route(route_data, gym='/sancu'):
     """
