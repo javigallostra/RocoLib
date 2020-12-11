@@ -238,6 +238,7 @@ def explore_boulders():
             walls_list=gym_walls
         )
 
+
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder():
     if request.method == 'POST':
@@ -359,11 +360,13 @@ def save_boulder():
     else:
         return abort(400)
 
+
 # route decorator should be the outermost decorator
 @app.route('/add_gym', methods=['GET', 'POST'])
 @login_required
 def add_gym():
     return render_template('add_new_gym.html')
+
 
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
@@ -380,6 +383,7 @@ def login():
                 next_page = url_for('home')
             return redirect(next_page)
     return render_template('login_form.html', form=form)
+
 
 @app.route('/signup/', methods=['GET', 'POST'])
 def show_signup_form():
@@ -407,10 +411,12 @@ def show_signup_form():
             return redirect(next_page)
     return render_template('signup_form.html', form=form, error=error)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 # User related
 @app.route('/tick_list', methods=['GET', 'POST'])
@@ -450,6 +456,7 @@ def tick_list():
         walls_list = walls_list
     )
 
+
 @app.route('/delete_ticklist_problem', methods=['POST'])
 def delete_ticklist_problem():
     if request.method == 'POST':
@@ -464,6 +471,7 @@ def delete_ticklist_problem():
         # update user's ticklist
         current_user.ticklist = [TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)]
     return redirect(url_for('tick_list'))
+
 
 @app.errorhandler(404)
 def page_not_found(error):
