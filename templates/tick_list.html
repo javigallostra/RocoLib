@@ -98,43 +98,52 @@
                   </form>
                 </div>
               </div>
-              <ul>
-                {%- for wall in walls_list -%}
-                {%- if  wall['image'] == boulder['section'] -%}
-                <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
-                {%- endif -%}
-                {% endfor %}
-                <li>Creator: {{boulder["creator"]}}</li>
-                <li>Feet: {{boulder["feet"]}}</li>
-                <li>
-                  <div class="container">
-                    <div class="row d-flex justify-content-left">
-                      <div class="col-lg-12 d-flex justify-content-left">
-                        <div class="star-rating-fixed">
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"
-                          ></span>
+              <div class="row">
+                <div class="col-8">
+                  <ul>
+                    {%- for wall in walls_list -%}
+                    {%- if  wall['image'] == boulder['section'] -%}
+                    <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
+                    {%- endif -%}
+                    {% endfor %}
+                    <li>Creator: {{boulder["creator"]}}</li>
+                    <li>Feet: {{boulder["feet"]}}</li>
+                    <li>
+                      <div class="container">
+                        <div class="row d-flex justify-content-left">
+                          <div class="col-lg-12 d-flex justify-content-left">
+                            <div class="star-rating-fixed">
+                              <span
+                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"
+                              ></span>
+                              <span
+                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"
+                              ></span>
+                              <span
+                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"
+                              ></span>
+                              <span
+                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"
+                              ></span>
+                              <span
+                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"
+                              ></span>
+                            </div>
+                            <p style="margin-left: 10px; margin-top: 0px;">
+                              {{ boulder.get('raters', 0) }} ratings
+                            </p>
+                          </div>
                         </div>
-                        <p style="margin-left: 10px; margin-top: 0px;">
-                          {{ boulder.get('raters', 0) }} ratings
-                        </p>
                       </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
+                    </li>
+                  </ul>
+            </div>
+            <div class="col-4" style="display: flex; justify-content: right;">
+              {%- if  boulder['is_done'] -%}
+                <span id="date-climbed">Date Climbed: {{ boulder['date_climbed'] }}</span>
+              {%- endif -%}
+            </div>
+            </div>
             </div>
             {% endfor %}
           </div>
@@ -209,7 +218,6 @@
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
     boulders = replaceAll(boulders, 'True', 'true');
     boulders = replaceAll(boulders, 'False', 'false');
-    
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     // Sort data
     if (this.value === "date-recent") {
@@ -285,13 +293,19 @@
   .star-rating-fixed .fas {
     color: yellow;
   }
-
+  #date-climbed {
+    padding-right: 3rem;
+  }
   @media (max-width: 600px) {
     .star-rating-fixed {
       line-height: 15px;
       font-size: 0.8em;
       margin-top: 4px;
     }
+    #date-climbed {
+    padding-right: 0rem;
+  }
+
   }
 </style>
 {% endblock %}
