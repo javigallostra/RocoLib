@@ -60,21 +60,33 @@ def favicon():
     )
 
 def get_gym_path():
+    """
+    Get the current session's gym path
+    """
     if session.get('gym', ''):
         return '/' + session['gym']
     else:
         return '/sancu'
 
 def get_gym():
+    """
+    Get the current session's selected gym
+    """
     if session.get('gym', ''):
         return session['gym']
     else:
         return 'sancu'    
 
 def get_gym_from_gym_path(gym_path):
+    """
+    Given a gym path, get its name
+    """
     return gym_path[1:]
 
 def get_path_from_gym_name(gym_name):
+    """
+    Given a gym name return its path
+    """
     return f'/{gym_name}'
 
 
@@ -88,6 +100,9 @@ def get_wall_radius(wall_path=None):
         return firebase_controller.get_walls_radius_all()[wall_path]
 
 def get_stats():
+    """
+    Gt current app stats from DDBB: Number of problems, routes and Gyms
+    """
     gyms = firebase_controller.get_gyms()
     total_gyms = len(gyms)
     total_boulders = 0
@@ -109,11 +124,15 @@ def get_stats():
     }
 
 def load_boulder_from_request(request):
+    """
+    Replace boulder data from valid Python to valid JS
+    """
     return json.loads(
                 request.form.get('boulder_data')
                 .replace('\'', '"')
                 .replace('True', 'true')
                 .replace('False', 'false'))
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
