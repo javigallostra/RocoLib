@@ -356,7 +356,11 @@ def save():
 @app.route('/save_boulder', methods=['GET', 'POST'])
 def save_boulder():
     if request.method == 'POST':
-        return render_template('save_boulder.html', holds=request.form.get('holds'), section=request.args.get('section'))
+        return render_template(
+            'save_boulder.html', 
+            holds=request.form.get('holds'), 
+            section=request.args.get('section')
+        )
     else:
         return abort(400)
 
@@ -426,16 +430,23 @@ def tick_list():
         # needed values: gym, id, section, is_done
         boulder = {
             'gym': request.form.get('gym'),
-            'iden': list(firebase_controller.get_boulder_by_name(request.form.get('gym'), request.form.get('name')).keys())[0],
+            'iden': list(
+                firebase_controller.get_boulder_by_name(
+                    request.form.get('gym'), 
+                    request.form.get('name')
+                ).keys()
+            )[0],
             'is_done': True if request.form.get('is_done', '') else False,
             'section': request.form.get('section')
         }
         # update user's ticklist
-        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)]
+        current_user.ticklist = [
+            TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)
+        ]
     # get boulders in ticklist and extra required values
     boulder_list = [
-            firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
-        ]
+        firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
+    ]
     unique_sections = dict()
     walls_list = []
     for boulder in boulder_list:
@@ -464,12 +475,19 @@ def delete_ticklist_problem():
         boulder_data = load_boulder_from_request(request)
         boulder = {
             'gym': boulder_data.get('gym'),
-            'iden': list(firebase_controller.get_boulder_by_name(boulder_data.get('gym'), request.form.get('name')).keys())[0],
+            'iden': list(
+                firebase_controller.get_boulder_by_name(
+                    boulder_data.get('gym'), 
+                    request.form.get('name')
+                ).keys()
+            )[0],
             's_done': boulder_data.get('is_done'),
             'section': boulder_data.get('section')
         }
         # update user's ticklist
-        current_user.ticklist = [TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)]
+        current_user.ticklist = [
+            TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)
+        ]
     return redirect(url_for('tick_list'))
 
 

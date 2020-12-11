@@ -7,7 +7,9 @@ from datetime import datetime
 TICKLIST = "ticklist"
 
 class User(UserMixin):
-
+    """
+    User model
+    """
     def __init__(self, *initial_data, **kwargs):
         self.id = None
         self.name = None
@@ -62,7 +64,9 @@ class User(UserMixin):
 
 
 class TickListProblem():
-
+    """
+    Tick List problem model
+    """
     def __init__(self, *initial_data, **kwargs):
         self.iden = None    
         self.gym = None
