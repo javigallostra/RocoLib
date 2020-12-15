@@ -12,30 +12,11 @@ from werkzeug.urls import url_parse
 
 
 import db.firebase_controller as firebase_controller
-
-WALLS_PATH = 'images/walls/'
-
-BOULDER_COLOR_MAP = {
-    'green': '#2CC990',
-    'blue': '#2C82C9',
-    'yellow': '#EEE657',
-    'red': '#FC6042'
-}
-
-# For DB querying
-EQUALS = ['section', 'difficulty']
-RANGE = ['rating']
-CONTAINS = ['creator']
-
-# Mappings of DB feet field values to friendly text to render
-FEET_MAPPINGS = {
-    'free': 'Free feet',
-    'follow': 'Feet follow hands',
-    'no-feet': 'Campus',
-}
+from config import *
 
 # create the application object
 app = Flask(__name__)
+
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -507,4 +488,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
