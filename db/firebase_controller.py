@@ -41,7 +41,7 @@ def get_gym_section_name(gym=None, section=None):
     init_db_connection()
     gym_walls = db.reference(gym).child('walls').get()
     name = [wall['name'] for wall in gym_walls if wall['image'] == section]
-    return name[0] if len(name)>=1 else ""
+    return name[0] if len(name)>=1 else ''
 
 def get_gyms():
     """
@@ -97,7 +97,7 @@ def get_users_connection():
     """
     # Create connection
     init_db_connection()
-    return db.reference("/users")
+    return db.reference('/users')
 
 def get_boulders(gym='/sancu'):
     """
