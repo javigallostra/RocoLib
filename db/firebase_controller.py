@@ -51,11 +51,17 @@ def get_gyms():
     return db.reference('walls').get()
 
 def get_gym_pretty_name(gym):
+    """
+    Get the actual Gym name from its path
+    """
     init_db_connection()
     data = db.reference('walls').order_by_child('value').equal_to(gym).get()
     return list(data.values())[0]['name']
 
 def get_wall_name(gym_name, wall_section):
+    """
+    Get the actual wall name from its path
+    """
     init_db_connection()
     data = db.reference(gym_name).child('walls').order_by_child('image').equal_to(wall_section).get()
     return list(data.values())[0]['name']
@@ -232,15 +238,24 @@ def get_boulders_filtered(gym='/sancu', conditions=None, equals=None, ranged=Non
     
 ## User related functions
 def save_user(user_data=None):
+    """
+    Persist user data
+    """
     collection = get_connection("users")
     return collection.push(user_data)
 
 def get_user_data_by_id(user_id=None):
+    """
+    Given a user id get its data
+    """
     user = get_connection("users").order_by_child('id').equal_to(user_id).get()
     user_matches = [u for u in user.values()] # this should only return one match
     return user_matches[0] if user_matches else None
 
 def get_user_data_by_email(email=None):
+    """
+    Given a user email get its data
+    """
     user = get_connection("users").order_by_child('email').equal_to(email).get()
     user_matches = [u for u in user.values()] # this should only return one match
     return user_matches[0] if user_matches else None
