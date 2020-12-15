@@ -241,14 +241,14 @@ def save_user(user_data=None):
     """
     Persist user data
     """
-    collection = get_connection("users")
+    collection = get_connection('users')
     return collection.push(user_data)
 
 def get_user_data_by_id(user_id=None):
     """
     Given a user id get its data
     """
-    user = get_connection("users").order_by_child('id').equal_to(user_id).get()
+    user = get_connection('users').order_by_child('id').equal_to(user_id).get()
     user_matches = [u for u in user.values()] # this should only return one match
     return user_matches[0] if user_matches else None
 
@@ -256,7 +256,7 @@ def get_user_data_by_email(email=None):
     """
     Given a user email get its data
     """
-    user = get_connection("users").order_by_child('email').equal_to(email).get()
+    user = get_connection('users').order_by_child('email').equal_to(email).get()
     user_matches = [u for u in user.values()] # this should only return one match
     return user_matches[0] if user_matches else None
 
