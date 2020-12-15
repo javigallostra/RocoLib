@@ -152,7 +152,6 @@ def put_boulder_in_ticklist(boulder_data, user_id):
         if boulder_data[IS_DONE] == True:
             boulder_data['date_climbed'] = datetime.today().strftime('%Y-%m-%d')
         ticklist.append(boulder_data)
-    print(boulder_data)
     # update user's ticklist and return it 
     collection.child(f'{list(user.keys())[0]}/ticklist').set(ticklist)
     return ticklist
@@ -261,7 +260,7 @@ def get_user_data_by_email(email=None):
     return user_matches[0] if user_matches else None
 
 if __name__ == '__main__':
-    # testing
+    ## Testing ##
     # print(get_gym_walls('/sancu'))
 
     # print(get_walls_radius_all())
