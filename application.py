@@ -406,8 +406,8 @@ def tick_list():
     boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user)
     return render_template(
         'tick_list.html', 
-        boulder_list = boulder_list,
-        walls_list = walls_list
+        boulder_list=boulder_list,
+        walls_list=walls_list
     )
 
 
