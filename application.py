@@ -378,11 +378,11 @@ def show_signup_form():
         if user is not None:
             error = f'The email {email} is already registered'
         else:
-            # Creamos el usuario y lo guardamos
+            # Create and save user
             user = User(name=name, email=email)
             user.set_password(password)
             user.save()
-            # Dejamos al usuario logueado
+            # Keep user logged in
             login_user(user, remember=True)
             next_page = request.args.get('next', None)
             if not next_page or url_parse(next_page).netloc != '':
