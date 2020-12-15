@@ -1,6 +1,7 @@
 from werkzeug.utils import secure_filename
 
 from db import firebase_controller
+# pylint: disable=unused-wildcard-import
 from utils.utils import *
 from config import *
 from models import TickListProblem
