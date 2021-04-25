@@ -1,7 +1,7 @@
 import uuid 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import firebase_controller
+from db import mongodb_controller
 from datetime import datetime
 
 TICKLIST = "ticklist"
@@ -33,12 +33,12 @@ class User(UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def save(self):
+    def save(self, database):
         if not self.id:
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
         self.ticklist = [problem.serialize() for problem in self.ticklist]
-        firebase_controller.save_user(self.__dict__)
+        mongodb_controller.save_user(self.__dict__, database)
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 
@@ -46,15 +46,15 @@ class User(UserMixin):
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_by_id(user_id):
-        user_data = firebase_controller.get_user_data_by_id(user_id)
+    def get_by_id(user_id, database):
+        user_data = mongodb_controller.get_user_data_by_id(user_id, database)
         if not user_data:
             return None
         return User(user_data)
 
     @staticmethod
-    def get_user_by_email(email):
-        user_data = firebase_controller.get_user_data_by_email(email=email)
+    def get_user_by_email(email, database):
+        user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None 
         return User(user_data)
@@ -85,8 +85,3 @@ class TickListProblem():
     
     def serialize(self):
         return self.__dict__
-
-
-if __name__ == '__main__':
-    test_user = User(1, "test", "test@test.com", "pass", is_admin=False)
-    test_user.save()

@@ -2,7 +2,7 @@ import os
 import json
 import ast
 import datetime
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory
+from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from models import User, TickListProblem
@@ -11,31 +11,16 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
 
-import db.firebase_controller as firebase_controller
+import pymongo
+import db.mongodb_controller as db_controller
+from config import *
+from utils.utils import *
 
-WALLS_PATH = 'images/walls/'
-
-BOULDER_COLOR_MAP = {
-    'green': '#2CC990',
-    'blue': '#2C82C9',
-    'yellow': '#EEE657',
-    'red': '#FC6042'
-}
-
-# For DB querying
-EQUALS = ['section', 'difficulty']
-RANGE = ['rating']
-CONTAINS = ['creator']
-
-# Mappings of DB feet field values to friendly text to render
-FEET_MAPPINGS = {
-    'free': 'Free feet',
-    'follow': 'Feet follow hands',
-    'no-feet': 'Campus',
-}
+import ticklist_handler
 
 # create the application object
 app = Flask(__name__)
+
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -45,10 +30,28 @@ login_manager.login_view = 'login'
 def make_cache_key_create():
     return (request.path + get_gym()).encode('utf-8')
 
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'database'):
+        client = pymongo.MongoClient("connection_string")
+        top.database = client["RocoLib"]
+    return top.database
+
+
+@app.teardown_appcontext
+def close_db_connection(exception):
+    """Closes the database again at the end of the request."""
+    top = _app_ctx_stack.top
+    if hasattr(top, 'database'):
+        top.database.client.close()
+
 # user loading callback
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_by_id(user_id)
+    return User.get_by_id(user_id, get_db())
 
 # Load favicon
 @app.route('/favicon.ico')
@@ -59,15 +62,6 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
-def get_gym_path():
-    """
-    Get the current session's gym path
-    """
-    if session.get('gym', ''):
-        return '/' + session['gym']
-    else:
-        return '/sancu'
-
 def get_gym():
     """
     Get the current session's selected gym
@@ -77,43 +71,30 @@ def get_gym():
     else:
         return 'sancu'    
 
-def get_gym_from_gym_path(gym_path):
-    """
-    Given a gym path, get its name
-    """
-    return gym_path[1:]
-
-def get_path_from_gym_name(gym_name):
-    """
-    Given a gym name return its path
-    """
-    return f'/{gym_name}'
-
-
 def get_wall_radius(wall_path=None):
     """
-    wall path is expected to be: 'gym/wall'
+    Wall path is expected to be: 'gym/wall'
     """
     if session.get('walls_radius', ''):
         return session['walls_radius'][wall_path]
     else:
-        return firebase_controller.get_walls_radius_all()[wall_path]
+        return db_controller.get_walls_radius_all(get_db())[wall_path]
 
 def get_stats():
     """
     Gt current app stats from DDBB: Number of problems, routes and Gyms
     """
-    gyms = firebase_controller.get_gyms()
+    gyms = db_controller.get_gyms(get_db())
     total_gyms = len(gyms)
     total_boulders = 0
     total_routes = 0
     for gym in gyms:
         try:
-            total_boulders += len(firebase_controller.get_boulders(gym['value'])['Items'])
+            total_boulders += len(db_controller.get_boulders(gym['id'], get_db())['Items'])
         except:
             pass
         try:
-            total_routes += len(firebase_controller.get_routes(gym['value'])['Items'])
+            total_routes += len(db_controller.get_routes(gym['id'], get_db())['Items'])
         except:
             pass
     
@@ -123,34 +104,24 @@ def get_stats():
         'Gyms': total_gyms
     }
 
-def load_boulder_from_request(request):
-    """
-    Replace boulder data from valid Python to valid JS
-    """
-    return json.loads(
-                request.form.get('boulder_data')
-                .replace('\'', '"')
-                .replace('True', 'true')
-                .replace('False', 'false'))
-
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    gyms = firebase_controller.get_gyms()
+    gyms = db_controller.get_gyms(get_db())
     if request.method == 'POST':
         session['gym'] = request.form.get('gym')
     return render_template(
         'home.html',
         gyms=gyms,
         selected=get_gym(),
-        current_gym=[gym['name'] for gym in gyms if gym['value']==get_gym()][0],
+        current_gym=[gym['name'] for gym in gyms if gym['id']==get_gym()][0],
         stats=get_stats())
 
 
 @app.route('/create')
 @cache.cached(timeout=60*60, key_prefix=make_cache_key_create)
 def create():
-    walls = firebase_controller.get_gym_walls(get_gym())
+    walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
         wall['image_path'] = url_for(
             'static',
@@ -175,17 +146,18 @@ def create_route():
 
 @app.route('/explore')
 def explore():
-    return render_template('explore.html', walls=firebase_controller.get_gym_walls(get_gym()))
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), get_db()))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders():
     if request.method == 'POST':
-        gym_path = get_gym_path()
+        gym = get_gym()
         filters = {key: val for (key, val) in json.loads(
             request.form.get('filters')).items() if val not in ['all', '']}
-        data = firebase_controller.get_boulders_filtered(
-                gym=gym_path,
+        data = db_controller.get_boulders_filtered(
+                gym=gym,
+                database=get_db(),
                 conditions=filters,
                 equals=EQUALS,
                 ranged=RANGE,
@@ -194,7 +166,7 @@ def explore_boulders():
         for boulder in data['Items']:
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
+            boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
         session['boulder_filters'] = filters
         session['boulders_list'] = sorted(
@@ -203,18 +175,19 @@ def explore_boulders():
                 x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
             reverse=True
         )
-        gym_walls = firebase_controller.get_gym_walls(gym_path)
+        gym_walls = db_controller.get_gym_walls(gym, get_db())
         return render_template(
             'explore_boulders.html',
             boulder_list=session['boulders_list'],
             walls_list=gym_walls
         )
     if request.method == 'GET':
-        gym_path = get_gym_path()
+        gym = get_gym()
         boulder_list = session.get('boulders_list', [])
         if not boulder_list:
-            data = firebase_controller.get_boulders_filtered(
-                    gym=gym_path,
+            data = db_controller.get_boulders_filtered(
+                    gym=gym,
+                    database=get_db(),
                     conditions=None,
                     equals=EQUALS,
                     contains=CONTAINS
@@ -222,7 +195,7 @@ def explore_boulders():
             for boulder in data['Items']:
                 boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
                 boulder['safe_name'] = secure_filename(boulder['name'])
-                boulder['radius'] = get_wall_radius(get_gym_from_gym_path(gym_path) + '/' + boulder['section'])
+                boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
                 boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
                 boulder_list.append(boulder)
         boulder_list = sorted(
@@ -231,7 +204,7 @@ def explore_boulders():
                 x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
             reverse=True
         )
-        gym_walls = firebase_controller.get_gym_walls(gym_path)
+        gym_walls = db_controller.get_gym_walls(gym, get_db())
         return render_template(
             'explore_boulders.html',
             boulder_list=boulder_list,
@@ -245,18 +218,19 @@ def rate_boulder():
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
         gym = request.form.get('gym') if request.form.get('gym', None) else get_gym()
-        boulder = firebase_controller.get_boulder_by_name(
+        boulder = db_controller.get_boulder_by_name(
             gym=gym,
-            name=boulder_name
-        )
-        for key, val in boulder.items():
-            # Update stats
-            val['rating'] = (val['rating'] * val['raters'] + int(boulder_rating)) / (val['raters'] + 1)
-            val['raters'] += 1
-            firebase_controller.update_boulder_by_id(
-                gym=get_path_from_gym_name(gym),
-                boulder_id=key,
-                data=val)
+            name=boulder_name,
+            database=get_db()
+        )        
+        # Update stats
+        boulder['rating'] = (boulder['rating'] * boulder['raters'] + int(boulder_rating)) / (boulder['raters'] + 1)
+        boulder['raters'] += 1
+        db_controller.update_boulder_by_id(
+            gym=gym,
+            boulder_id=boulder['_id'],
+            data=boulder,
+            database=get_db())
     
     return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
 
@@ -285,13 +259,14 @@ def load_boulder():
             return abort(404)
     elif request.method == 'GET':
         try:
-            boulder = list(firebase_controller.get_boulder_by_name(
+            boulder = db_controller.get_boulder_by_name(
                 gym=request.args.get("gym"), 
-                name=request.args.get("name")
-            ).values())[0]
+                name=request.args.get("name"),
+                database=get_db()
+            )
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(get_gym_from_gym_path(f'/{request.args.get("gym")}') + '/' + boulder['section'])
+            boulder['radius'] = get_wall_radius(request.args.get("gym") + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
             boulder_name = boulder['name']
             section = boulder['section']
@@ -324,7 +299,7 @@ def render_about_us():
 def wall_section(wall_section):
     template = 'create_boulder.html'
     if not session.get('walls_radius', ''):
-        session['walls_radius'] = firebase_controller.get_walls_radius_all()
+        session['walls_radius'] = db_controller.get_walls_radius_all(get_db())
     if request.args.get('options', '') == 'route':
         template = 'create_route.html'
 
@@ -334,7 +309,7 @@ def wall_section(wall_section):
             'static',
             filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall_section)
         ),
-        wall_name=firebase_controller.get_gym_section_name(get_gym(), wall_section),
+        wall_name=db_controller.get_gym_section_name(get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=get_wall_radius(get_gym()+'/'+wall_section)
     )
@@ -349,7 +324,7 @@ def save():
             if key == 'holds':
                 data[key] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        firebase_controller.put_boulder(data, gym=get_gym_path())
+        db_controller.put_boulder(data, gym=get_gym(), database=get_db())
     return redirect('/')
 
 
@@ -379,7 +354,7 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.get_user_by_email(form.email.data)
+        user = User.get_user_by_email(form.email.data, get_db())
         if user is not None and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
@@ -399,15 +374,15 @@ def show_signup_form():
         name = form.name.data
         email = form.email.data
         password = form.password.data
-        user = User.get_user_by_email(email)
+        user = User.get_user_by_email(email, get_db())
         if user is not None:
             error = f'The email {email} is already registered'
         else:
-            # Creamos el usuario y lo guardamos
+            # Create and save user
             user = User(name=name, email=email)
             user.set_password(password)
             user.save()
-            # Dejamos al usuario logueado
+            # Keep user logged in
             login_user(user, remember=True)
             next_page = request.args.get('next', None)
             if not next_page or url_parse(next_page).netloc != '':
@@ -427,67 +402,19 @@ def logout():
 @login_required
 def tick_list():
     if request.method == 'POST':
-        # needed values: gym, id, section, is_done
-        boulder = {
-            'gym': request.form.get('gym'),
-            'iden': list(
-                firebase_controller.get_boulder_by_name(
-                    request.form.get('gym'), 
-                    request.form.get('name')
-                ).keys()
-            )[0],
-            'is_done': True if request.form.get('is_done', '') else False,
-            'section': request.form.get('section')
-        }
-        # update user's ticklist
-        current_user.ticklist = [
-            TickListProblem(p) for p in firebase_controller.put_boulder_in_ticklist(boulder, current_user.id)
-        ]
-    # get boulders in ticklist and extra required values
-    boulder_list = [
-        firebase_controller.get_ticklist_boulder(problem) for problem in current_user.ticklist
-    ]
-    unique_sections = dict()
-    walls_list = []
-    for boulder in boulder_list:
-        boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-        boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'])
-        boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-        if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
-            unique_sections[boulder['gym']] = boulder['section']
-            walls_list.append({
-                'gym_name': firebase_controller.get_gym_pretty_name(boulder['gym']),
-                'image': boulder['section'], 
-                'name': firebase_controller.get_wall_name(boulder['gym'], boulder['section'])
-            })
+        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(request, current_user, get_db())
+    boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user, get_db())
     return render_template(
         'tick_list.html', 
-        boulder_list = boulder_list,
-        walls_list = walls_list
+        boulder_list=boulder_list,
+        walls_list=walls_list
     )
 
 
 @app.route('/delete_ticklist_problem', methods=['POST'])
 def delete_ticklist_problem():
     if request.method == 'POST':
-        # needed values: gym, id, section, is_done
-        boulder_data = load_boulder_from_request(request)
-        boulder = {
-            'gym': boulder_data.get('gym'),
-            'iden': list(
-                firebase_controller.get_boulder_by_name(
-                    boulder_data.get('gym'), 
-                    request.form.get('name')
-                ).keys()
-            )[0],
-            's_done': boulder_data.get('is_done'),
-            'section': boulder_data.get('section')
-        }
-        # update user's ticklist
-        current_user.ticklist = [
-            TickListProblem(p) for p in firebase_controller.delete_boulder_in_ticklist(boulder, current_user.id)
-        ]
+        current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(request, current_user, get_db())
     return redirect(url_for('tick_list'))
 
 
@@ -507,4 +434,4 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
