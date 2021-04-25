@@ -383,7 +383,7 @@ def show_signup_form():
             # Create and save user
             user = User(name=name, email=email)
             user.set_password(password)
-            user.save()
+            user.save(get_db())
             # Keep user logged in
             login_user(user, remember=True)
             next_page = request.args.get('next', None)
