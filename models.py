@@ -85,8 +85,3 @@ class TickListProblem():
     
     def serialize(self):
         return self.__dict__
-
-
-if __name__ == '__main__':
-    test_user = User(1, "test", "test@test.com", "pass", is_admin=False)
-    test_user.save()
