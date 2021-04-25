@@ -30,7 +30,7 @@
             <form action="/" method="POST">
               <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
                 {% for gym in gyms %}
-                <option onclick="this.form.submit()" value="{{ gym['value'] }}" {% if gym['value']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
+                <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
                 {% endfor %}
               </select>
             </form>
