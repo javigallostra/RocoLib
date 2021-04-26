@@ -4,11 +4,10 @@ Simple Web App to create and share boulders & routes of a climbing gym.
 
 Check it out at:
 
-- [http://galloafro.pythonanywhere.com/](http://galloafro.pythonanywhere.com/)
 - [https://rocolib.herokuapp.com/](https://rocolib.herokuapp.com/)
 
 Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/).
-Also using [Firebase](https://firebase.google.com/) and being hosted on [pythonanywhere](https://www.pythonanywhere.com). 
+Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [heroku](https://www.heroku.com/home). 
 
 ## Features
 
