@@ -49,3 +49,7 @@ Create Boulders
 <img src="/extras/images/view.jpg"><br>
 Load Boulders
 </p>
+
+## Links of interest
+
+* [Yolo Bouldering](https://github.com/yarkhinephyo/yolo_bouldering)
