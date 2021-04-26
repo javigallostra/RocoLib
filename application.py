@@ -77,7 +77,7 @@ def get_wall_radius(wall_path=None):
     """
     Wall path is expected to be: 'gym/wall'
     """
-    if session.get('walls_radius', ''):
+    if session.get('walls_radius', '') and session['walls_radius'].get(wall_path, ''):
         return session['walls_radius'][wall_path]
     else:
         return db_controller.get_walls_radius_all(get_db())[wall_path]
