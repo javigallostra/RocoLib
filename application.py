@@ -333,8 +333,12 @@ def save():
 @app.route('/save_boulder', methods=['GET', 'POST'])
 def save_boulder():
     if request.method == 'POST':
+        username = ''
+        if current_user.is_authenticated:
+            username = current_user.name
         return render_template(
-            'save_boulder.html', 
+            'save_boulder.html',
+            username=username,
             holds=request.form.get('holds'), 
             section=request.args.get('section')
         )
