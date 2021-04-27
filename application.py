@@ -31,7 +31,8 @@ def make_cache_key_create():
     return (request.path + get_gym()).encode('utf-8')
 
 def get_db():
-    """Opens a new database connection if there is none yet for the
+    """
+    Opens a new database connection if there is none yet for the
     current application context.
     """
     top = _app_ctx_stack.top
