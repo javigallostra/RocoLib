@@ -170,8 +170,7 @@ def explore_boulders():
             boulder['safe_name'] = secure_filename(boulder['name'])
             boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-        session['boulder_filters'] = filters
-        session['boulders_list'] = sorted(
+        boulders = sorted(
             data['Items'],
             key=lambda x: datetime.datetime.strptime(
                 x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
@@ -180,26 +179,27 @@ def explore_boulders():
         gym_walls = db_controller.get_gym_walls(gym, get_db())
         return render_template(
             'explore_boulders.html',
-            boulder_list=session['boulders_list'],
+            boulder_list=boulders,
             walls_list=gym_walls
         )
     if request.method == 'GET':
-        gym = get_gym()
-        boulder_list = session.get('boulders_list', [])
-        if not boulder_list:
-            data = db_controller.get_boulders_filtered(
-                    gym=gym,
-                    database=get_db(),
-                    conditions=None,
-                    equals=EQUALS,
-                    contains=CONTAINS
-                )
-            for boulder in data['Items']:
-                boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-                boulder['safe_name'] = secure_filename(boulder['name'])
-                boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
-                boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-                boulder_list.append(boulder)
+        gym = request.args.get('gym', '')
+        if not gym:
+            gym = get_gym()
+        data = db_controller.get_boulders_filtered(
+                gym=gym,
+                database=get_db(),
+                conditions=None,
+                equals=EQUALS,
+                contains=CONTAINS
+            )
+        boulder_list = []
+        for boulder in data['Items']:
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+            boulder['safe_name'] = secure_filename(boulder['name'])
+            boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
+            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+            boulder_list.append(boulder)
         boulder_list = sorted(
             boulder_list,
             key=lambda x: datetime.datetime.strptime(
@@ -409,6 +409,7 @@ def logout():
 def tick_list():
     if request.method == 'POST':
         current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(request, current_user, get_db())
+        return redirect(url_for('explore_boulders', gym=get_gym()))
     boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user, get_db())
     return render_template(
         'tick_list.html', 
