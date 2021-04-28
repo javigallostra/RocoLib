@@ -1,4 +1,5 @@
 WALLS_PATH = 'images/walls/'
+STATIC_ASSETS = 'static'
 
 BOULDER_COLOR_MAP = {
     'green': '#2CC990',
