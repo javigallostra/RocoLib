@@ -83,6 +83,11 @@
                         <!-- Required fields -->
                         <input
                           type="hidden"
+                          name="origin"
+                          value="{{ origin }}"
+                        />
+                        <input
+                          type="hidden"
                           name="gym"
                           value="{{ boulder_data['gym'] }}"
                         />
@@ -117,6 +122,11 @@
                           type="hidden"
                           name="is_done"
                           value="true"
+                        />
+                        <input
+                          type="hidden"
+                          name="origin"
+                          value="{{ origin }}"
                         />
                         <input
                           type="hidden"

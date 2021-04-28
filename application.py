@@ -181,7 +181,8 @@ def explore_boulders():
         return render_template(
             'explore_boulders.html',
             boulder_list=boulders,
-            walls_list=gym_walls
+            walls_list=gym_walls,
+            origin='explore_boulders'
         )
     if request.method == 'GET':
         gym = request.args.get('gym', '')
@@ -211,7 +212,8 @@ def explore_boulders():
         return render_template(
             'explore_boulders.html',
             boulder_list=boulder_list,
-            walls_list=gym_walls
+            walls_list=gym_walls,
+            origin='explore_boulders'
         )
 
 
@@ -257,7 +259,9 @@ def load_boulder():
                 'load_boulder.html',
                 boulder_name=boulder_name,
                 wall_image=wall_image,
-                boulder_data=boulder)
+                boulder_data=boulder,
+                origin=request.form.get('origin')
+            )
         except:
             return abort(404)
     elif request.method == 'GET':
@@ -281,7 +285,9 @@ def load_boulder():
                 'load_boulder.html',
                 boulder_name=boulder_name,
                 wall_image=wall_image,
-                boulder_data=boulder)
+                boulder_data=boulder,
+                origin=request.form.get('origin')
+            )
         except:
             return abort(404)
 
@@ -410,7 +416,9 @@ def logout():
 def tick_list():
     if request.method == 'POST':
         current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(request, current_user, get_db())
-        return redirect(url_for('explore_boulders', gym=get_gym()))
+        # if the request origin is the explore boulders page, go back to it
+        if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
+            return redirect(url_for('explore_boulders', gym=get_gym()))
     boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user, get_db())
     return render_template(
         'tick_list.html', 
