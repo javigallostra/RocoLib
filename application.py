@@ -261,26 +261,42 @@ def load_boulder():
     """
     Load a boulder in the required format to be rendered in the page.
     """
-    if request.method == 'POST':
-        try:
+    try:
+        if request.method == 'POST':
             boulder = load_boulder_from_request(request)
             boulder_name = boulder['name']
             section = boulder['section']
-            gym = boulder['gym'] if boulder.get('gym', '') else get_gym()
+            boulder['gym'] = get_gym()
             wall_image = url_for(
                 STATIC_ASSETS,
-                filename='{}{}/{}.JPG'.format(WALLS_PATH, gym, section)
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), section)
             )
-            return render_template(
+        elif request.method == 'GET':
+            boulder = db_controller.get_boulder_by_name(
+                gym=request.args.get('gym'), 
+                name=request.args.get('name'),
+                database=get_db()
+            )
+            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+            boulder['safe_name'] = secure_filename(boulder['name'])
+            boulder['radius'] = get_wall_radius(request.args.get("gym") + '/' + boulder['section'])
+            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+            boulder['gym'] = request.args.get('gym')
+            boulder_name = boulder['name']
+            section = boulder['section']
+            wall_image = url_for(
+                'static',
+                filename='{}{}/{}.JPG'.format(WALLS_PATH, request.args.get("gym"), section)
+            )
+        return render_template(
                 'load_boulder.html',
                 boulder_name=boulder_name,
                 wall_image=wall_image,
                 boulder_data=boulder,
                 origin=request.form.get('origin')
             )
-        except:
-            return abort(404)
-    return abort(400)
+    except:
+        return abort(404)
 
 
 @app.route('/explore_routes')
