@@ -97,11 +97,11 @@ def get_stats():
     total_routes = 0
     for gym in gyms:
         try:
-            total_boulders += len(db_controller.get_boulders(gym['id'], get_db())['Items'])
+            total_boulders += len(db_controller.get_boulders(gym['id'], get_db())[ITEMS])
         except:
             pass
         try:
-            total_routes += len(db_controller.get_routes(gym['id'], get_db())['Items'])
+            total_routes += len(db_controller.get_routes(gym['id'], get_db())[ITEMS])
         except:
             pass
     
@@ -125,13 +125,13 @@ def get_boulders_list(gym, filters, database):
             contains=CONTAINS
         )
     # Map and complete boulder data
-    for boulder in data['Items']:
+    for boulder in data[ITEMS]:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
         boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
     return sorted(
-        data['Items'],
+        data[ITEMS],
         key=lambda x: datetime.datetime.strptime(
             x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
         reverse=True
