@@ -161,10 +161,7 @@ def create():
     """
     walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
-        wall['image_path'] = url_for(
-            STATIC_ASSETS,
-            filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall['image'])
-        )
+        wall['image_path'] = get_wall_image(get_gym(), wall['image'], WALLS_PATH)
     return render_template(
         'create.html',
         walls=walls,
