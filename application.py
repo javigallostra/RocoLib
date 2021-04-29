@@ -267,10 +267,7 @@ def load_boulder():
             boulder_name = boulder['name']
             section = boulder['section']
             boulder['gym'] = get_gym()
-            wall_image = url_for(
-                STATIC_ASSETS,
-                filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), section)
-            )
+            wall_image = get_wall_image(get_gym(), section, WALLS_PATH)
         elif request.method == 'GET':
             boulder = db_controller.get_boulder_by_name(
                 gym=request.args.get('gym'), 
@@ -279,15 +276,12 @@ def load_boulder():
             )
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(request.args.get("gym") + '/' + boulder['section'])
+            boulder['radius'] = get_wall_radius(request.args.get('gym') + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
             boulder['gym'] = request.args.get('gym')
             boulder_name = boulder['name']
             section = boulder['section']
-            wall_image = url_for(
-                'static',
-                filename='{}{}/{}.JPG'.format(WALLS_PATH, request.args.get("gym"), section)
-            )
+            wall_image = get_wall_image(request.args.get('gym'), section, WALLS_PATH)
         return render_template(
                 'load_boulder.html',
                 boulder_name=boulder_name,
@@ -329,10 +323,7 @@ def wall_section(wall_section):
 
     return render_template(
         template,
-        wall_image=url_for(
-            STATIC_ASSETS,
-            filename='{}{}/{}.JPG'.format(WALLS_PATH, get_gym(), wall_section)
-        ),
+        wall_image=get_wall_image(get_gym(), wall_section, WALLS_PATH),
         wall_name=db_controller.get_gym_section_name(get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=get_wall_radius(get_gym()+'/'+wall_section)
