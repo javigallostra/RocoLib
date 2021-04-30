@@ -263,8 +263,9 @@ def load_boulder():
             boulder = load_boulder_from_request(request)
             boulder_name = boulder['name']
             section = boulder['section']
-            boulder['gym'] = get_gym()
-            wall_image = get_wall_image(get_gym(), section, WALLS_PATH)
+            if not boulder.get('gym', ''):
+                boulder['gym'] = get_gym()
+            wall_image = get_wall_image(boulder['gym'], section, WALLS_PATH)
         elif request.method == 'GET':
             boulder = db_controller.get_boulder_by_name(
                 gym=request.args.get('gym'), 
