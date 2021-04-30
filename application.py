@@ -285,7 +285,7 @@ def load_boulder():
                 boulder_name=boulder_name,
                 wall_image=wall_image,
                 boulder_data=boulder,
-                origin=request.form.get('origin')
+                origin=request.form.get('origin', 'explore_boulders')
             )
     except:
         return abort(404)
