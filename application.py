@@ -222,7 +222,9 @@ def explore_boulders():
         'explore_boulders.html',
         boulder_list=boulders,
         walls_list=gym_walls,
-        origin='explore_boulders'
+        origin='explore_boulders',
+        is_authenticated=current_user.is_authenticated,
+        ticklist=[boulder.iden for boulder in current_user.ticklist if boulder.is_done] 
     )
 
 @app.route('/rate_boulder', methods=['POST'])

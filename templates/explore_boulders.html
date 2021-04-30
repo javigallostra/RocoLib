@@ -3,133 +3,137 @@
 {% block title %}Explore{% endblock %}
 
 {% block content %}
-    <br />
-    <div id="holder">
-      <div id="body">
-        <div class="container">
+<br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/explore">Back</a></p>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/">Home</a></p>
             </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
-          <div class="row text-left">
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1 mb-1">
-              Sort by:
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-              <div class="form-group row" style="margin: inherit; padding: inherit;">
-                <select class="form-control col-6 col-md-4 mr-3" id="sortCriteria">
-                  <option value="date-recent" selected>Creation Date</option>
-                  <option value="rating">Rating</option>
-                  <option value="difficulty">Difficulty</option>
-                  <option value="section">Wall Section</option>
-                </select>
-                <select class="form-control col-4" id="sortAscending">
-                  <option value="increasing">Increasing</option>
-                  <option value="decreasing" selected>Decreasing</option>
-                </select>
-              </div>
+            <div class="col">
+              <p><a href="/explore">Back</a></p>
             </div>
           </div>
-          {% if not boulder_list %}
-          <br />
-          <br />
-          <div class="d-flex justify-content-center">
-            <h5>No boulders matching the specified criteria</h5>
-          </div>
-          {% endif %}
-          <div id="bouldersList">
-            {% for boulder in boulder_list %}
-            <div class="card" id="{{ boulder['safe_name'] }}">
-              <div class="row">
-                <div
-                  class="dot"
-                  style="background-color: {{ boulder['color'] }};"
-                ></div>
-                <!-- TODO: Add safename field to boulder -->
-                <div style="padding-left: 0.5rem;">
-                  <form action="/load_boulder" method="post">
-                    <input
-                      type="hidden"
-                      name="boulder_data"
-                      id="holds-array"
-                      value="{{boulder}}"
-                    />
-                    <input
-                      type="hidden"
-                      name="origin"
-                      id="origin"
-                      value="explore_boulders"
-                    />
-                    <button
-                      type="submit"
-                      name="boulder"
-                      value="{{ boulder['name'] }}"
-                      class="btn-link"
-                    >
-                      <h5>{{boulder['name']}}</h5>
-                    </button>
-                  </form>
-                </div>
-              </div>
-              <ul>
-                {%- for wall in walls_list -%}
-                {%- if  wall['image'] == boulder['section'] -%}
-                <li>Section: {{ wall['name'] }}</li>
-                {%- endif -%}
-                {% endfor %}
-                <li>Creator: {{boulder["creator"]}}</li>
-                <li>Feet: {{boulder["feet"]}}</li>
-                <li>
-                  <div class="container">
-                    <div class="row d-flex justify-content-left">
-                      <div class="col-lg-12 d-flex justify-content-left">
-                        <div class="star-rating-fixed">
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"
-                          ></span>
-                          <span
-                            class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"
-                          ></span>
-                        </div>
-                        <p style="margin-left: 10px; margin-top: 0px;">
-                          {{ boulder.get('raters', 0) }} ratings
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            {% endfor %}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+      </div>
+      <div class="row text-left">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1 mb-1">
+          Sort by:
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+          <div class="form-group row" style="margin: inherit; padding: inherit;">
+            <select class="form-control col-5 col-md-4 mr-3" id="sortCriteria">
+              <option value="date-recent" selected>Creation Date</option>
+              <option value="rating">Rating</option>
+              <option value="difficulty">Difficulty</option>
+              <option value="section">Wall Section</option>
+            </select>
+            <select class="form-control col-5" id="sortAscending">
+              <option value="increasing">Increasing</option>
+              <option value="decreasing" selected>Decreasing</option>
+            </select>
           </div>
         </div>
       </div>
+      {% if is_authenticated %}
+        <div class="row text-left mb-3 mt-3" style="padding-left: 2.75rem;">
+          <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
+          <label class="form-check-label" for="hideDoneCheck">Hide done</label>
+        </div>
+      {% endif %}
+      {% if not boulder_list %}
+      <br />
+      <br />
+      <div class="d-flex justify-content-center">
+        <h5>No boulders matching the specified criteria</h5>
+      </div>
+      {% endif %}
+      <div id="bouldersList">
+        {% for boulder in boulder_list %}
+        <div class="card" id="{{ boulder['safe_name'] }}">
+          <div class="row">
+            <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
+            <!-- TODO: Add safename field to boulder -->
+            <div style="padding-left: 0.5rem;">
+              <form action="/load_boulder" method="post">
+                <input type="hidden" name="boulder_data" id="holds-array" value="{{boulder}}" />
+                <input type="hidden" name="origin" id="origin" value="explore_boulders" />
+                <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
+                  <h5>{{boulder['name']}}</h5>
+                </button>
+              </form>
+            </div>
+          </div>
+          <ul>
+            {%- for wall in walls_list -%}
+            {%- if wall['image'] == boulder['section'] -%}
+            <li>Section: {{ wall['name'] }}</li>
+            {%- endif -%}
+            {% endfor %}
+            <li>Creator: {{boulder["creator"]}}</li>
+            <li>Feet: {{boulder["feet"]}}</li>
+            <li>
+              <div class="container">
+                <div class="row d-flex justify-content-left">
+                  <div class="col-lg-12 d-flex justify-content-left">
+                    <div class="star-rating-fixed">
+                      <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"></span>
+                      <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"></span>
+                      <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"></span>
+                      <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"></span>
+                      <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"></span>
+                    </div>
+                    <p style="margin-left: 10px; margin-top: 0px;">
+                      {{ boulder.get('raters', 0) }} ratings
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
     </div>
+  </div>
+</div>
 
 <script>
+
+  const checkbox = document.getElementById('hideDoneCheck')
+
+  checkbox.addEventListener('change', (event) => {
+    if (event.currentTarget.checked) {
+      console.log(true);
+      UpdateList(true);
+    } else {
+      console.log(false);
+      UpdateList(false);
+    }
+  })
+
+  function UpdateList(checked) {
+    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
+    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+    var ticklist_data = JSON.parse('{"boulder_ids": ' + replaceAll(decodeHtml("{{ ticklist }}"), "'", '"') + "}");
+
+    boulders_data["boulders"].forEach((boulder) => {
+      $("#" + boulder["safe_name"])
+      .css(
+        'display',
+         ((ticklist_data.boulder_ids.indexOf(boulder._id) > -1) && checked) ? 'none' : 'flex'
+      );
+    });
+  }
+
   function decodeHtml(html) {
-    var txt = document.createElement("textarea");
-    txt.innerHTML = html;
-    return txt.value;
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.documentElement.textContent;
   }
 
   function replaceAll(string, search, replace) {
@@ -166,8 +170,8 @@
         return a["section"] < b["section"]
           ? 1
           : b["section"] < a["section"]
-          ? -1
-          : 0;
+            ? -1
+            : 0;
       }
     } else if (this.value === "rating") {
       function sortBoulders(a, b) {
@@ -205,9 +209,11 @@
     font-family: inherit;
     font-size: inherit;
   }
+
   .btn-link:hover {
     text-decoration: underline;
   }
+
   .dot {
     height: 25px;
     width: 25px;
@@ -215,12 +221,14 @@
     position: relative;
     display: inline-block;
   }
+
   .card {
     border: 0.1em solid dimgray;
     padding: 0.5em;
     padding-left: 1.2em;
     margin: 0.5em;
   }
+
   .star-rating-fixed .fas {
     color: yellow;
   }
