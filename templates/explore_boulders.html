@@ -41,10 +41,10 @@
         </div>
       </div>
       {% if is_authenticated %}
-        <div class="row text-left mb-3 mt-3" style="padding-left: 2.75rem;">
-          <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
-          <label class="form-check-label" for="hideDoneCheck">Hide done</label>
-        </div>
+      <div class="row text-left mb-3 mt-3" style="padding-left: 2.75rem;">
+        <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
+        <label class="form-check-label" for="hideDoneCheck">Hide done</label>
+      </div>
       {% endif %}
       {% if not boulder_list %}
       <br />
@@ -105,32 +105,6 @@
 
 <script>
 
-  const checkbox = document.getElementById('hideDoneCheck')
-
-  checkbox.addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-      console.log(true);
-      UpdateList(true);
-    } else {
-      console.log(false);
-      UpdateList(false);
-    }
-  })
-
-  function UpdateList(checked) {
-    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
-    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
-    var ticklist_data = JSON.parse('{"boulder_ids": ' + replaceAll(decodeHtml("{{ ticklist }}"), "'", '"') + "}");
-
-    boulders_data["boulders"].forEach((boulder) => {
-      $("#" + boulder["safe_name"])
-      .css(
-        'display',
-         ((ticklist_data.boulder_ids.indexOf(boulder._id) > -1) && checked) ? 'none' : 'flex'
-      );
-    });
-  }
-
   function decodeHtml(html) {
     var doc = new DOMParser().parseFromString(html, "text/html");
     return doc.documentElement.textContent;
@@ -138,6 +112,28 @@
 
   function replaceAll(string, search, replace) {
     return string.split(search).join(replace);
+  }
+
+  const checkbox = document.getElementById('hideDoneCheck')
+
+  checkbox.addEventListener('change', (event) => {
+    if (event.currentTarget.checked) {
+      UpdateList(true);
+    } else {
+      UpdateList(false);
+    }
+  })
+
+  function UpdateList(checked) {
+    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
+    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+    boulders_data["boulders"].forEach((boulder) => {
+      $("#" + boulder["safe_name"])
+        .css(
+          'display',
+          (boulder.is_done && checked) ? 'none' : 'flex'
+        );
+    });
   }
 
   $("#sortAscending").on("change", function () {

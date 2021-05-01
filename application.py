@@ -218,13 +218,18 @@ def explore_boulders():
         
     boulders = get_boulders_list(gym, filters, get_db())
     gym_walls = db_controller.get_gym_walls(gym, get_db())
+
+    if current_user.is_authenticated:
+        done_boulders = [boulder.iden for boulder in current_user.ticklist if boulder.is_done] 
+        for boulder in boulders:
+            boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
+
     return render_template(
         'explore_boulders.html',
         boulder_list=boulders,
         walls_list=gym_walls,
         origin='explore_boulders',
-        is_authenticated=current_user.is_authenticated,
-        ticklist=[boulder.iden for boulder in current_user.ticklist if boulder.is_done] 
+        is_authenticated=current_user.is_authenticated
     )
 
 @app.route('/rate_boulder', methods=['POST'])
