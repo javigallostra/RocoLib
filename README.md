@@ -1,18 +1,19 @@
 # RocoLib
 
-Simple Web App to create and share boulders & routes of a climbing gym.
+Simple Web App to create and share boulders & routes for any climbing wall
 
 Check it out at:
 
 - [https://rocolib.herokuapp.com/](https://rocolib.herokuapp.com/)
 
 Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/).
-Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [heroku](https://www.heroku.com/home). 
+Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home). 
 
 ## Features
 
 * Create problems on any climbing wall, just from an image.
-* Explore, load and climb problems created by other users.
+* Explore and climb problems created by other users.
+* Create your own ticklist, save problems that you want to climb and log your sends.
 * Sort problems by difficulty, rating, creation date or setter and find your ideal climb or project.
 * Rate problems so that other users can get feedback and find the best climbs.
 
