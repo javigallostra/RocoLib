@@ -259,7 +259,7 @@ def rate_boulder():
     return abort(400)
 
 
-@app.route('/load_boulder', methods=['POST'])
+@app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder():
     """
