@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 
 import functools
-from datetime import date, datetime
+from datetime import datetime
 
 
 def serializable(func):
