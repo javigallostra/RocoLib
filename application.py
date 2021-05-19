@@ -3,10 +3,10 @@ import json
 import ast
 import datetime
 
-from flask import Flask, render_template, request, url_for, redirect, abort, jsonify, session, send_from_directory, _app_ctx_stack
+from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from models import User, TickListProblem
+from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
