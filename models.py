@@ -83,6 +83,9 @@ class BoulderProblem():
     Boulder problem Model
     """
     def __init__(self, db, gym, *initial_data, **kwargs) -> None:
+        # Keys to skip when adding values
+        self.skip_keys = ['gym']
+
         # Boulder values coming from DDBB
         self._id = None
         self.rating = None
@@ -98,11 +101,14 @@ class BoulderProblem():
         self.to_serialize = tuple(key for d in initial_data for key in d)
         for dictionary in initial_data:
             for key in dictionary:
+                if key in self.skip_keys:
+                    continue
                 setattr(self, key, dictionary[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
         # additional values
         self.is_done = False
+        self.gym = gym
         self.safe_name = secure_filename(self.name)
         self.color = self.map_difficulty_to_color(self.difficulty)
         self.radius = mongodb_controller.get_walls_radius_all(db)[gym + '/' + self.section]
