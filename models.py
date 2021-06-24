@@ -1,10 +1,26 @@
 import uuid 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from db import mongodb_controller
 from datetime import datetime
 
 TICKLIST = "ticklist"
+
+# Boulder constants
+BOULDER_COLOR_MAP = {
+    'green': '#2CC990',
+    'blue': '#2C82C9',
+    'yellow': '#EEE657',
+    'red': '#FC6042'
+}
+
+# Mappings of DB feet field values to friendly text to render
+FEET_MAPPINGS = {
+    'free': 'Free feet',
+    'follow': 'Feet follow hands',
+    'no-feet': 'Campus',
+}
 
 class User(UserMixin):
     """
@@ -62,6 +78,58 @@ class User(UserMixin):
     def __repr__(self):
         return '<User {}>'.format(self.email)
 
+class BoulderProblem():
+    """
+    Boulder problem Model
+    """
+    def __init__(self, db, gym, *initial_data, **kwargs) -> None:
+        # Boulder values coming from DDBB
+        self._id = None
+        self.rating = None
+        self.raters = None
+        self.name = None
+        self.creator = None
+        self.difficulty = None
+        self.feet = None
+        self.holds = None
+        self.section = None
+        self.time = None
+        # fields to serialize
+        self.to_serialize = tuple(key for d in initial_data for key in d)
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+        # additional values
+        self.is_done = False
+        self.safe_name = secure_filename(self.name)
+        self.color = self.map_difficulty_to_color(self.difficulty)
+        self.radius = mongodb_controller.get_walls_radius_all(db)[gym + '/' + self.section]
+
+    def get_id(self) -> str:
+        return self._id
+
+    def map_feet(self, feet) -> str:
+        return FEET_MAPPINGS[feet]
+
+    def map_difficulty_to_color(self, difficulty) -> str:
+        return BOULDER_COLOR_MAP[difficulty]
+
+    def map_values(self) -> None:
+        self.difficulty = self.map_difficulty(self.difficulty)
+        self.feet = self.map_feet(self.feet)
+    
+    def map_values_for_db(self):
+        pass
+
+    def serialize_all(self) -> dict:
+        data = self.__dict__
+        data.pop('to_serialize', False)
+        return data
+
+    def serialize_for_db(self) -> dict:
+        return {key: self.__dict__[key] for key in self.__dict__ if key in self.to_serialize} 
 
 class TickListProblem():
     """
