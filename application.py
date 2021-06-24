@@ -17,6 +17,7 @@ from config import *
 from utils.utils import *
 
 import ticklist_handler
+import boulder_handler
 
 # create the application object
 app = Flask(__name__)
@@ -111,32 +112,6 @@ def get_stats():
         'Gyms': total_gyms
     }
 
-def get_boulders_list(gym, filters, database):
-    """
-    Given a gym and a set of filters return the list of
-    boulders that match the specified criteria.
-    """
-    data = db_controller.get_boulders_filtered(
-            gym=gym,
-            database=database,
-            conditions=filters,
-            equals=EQUALS,
-            ranged=RANGE,
-            contains=CONTAINS
-        )
-    # Map and complete boulder data
-    for boulder in data[ITEMS]:
-        boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-        boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
-        boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-    return sorted(
-        data[ITEMS],
-        key=lambda x: datetime.datetime.strptime(
-            x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
-        reverse=True
-    )
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
     """
@@ -208,25 +183,25 @@ def explore_boulders():
                 request.form.get('filters')
             ).items() if val not in ['all', '']
         }
-        boulders = get_boulders_list(gym, filters, get_db())
+        boulders = boulder_handler.get_boulders_list(gym, filters, get_db())
 
     elif request.method == 'GET':
         gym = request.args.get('gym', '')
         if not gym:
             gym = get_gym()
         filters = None
-        
-    boulders = get_boulders_list(gym, filters, get_db())
+
+    boulders = boulder_handler.get_boulders_list(gym, filters, get_db())
     gym_walls = db_controller.get_gym_walls(gym, get_db())
 
     if current_user.is_authenticated:
-        done_boulders = [boulder.iden for boulder in current_user.ticklist if boulder.is_done] 
+        done_boulders = [boulder.iden for boulder in current_user.ticklist if boulder.is_done]
         for boulder in boulders:
-            boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
+            boulder.is_done = 1 if boulder.get_id() in done_boulders else 0
 
     return render_template(
         'explore_boulders.html',
-        boulder_list=boulders,
+        boulder_list=[boulder.serialize_all() for boulder in boulders],
         walls_list=gym_walls,
         origin='explore_boulders',
         is_authenticated=current_user.is_authenticated
@@ -241,22 +216,12 @@ def rate_boulder():
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
         gym = request.form.get('gym') if request.form.get('gym', '') else get_gym()
-        boulder = db_controller.get_boulder_by_name(
-            gym=gym,
-            name=boulder_name,
-            database=get_db()
-        )        
-        # Update stats
-        boulder['rating'] = (boulder['rating'] * boulder['raters'] + int(boulder_rating)) / (boulder['raters'] + 1)
-        boulder['raters'] += 1
-        db_controller.update_boulder_by_id(
-            gym=gym,
-            boulder_id=boulder['_id'],
-            data=boulder,
-            database=get_db()
-        )
+        boulder = boulder_handler.get_boulder_by_name(gym, boulder_name, get_db())
+        boulder.rating = (boulder.rating * boulder.raters + int(boulder_rating)) / (boulder.raters + 1)
+        boulder.raters += 1
+        boulder_handler.update_boulder_by_id(gym, boulder, get_db())
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
-    return abort(400)
+    return abort(500)
 
 
 @app.route('/load_boulder', methods=['POST', 'GET'])
@@ -295,7 +260,7 @@ def load_boulder():
                 origin=request.form.get('origin', 'explore_boulders')
             )
     except:
-        return abort(404)
+        return abort(500)
 
 
 @app.route('/explore_routes')
