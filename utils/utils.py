@@ -2,7 +2,7 @@ import json
 from flask import url_for
 
 
-def load_boulder_from_request(request):
+def parse_boulder_from_request(request):
     """
     Replace boulder data from valid Python to valid JS
     """
