@@ -42,7 +42,7 @@ def get_boulder_by_name(name, gym, db) -> BoulderProblem:
     return BoulderProblem(db, gym, boulder_data)
 
 
-def update_boulder_by_id(boulder, gym, db) -> bool:
+def update_boulder_by_id(boulder, gym, db):
     return db_controller.update_boulder_by_id(
         gym=gym,
         boulder_id=boulder.get_id(),
@@ -50,7 +50,10 @@ def update_boulder_by_id(boulder, gym, db) -> bool:
         database=db
     )
 
-def load_boulder_from_request(request, gym, db):
+def load_boulder_from_request(request, gym, db) -> BoulderProblem:
     boulder_data = parse_boulder_from_request(request)
     gym = boulder_data.pop('gym', gym)
     return BoulderProblem(db, gym, boulder_data)
+
+def create_boulder(data, gym, db):
+    db_controller.put_boulder(data, gym, db)

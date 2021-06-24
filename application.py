@@ -124,7 +124,7 @@ def home():
         'home.html',
         gyms=gyms,
         selected=get_gym(),
-        current_gym=[gym['name'] for gym in gyms if gym['id']==get_gym()][0],
+        current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
         stats=get_stats())
 
 
@@ -214,8 +214,8 @@ def rate_boulder():
     """
     if request.method == 'POST':
         boulder_name = request.form.get('boulder_name')
-        boulder_rating = request.form.get('boulder_rating')
-        gym = request.form.get('gym') if request.form.get('gym', '') else get_gym()
+        boulder_rating = request.form.get('boulder_rating') # rating to be assigned
+        gym = request.form.get('gym', get_gym())
         boulder = boulder_handler.get_boulder_by_name(boulder_name, gym, get_db())
         boulder.rating = (boulder.rating * boulder.raters + int(boulder_rating)) / (boulder.raters + 1)
         boulder.raters += 1
@@ -294,13 +294,14 @@ def save():
     Save page handler.
     """
     if request.method == 'POST':
-        data = {'rating': 0, 'raters': 0}
+        # initial boulder rating
+        boulder_data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
-            data[key] = val
+            boulder_data[key] = val
             if key == 'holds':
-                data[key] = ast.literal_eval(val)
-        data['time'] = datetime.datetime.now().isoformat()
-        db_controller.put_boulder(data, gym=get_gym(), database=get_db())
+                boulder_data[key] = ast.literal_eval(val)
+        boulder_data['time'] = datetime.datetime.now().isoformat()
+        boulder_handler.create_boulder(boulder_data, get_gym(), get_db())
     return redirect('/')
 
 
