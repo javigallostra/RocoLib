@@ -216,10 +216,10 @@ def rate_boulder():
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
         gym = request.form.get('gym') if request.form.get('gym', '') else get_gym()
-        boulder = boulder_handler.get_boulder_by_name(gym, boulder_name, get_db())
+        boulder = boulder_handler.get_boulder_by_name(boulder_name, gym, get_db())
         boulder.rating = (boulder.rating * boulder.raters + int(boulder_rating)) / (boulder.raters + 1)
         boulder.raters += 1
-        boulder_handler.update_boulder_by_id(gym, boulder, get_db())
+        boulder_handler.update_boulder_by_id(boulder, gym, get_db())
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
     return abort(500)
 
@@ -232,31 +232,19 @@ def load_boulder():
     """
     try:
         if request.method == 'POST':
-            boulder = load_boulder_from_request(request)
-            boulder_name = boulder['name']
-            section = boulder['section']
-            if not boulder.get('gym', ''):
-                boulder['gym'] = get_gym()
-            wall_image = get_wall_image(boulder['gym'], section, WALLS_PATH)
+            boulder = boulder_handler.load_boulder_from_request(request, get_gym(), get_db())
         elif request.method == 'GET':
-            boulder = db_controller.get_boulder_by_name(
-                gym=request.args.get('gym'), 
-                name=request.args.get('name'),
-                database=get_db()
+            boulder = boulder_handler.get_boulder_by_name(
+                request.args.get('name'),
+                request.args.get('gym', get_gym()),
+                get_db()
             )
-            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-            boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(request.args.get('gym') + '/' + boulder['section'])
-            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-            boulder['gym'] = request.args.get('gym')
-            boulder_name = boulder['name']
-            section = boulder['section']
-            wall_image = get_wall_image(request.args.get('gym'), section, WALLS_PATH)
+        wall_image = get_wall_image(boulder.gym, boulder.section, WALLS_PATH)
         return render_template(
                 'load_boulder.html',
-                boulder_name=boulder_name,
+                boulder_name=boulder.name,
                 wall_image=wall_image,
-                boulder_data=boulder,
+                boulder_data=boulder.serialize_all(),
                 origin=request.form.get('origin', 'explore_boulders')
             )
     except:
