@@ -111,6 +111,7 @@ class BoulderProblem():
         self.gym = gym
         self.safe_name = secure_filename(self.name)
         self.color = self.map_difficulty_to_color(self.difficulty)
+        self.mapped_feet = self.map_feet(self.feet)
         self.radius = mongodb_controller.get_walls_radius_all(db)[gym + '/' + self.section]
 
     def get_id(self) -> str:

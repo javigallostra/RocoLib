@@ -8,13 +8,12 @@ from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from models import User
 from forms import LoginForm, SignupForm
-from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
 import pymongo
 import db.mongodb_controller as db_controller
 from config import *
-from utils.utils import *
+from utils import utils
 
 import ticklist_handler
 import boulder_handler
@@ -88,29 +87,6 @@ def get_wall_radius(wall_path=None):
     else:
         return db_controller.get_walls_radius_all(get_db())[wall_path]
 
-def get_stats():
-    """
-    Gt current app stats from DDBB: Number of problems, routes and Gyms.
-    """
-    gyms = db_controller.get_gyms(get_db())
-    total_gyms = len(gyms)
-    total_boulders = 0
-    total_routes = 0
-    for gym in gyms:
-        try:
-            total_boulders += len(db_controller.get_boulders(gym['id'], get_db())[ITEMS])
-        except:
-            pass
-        try:
-            total_routes += len(db_controller.get_routes(gym['id'], get_db())[ITEMS])
-        except:
-            pass
-    
-    return {
-        'Boulders': total_boulders,
-        'Routes': total_routes,
-        'Gyms': total_gyms
-    }
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -125,7 +101,7 @@ def home():
         gyms=gyms,
         selected=get_gym(),
         current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
-        stats=get_stats())
+        stats=utils.get_stats(get_db()))
 
 
 @app.route('/create')
@@ -136,7 +112,7 @@ def create():
     """
     walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
-        wall['image_path'] = get_wall_image(get_gym(), wall['image'], WALLS_PATH)
+        wall['image_path'] = utils.get_wall_image(get_gym(), wall['image'], WALLS_PATH)
     return render_template(
         'create.html',
         walls=walls,
@@ -183,7 +159,7 @@ def explore_boulders():
                 request.form.get('filters')
             ).items() if val not in ['all', '']
         }
-        boulders = boulder_handler.get_boulders_list(gym, filters, get_db())
+        boulders = boulder_handler.get_boulders_list(filters, gym, get_db())
 
     elif request.method == 'GET':
         gym = request.args.get('gym', '')
@@ -191,7 +167,7 @@ def explore_boulders():
             gym = get_gym()
         filters = None
 
-    boulders = boulder_handler.get_boulders_list(gym, filters, get_db())
+    boulders = boulder_handler.get_boulders_list(filters, gym, get_db())
     gym_walls = db_controller.get_gym_walls(gym, get_db())
 
     if current_user.is_authenticated:
@@ -239,7 +215,7 @@ def load_boulder():
                 request.args.get('gym', get_gym()),
                 get_db()
             )
-        wall_image = get_wall_image(boulder.gym, boulder.section, WALLS_PATH)
+        wall_image = utils.get_wall_image(boulder.gym, boulder.section, WALLS_PATH)
         return render_template(
                 'load_boulder.html',
                 boulder_name=boulder.name,
@@ -281,7 +257,7 @@ def wall_section(wall_section):
 
     return render_template(
         template,
-        wall_image=get_wall_image(get_gym(), wall_section, WALLS_PATH),
+        wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
         wall_name=db_controller.get_gym_section_name(get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=get_wall_radius(get_gym()+'/'+wall_section)
