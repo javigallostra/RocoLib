@@ -1,4 +1,4 @@
-import uuid 
+import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
@@ -6,10 +6,12 @@ from datetime import datetime
 
 TICKLIST = "ticklist"
 
+
 class User(UserMixin):
     """
     User model
     """
+
     def __init__(self, *initial_data, **kwargs):
         self.id = None
         self.name = None
@@ -56,7 +58,7 @@ class User(UserMixin):
     def get_user_by_email(email, database):
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
-            return None 
+            return None
         return User(user_data)
 
     def __repr__(self):
@@ -67,8 +69,9 @@ class TickListProblem():
     """
     Tick List problem model
     """
+
     def __init__(self, *initial_data, **kwargs):
-        self.iden = None    
+        self.iden = None
         self.gym = None
         self.section = None
         self.is_done = False
@@ -82,6 +85,6 @@ class TickListProblem():
     def tick_problem(self):
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
-    
+
     def serialize(self):
         return self.__dict__

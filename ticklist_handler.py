@@ -13,6 +13,7 @@ def get_wall_radius(wall_path, database):
     """
     return mongodb_controller.get_walls_radius_all(database)[wall_path]
 
+
 def delete_problem_from_ticklist(request, current_user, database):
     """
     Delete a problem from a user's ticklist
@@ -21,12 +22,12 @@ def delete_problem_from_ticklist(request, current_user, database):
     boulder_data = load_boulder_from_request(request)
     boulder = {
         'gym': boulder_data.get('gym'),
-        'iden': 
+        'iden':
             mongodb_controller.get_boulder_by_name(
-                boulder_data.get('gym'), 
+                boulder_data.get('gym'),
                 request.form.get('name'),
                 database
-            ).get('_id', ''),
+        ).get('_id', ''),
         's_done': boulder_data.get('is_done'),
         'section': boulder_data.get('section')
     }
@@ -34,6 +35,7 @@ def delete_problem_from_ticklist(request, current_user, database):
     return [
         TickListProblem(p) for p in mongodb_controller.delete_boulder_in_ticklist(boulder, current_user.id, database)
     ]
+
 
 def load_user_ticklist(current_user, database):
     """
@@ -48,16 +50,18 @@ def load_user_ticklist(current_user, database):
     for boulder in boulder_list:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(boulder['gym']+ '/' + boulder['section'], database)
+        boulder['radius'] = get_wall_radius(
+            boulder['gym'] + '/' + boulder['section'], database)
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
         if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
             unique_sections[boulder['gym']] = boulder['section']
             walls_list.append({
                 'gym_name': mongodb_controller.get_gym_pretty_name(boulder['gym'], database),
-                'image': boulder['section'], 
+                'image': boulder['section'],
                 'name': mongodb_controller.get_wall_name(boulder['gym'], boulder['section'], database)
             })
     return boulder_list, walls_list
+
 
 def add_boulder_to_ticklist(request, current_user, database):
     """
@@ -66,13 +70,12 @@ def add_boulder_to_ticklist(request, current_user, database):
     # needed values: gym, id, section, is_done
     boulder = {
         'gym': request.form.get('gym'),
-        'iden': 
+        'iden':
             mongodb_controller.get_boulder_by_name(
-                request.form.get('gym'), 
+                request.form.get('gym'),
                 request.form.get('name'),
                 database
-            ).get('_id', '')
-        ,
+        ).get('_id', ''),
         'is_done': True if request.form.get('is_done', '') else False,
         'section': request.form.get('section')
     }
