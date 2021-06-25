@@ -14,7 +14,7 @@ from werkzeug.urls import url_parse
 import pymongo
 import db.mongodb_controller as db_controller
 from config import *
-from utils.utils import *
+import utils
 
 import ticklist_handler
 
@@ -96,33 +96,6 @@ def get_wall_radius(wall_path=None):
         return db_controller.get_walls_radius_all(get_db())[wall_path]
 
 
-def get_stats():
-    """
-    Gt current app stats from DDBB: Number of problems, routes and Gyms.
-    """
-    gyms = db_controller.get_gyms(get_db())
-    total_gyms = len(gyms)
-    total_boulders = 0
-    total_routes = 0
-    for gym in gyms:
-        try:
-            total_boulders += len(
-                db_controller.get_boulders(gym['id'], get_db())[ITEMS])
-        except:
-            pass
-        try:
-            total_routes += len(db_controller.get_routes(
-                gym['id'], get_db())[ITEMS])
-        except:
-            pass
-
-    return {
-        'Boulders': total_boulders,
-        'Routes': total_routes,
-        'Gyms': total_gyms
-    }
-
-
 def get_boulders_list(gym, filters, database):
     """
     Given a gym and a set of filters return the list of
@@ -163,7 +136,7 @@ def home():
         gyms=gyms,
         selected=get_gym(),
         current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
-        stats=get_stats())
+        stats=utils.get_stats(get_db()))
 
 
 @app.route('/create')
@@ -174,7 +147,7 @@ def create():
     """
     walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
-        wall['image_path'] = get_wall_image(
+        wall['image_path'] = utils.get_wall_image(
             get_gym(), wall['image'], WALLS_PATH)
     return render_template(
         'create.html',
@@ -285,12 +258,13 @@ def load_boulder():
     """
     try:
         if request.method == 'POST':
-            boulder = load_boulder_from_request(request)
+            boulder = utils.load_boulder_from_request(request)
             boulder_name = boulder['name']
             section = boulder['section']
             if not boulder.get('gym', ''):
                 boulder['gym'] = get_gym()
-            wall_image = get_wall_image(boulder['gym'], section, WALLS_PATH)
+            wall_image = utils.get_wall_image(
+                boulder['gym'], section, WALLS_PATH)
         elif request.method == 'GET':
             boulder = db_controller.get_boulder_by_name(
                 gym=request.args.get('gym'),
@@ -305,7 +279,7 @@ def load_boulder():
             boulder['gym'] = request.args.get('gym')
             boulder_name = boulder['name']
             section = boulder['section']
-            wall_image = get_wall_image(
+            wall_image = utils.get_wall_image(
                 request.args.get('gym'), section, WALLS_PATH)
         return render_template(
             'load_boulder.html',
@@ -348,7 +322,7 @@ def wall_section(wall_section):
 
     return render_template(
         template,
-        wall_image=get_wall_image(get_gym(), wall_section, WALLS_PATH),
+        wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
         wall_name=db_controller.get_gym_section_name(
             get_gym(), wall_section, get_db()),
         section=wall_section,
