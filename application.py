@@ -27,8 +27,10 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
 def make_cache_key_create():
     return (request.path + get_gym()).encode('utf-8')
+
 
 def get_db():
     """
@@ -54,11 +56,15 @@ def close_db_connection(exception):
         top.database.client.close()
 
 # user loading callback
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id, get_db())
 
 # Load favicon
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -67,6 +73,7 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+
 def get_gym():
     """
     Get the current session's selected gym.
@@ -74,7 +81,8 @@ def get_gym():
     if session.get('gym', ''):
         return session['gym']
     else:
-        return 'sancu'    
+        return 'sancu'
+
 
 def get_wall_radius(wall_path=None):
     """
@@ -112,7 +120,8 @@ def create():
     """
     walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
-        wall['image_path'] = utils.get_wall_image(get_gym(), wall['image'], WALLS_PATH)
+        wall['image_path'] = utils.get_wall_image(
+            get_gym(), wall['image'], WALLS_PATH)
     return render_template(
         'create.html',
         walls=walls,
@@ -153,7 +162,7 @@ def explore_boulders():
         gym = get_gym()
         filters = {
             key: val for (
-                key, 
+                key,
                 val
             ) in json.loads(
                 request.form.get('filters')
@@ -171,7 +180,8 @@ def explore_boulders():
     gym_walls = db_controller.get_gym_walls(gym, get_db())
 
     if current_user.is_authenticated:
-        done_boulders = [boulder.iden for boulder in current_user.ticklist if boulder.is_done]
+        done_boulders = [
+            boulder.iden for boulder in current_user.ticklist if boulder.is_done]
         for boulder in boulders:
             boulder.is_done = 1 if boulder.get_id() in done_boulders else 0
 
@@ -183,6 +193,7 @@ def explore_boulders():
         is_authenticated=current_user.is_authenticated
     )
 
+
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder():
     """
@@ -190,10 +201,13 @@ def rate_boulder():
     """
     if request.method == 'POST':
         boulder_name = request.form.get('boulder_name')
-        boulder_rating = request.form.get('boulder_rating') # rating to be assigned
+        boulder_rating = request.form.get(
+            'boulder_rating')  # rating to be assigned
         gym = request.form.get('gym', get_gym())
-        boulder = boulder_handler.get_boulder_by_name(boulder_name, gym, get_db())
-        boulder.rating = (boulder.rating * boulder.raters + int(boulder_rating)) / (boulder.raters + 1)
+        boulder = boulder_handler.get_boulder_by_name(
+            boulder_name, gym, get_db())
+        boulder.rating = (boulder.rating * boulder.raters +
+                          int(boulder_rating)) / (boulder.raters + 1)
         boulder.raters += 1
         boulder_handler.update_boulder_by_id(boulder, gym, get_db())
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
@@ -208,21 +222,23 @@ def load_boulder():
     """
     try:
         if request.method == 'POST':
-            boulder = boulder_handler.load_boulder_from_request(request, get_gym(), get_db())
+            boulder = boulder_handler.load_boulder_from_request(
+                request, get_gym(), get_db())
         elif request.method == 'GET':
             boulder = boulder_handler.get_boulder_by_name(
                 request.args.get('name'),
                 request.args.get('gym', get_gym()),
                 get_db()
             )
-        wall_image = utils.get_wall_image(boulder.gym, boulder.section, WALLS_PATH)
+        wall_image = utils.get_wall_image(
+            boulder.gym, boulder.section, WALLS_PATH)
         return render_template(
-                'load_boulder.html',
-                boulder_name=boulder.name,
-                wall_image=wall_image,
-                boulder_data=boulder.serialize_all(),
-                origin=request.form.get('origin', 'explore_boulders')
-            )
+            'load_boulder.html',
+            boulder_name=boulder.name,
+            wall_image=wall_image,
+            boulder_data=boulder.serialize_all(),
+            origin=request.form.get('origin', 'explore_boulders')
+        )
     except:
         return abort(500)
 
@@ -258,7 +274,8 @@ def wall_section(wall_section):
     return render_template(
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
-        wall_name=db_controller.get_gym_section_name(get_gym(), wall_section, get_db()),
+        wall_name=db_controller.get_gym_section_name(
+            get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=get_wall_radius(get_gym()+'/'+wall_section)
     )
@@ -293,7 +310,7 @@ def save_boulder():
         return render_template(
             'save_boulder.html',
             username=username,
-            holds=request.form.get('holds'), 
+            holds=request.form.get('holds'),
             section=request.args.get('section')
         )
     else:
@@ -377,13 +394,15 @@ def tick_list():
     Tick list page handler.
     """
     if request.method == 'POST':
-        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(request, current_user, get_db())
+        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
+            request, current_user, get_db())
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
             return redirect(url_for('explore_boulders', gym=get_gym()))
-    boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user, get_db())
+    boulder_list, walls_list = ticklist_handler.load_user_ticklist(
+        current_user, get_db())
     return render_template(
-        'tick_list.html', 
+        'tick_list.html',
         boulder_list=boulder_list,
         walls_list=walls_list
     )
@@ -395,7 +414,8 @@ def delete_ticklist_problem():
     Delete tick list problem page handler.
     """
     if request.method == 'POST':
-        current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(request, current_user, get_db())
+        current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(
+            request, current_user, get_db())
         return redirect(url_for('tick_list'))
     return abort(400)
 
