@@ -27,8 +27,10 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
 def make_cache_key_create():
     return (request.path + get_gym()).encode('utf-8')
+
 
 def get_db():
     """
@@ -54,11 +56,15 @@ def close_db_connection(exception):
         top.database.client.close()
 
 # user loading callback
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id, get_db())
 
 # Load favicon
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -67,6 +73,7 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+
 def get_gym():
     """
     Get the current session's selected gym.
@@ -74,7 +81,8 @@ def get_gym():
     if session.get('gym', ''):
         return session['gym']
     else:
-        return 'sancu'    
+        return 'sancu'
+
 
 def get_wall_radius(wall_path=None):
     """
@@ -87,6 +95,7 @@ def get_wall_radius(wall_path=None):
     else:
         return db_controller.get_walls_radius_all(get_db())[wall_path]
 
+
 def get_stats():
     """
     Gt current app stats from DDBB: Number of problems, routes and Gyms.
@@ -97,19 +106,22 @@ def get_stats():
     total_routes = 0
     for gym in gyms:
         try:
-            total_boulders += len(db_controller.get_boulders(gym['id'], get_db())[ITEMS])
+            total_boulders += len(
+                db_controller.get_boulders(gym['id'], get_db())[ITEMS])
         except:
             pass
         try:
-            total_routes += len(db_controller.get_routes(gym['id'], get_db())[ITEMS])
+            total_routes += len(db_controller.get_routes(
+                gym['id'], get_db())[ITEMS])
         except:
             pass
-    
+
     return {
         'Boulders': total_boulders,
         'Routes': total_routes,
         'Gyms': total_gyms
     }
+
 
 def get_boulders_list(gym, filters, database):
     """
@@ -117,13 +129,13 @@ def get_boulders_list(gym, filters, database):
     boulders that match the specified criteria.
     """
     data = db_controller.get_boulders_filtered(
-            gym=gym,
-            database=database,
-            conditions=filters,
-            equals=EQUALS,
-            ranged=RANGE,
-            contains=CONTAINS
-        )
+        gym=gym,
+        database=database,
+        conditions=filters,
+        equals=EQUALS,
+        ranged=RANGE,
+        contains=CONTAINS
+    )
     # Map and complete boulder data
     for boulder in data[ITEMS]:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
@@ -137,6 +149,7 @@ def get_boulders_list(gym, filters, database):
         reverse=True
     )
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     """
@@ -149,7 +162,7 @@ def home():
         'home.html',
         gyms=gyms,
         selected=get_gym(),
-        current_gym=[gym['name'] for gym in gyms if gym['id']==get_gym()][0],
+        current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
         stats=get_stats())
 
 
@@ -161,7 +174,8 @@ def create():
     """
     walls = db_controller.get_gym_walls(get_gym(), get_db())
     for wall in walls:
-        wall['image_path'] = get_wall_image(get_gym(), wall['image'], WALLS_PATH)
+        wall['image_path'] = get_wall_image(
+            get_gym(), wall['image'], WALLS_PATH)
     return render_template(
         'create.html',
         walls=walls,
@@ -202,7 +216,7 @@ def explore_boulders():
         gym = get_gym()
         filters = {
             key: val for (
-                key, 
+                key,
                 val
             ) in json.loads(
                 request.form.get('filters')
@@ -215,12 +229,13 @@ def explore_boulders():
         if not gym:
             gym = get_gym()
         filters = None
-        
+
     boulders = get_boulders_list(gym, filters, get_db())
     gym_walls = db_controller.get_gym_walls(gym, get_db())
 
     if current_user.is_authenticated:
-        done_boulders = [boulder.iden for boulder in current_user.ticklist if boulder.is_done] 
+        done_boulders = [
+            boulder.iden for boulder in current_user.ticklist if boulder.is_done]
         for boulder in boulders:
             boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
 
@@ -232,6 +247,7 @@ def explore_boulders():
         is_authenticated=current_user.is_authenticated
     )
 
+
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder():
     """
@@ -240,14 +256,16 @@ def rate_boulder():
     if request.method == 'POST':
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
-        gym = request.form.get('gym') if request.form.get('gym', '') else get_gym()
+        gym = request.form.get('gym') if request.form.get(
+            'gym', '') else get_gym()
         boulder = db_controller.get_boulder_by_name(
             gym=gym,
             name=boulder_name,
             database=get_db()
-        )        
+        )
         # Update stats
-        boulder['rating'] = (boulder['rating'] * boulder['raters'] + int(boulder_rating)) / (boulder['raters'] + 1)
+        boulder['rating'] = (boulder['rating'] * boulder['raters'] +
+                             int(boulder_rating)) / (boulder['raters'] + 1)
         boulder['raters'] += 1
         db_controller.update_boulder_by_id(
             gym=gym,
@@ -275,25 +293,27 @@ def load_boulder():
             wall_image = get_wall_image(boulder['gym'], section, WALLS_PATH)
         elif request.method == 'GET':
             boulder = db_controller.get_boulder_by_name(
-                gym=request.args.get('gym'), 
+                gym=request.args.get('gym'),
                 name=request.args.get('name'),
                 database=get_db()
             )
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(request.args.get('gym') + '/' + boulder['section'])
+            boulder['radius'] = get_wall_radius(
+                request.args.get('gym') + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
             boulder['gym'] = request.args.get('gym')
             boulder_name = boulder['name']
             section = boulder['section']
-            wall_image = get_wall_image(request.args.get('gym'), section, WALLS_PATH)
+            wall_image = get_wall_image(
+                request.args.get('gym'), section, WALLS_PATH)
         return render_template(
-                'load_boulder.html',
-                boulder_name=boulder_name,
-                wall_image=wall_image,
-                boulder_data=boulder,
-                origin=request.form.get('origin', 'explore_boulders')
-            )
+            'load_boulder.html',
+            boulder_name=boulder_name,
+            wall_image=wall_image,
+            boulder_data=boulder,
+            origin=request.form.get('origin', 'explore_boulders')
+        )
     except:
         return abort(404)
 
@@ -329,7 +349,8 @@ def wall_section(wall_section):
     return render_template(
         template,
         wall_image=get_wall_image(get_gym(), wall_section, WALLS_PATH),
-        wall_name=db_controller.get_gym_section_name(get_gym(), wall_section, get_db()),
+        wall_name=db_controller.get_gym_section_name(
+            get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=get_wall_radius(get_gym()+'/'+wall_section)
     )
@@ -363,7 +384,7 @@ def save_boulder():
         return render_template(
             'save_boulder.html',
             username=username,
-            holds=request.form.get('holds'), 
+            holds=request.form.get('holds'),
             section=request.args.get('section')
         )
     else:
@@ -447,13 +468,15 @@ def tick_list():
     Tick list page handler.
     """
     if request.method == 'POST':
-        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(request, current_user, get_db())
+        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
+            request, current_user, get_db())
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
             return redirect(url_for('explore_boulders', gym=get_gym()))
-    boulder_list, walls_list = ticklist_handler.load_user_ticklist(current_user, get_db())
+    boulder_list, walls_list = ticklist_handler.load_user_ticklist(
+        current_user, get_db())
     return render_template(
-        'tick_list.html', 
+        'tick_list.html',
         boulder_list=boulder_list,
         walls_list=walls_list
     )
@@ -465,7 +488,8 @@ def delete_ticklist_problem():
     Delete tick list problem page handler.
     """
     if request.method == 'POST':
-        current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(request, current_user, get_db())
+        current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(
+            request, current_user, get_db())
         return redirect(url_for('tick_list'))
     return abort(400)
 
