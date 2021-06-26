@@ -14,7 +14,7 @@ from werkzeug.urls import url_parse
 import pymongo
 import db.mongodb_controller as db_controller
 from config import *
-import utils
+from utils import utils
 
 import ticklist_handler
 
@@ -333,14 +333,14 @@ def wall_section(wall_section):
 @app.route('/save', methods=['POST'])
 def save():
     """
-    Save page handler.
+    Save page handler
     """
     if request.method == 'POST':
         data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
-            data[key] = val
-            if key == 'holds':
-                data[key] = ast.literal_eval(val)
+            data[key.lower()] = val
+            if key.lower() == 'holds':
+                data[key.lower()] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
         db_controller.put_boulder(data, gym=get_gym(), database=get_db())
     return redirect('/')
