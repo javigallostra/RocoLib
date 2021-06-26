@@ -30,7 +30,20 @@
           <br />
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
           <canvas id="wall-canvas"></canvas>
-          <br />
+          <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;"/>
+          {% if  boulder_data.get('notes', '') %}
+          <div class="container">
+            <div class="row d-flex justify-content-center">
+              <p style="margin-top: 0; margin-bottom: 0.5rem;">
+                <b>Notes:</b>
+              </p>
+              <div class="col-lg-12 d-flex justify-content-center">
+                {{ boulder_data.get('notes', '') }}
+              </div>
+            </div>
+            </div>
+           <hr width=50% style="margin-bottom: 0.5rem; margin-top: 0.5rem;"/>
+           {% endif %}
           <div class="container">
             <div class="row d-flex justify-content-center">
               <div class="col-lg-12 d-flex justify-content-center">
@@ -267,8 +280,11 @@
 
   @media (max-width: 600px) {
     .star-rating {
-      line-height: 15px;
+      /* line-height: 15px; */
       font-size: 0.8em;
+    }
+    hr {
+      width: 95%;
     }
   }
 </style>
