@@ -56,15 +56,11 @@ def close_db_connection(exception):
         top.database.client.close()
 
 # user loading callback
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id, get_db())
 
 # Load favicon
-
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -80,47 +76,7 @@ def get_gym():
     """
     if session.get('gym', ''):
         return session['gym']
-    else:
-        return 'sancu'
-
-
-def get_wall_radius(wall_path=None):
-    """
-    Gets the radius of the circe used to mark holds for
-    a specific wall.
-    Wall path is expected to be: 'gym/wall'.
-    """
-    if session.get('walls_radius', '') and session['walls_radius'].get(wall_path, ''):
-        return session['walls_radius'][wall_path]
-    else:
-        return db_controller.get_walls_radius_all(get_db())[wall_path]
-
-
-def get_boulders_list(gym, filters, database):
-    """
-    Given a gym and a set of filters return the list of
-    boulders that match the specified criteria.
-    """
-    data = db_controller.get_boulders_filtered(
-        gym=gym,
-        database=database,
-        conditions=filters,
-        equals=EQUALS,
-        ranged=RANGE,
-        contains=CONTAINS
-    )
-    # Map and complete boulder data
-    for boulder in data[ITEMS]:
-        boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-        boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(gym + '/' + boulder['section'])
-        boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-    return sorted(
-        data[ITEMS],
-        key=lambda x: datetime.datetime.strptime(
-            x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
-        reverse=True
-    )
+    return 'sancu'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -195,7 +151,7 @@ def explore_boulders():
                 request.form.get('filters')
             ).items() if val not in ['all', '']
         }
-        boulders = get_boulders_list(gym, filters, get_db())
+        boulders = utils.get_boulders_list(gym, filters, get_db(), session)
 
     elif request.method == 'GET':
         gym = request.args.get('gym', '')
@@ -203,7 +159,7 @@ def explore_boulders():
             gym = get_gym()
         filters = None
 
-    boulders = get_boulders_list(gym, filters, get_db())
+    boulders = utils.get_boulders_list(gym, filters, get_db(), session)
     gym_walls = db_controller.get_gym_walls(gym, get_db())
 
     if current_user.is_authenticated:
@@ -273,7 +229,9 @@ def load_boulder():
             )
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = get_wall_radius(
+            boulder['radius'] = utils.get_wall_radius(
+                session,
+                get_db(),
                 request.args.get('gym') + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
             boulder['gym'] = request.args.get('gym')
@@ -326,7 +284,8 @@ def wall_section(wall_section):
         wall_name=db_controller.get_gym_section_name(
             get_gym(), wall_section, get_db()),
         section=wall_section,
-        radius=get_wall_radius(get_gym()+'/'+wall_section)
+        radius=utils.get_wall_radius(
+            session, get_db(), get_gym() + '/' + wall_section)
     )
 
 
