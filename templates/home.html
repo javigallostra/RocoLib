@@ -3,98 +3,122 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div id="holder">
-      <div id="body">
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <br />
+      <div class="row mb-3">
+        <div class="col-sm-12 m-auto text-center">
+          <img id="logo-img" title="Create problems on any climbing wall"
+            src="{{ url_for('static', filename='images/logo/logo_large_2.PNG') }}"
+            alt="Create problems on any climbing wall" />
+          <!-- <h3>RocoLib</h3> -->
+        </div>
+      </div>
+      <div class="row">
         <div class="container">
-          <br />
-          <div class="row mb-3">
+          <h5>Current Gym: </h5>
+          <p>{{ current_gym }}</p>
+        </div>
+      </div>
+      <hr />
+      <label>Select Gym: </label>
+      <div class="row">
+        <div class="form-group col-4" style="margin: inherit;">
+          <form action="/" method="POST">
+            <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
+              {% for gym in gyms %}
+              <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
+                endif %}>{{ gym['name'] }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+        <div class="col-4">
+          <button type="button" class="btn btn-primary" onclick="getLocation()">
+            Locate Nearest Gym
+          </button>
+        </div>
+      </div>
+      <br />
+      <div>
+        <p>&bull; <a href="/create?options=boulder">Create Boulder</a></p>
+        <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
+        <p>&bull; <a href="">Create Route (Coming soon)</a></p>
+        <p>&bull; <a href="/explore">Explore</a></p>
+      </div>
+      <hr />
+      <section class="module stats" id="counter">
+        <div class="container">
+          <div class="row">
             <div class="col-sm-12 m-auto text-center">
-              <img
-                id="logo-img"
-                title="Create problems on any climbing wall"
-                src="{{ url_for('static', filename='images/logo/logo_large_2.PNG') }}"
-                alt="Create problems on any climbing wall"
-            />
-              <!-- <h3>RocoLib</h3> -->
+              <h4>Stats</h4>
             </div>
           </div>
           <div class="row">
-            <div class="container">
-              <h5>Current Gym: </h5>
-              <p>{{ current_gym }}</p>
+            {% for key, val in stats.items() %}
+            <div class="col-sm-4 text-center">
+              <div class="counter pt-3">
+                <div class="number"> <span class="count">{{ val }}</span></div>
+                <div class="title mx-auto">{{ key }}</div>
+              </div>
             </div>
+            {% endfor %}
           </div>
-          <hr />
-          <label>Select Gym: </label>
-          <div class="form-group row" style="margin: inherit;">
-            <form action="/" method="POST">
-              <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
-                {% for gym in gyms %}
-                <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {% endif %} >{{ gym['name'] }}</option>
-                {% endfor %}
-              </select>
-            </form>
-          </div>
-          <br />
-          <div>
-            <p>&bull; <a href="/create?options=boulder">Create Boulder</a></p>
-            <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
-            <p>&bull; <a href="">Create Route (Coming soon)</a></p>
-            <p>&bull; <a href="/explore">Explore</a></p>
-          </div>
-          <hr />
-          <section class="module stats" id="counter"> 
-            <div class="container">
-              <div class="row">
-                <div class="col-sm-12 m-auto text-center">
-                  <h4>Stats</h4>
-                </div>
-              </div>
-              <div class="row">
-                {% for key, val in stats.items() %}
-                <div class="col-sm-4 text-center">
-                  <div class="counter pt-3">
-                    <div class="number"> <span class="count">{{ val }}</span></div>
-                    <div class="title mx-auto">{{ key }}</div>
-                  </div>
-                </div>
-                {% endfor %}
-              </div>
-            </div> 
-          </section>
         </div>
-      </div>
+      </section>
     </div>
+  </div>
+</div>
+{% endblock %}
+
+{%block scripts%}
+<script>
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }
+
+  function showPosition(position) {
+    console.log("Latitude: " + position.coords.latitude +
+      " Longitude: " + position.coords.longitude);
+  }
+</script>
 {% endblock %}
 
 {% block styles %}
 <style>
-.stats {
-  padding: 10px 0 10px 0;
-}
-.stats .counter .number {
-  color: #1789DA;
-  font-size: 3rem;
-  font-weight: 300;
-}
-.stats .counter .title {
-  max-width: 200px;
-  font-size: 1.25rem;
-  line-height: 1.2;
-  font-weight: bold;
-}
-
-/* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px) {
-  #logo-img {
-    max-width: 70%;
+  .stats {
+    padding: 10px 0 10px 0;
   }
-}
-@media only screen and (min-width: 701px) {
-  #logo-img {
-    max-width: 40%;
-  }
-}
 
+  .stats .counter .number {
+    color: #1789DA;
+    font-size: 3rem;
+    font-weight: 300;
+  }
+
+  .stats .counter .title {
+    max-width: 200px;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    font-weight: bold;
+  }
+
+  /* 100% Image Width on Smaller Screens */
+  @media only screen and (max-width: 700px) {
+    #logo-img {
+      max-width: 70%;
+    }
+  }
+
+  @media only screen and (min-width: 701px) {
+    #logo-img {
+      max-width: 40%;
+    }
+  }
 </style>
 {% endblock %}
