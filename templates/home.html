@@ -35,9 +35,11 @@
           </form>
         </div>
         <div class="col-4">
-          <button type="button" class="btn btn-primary" onclick="getLocation()">
-            Locate Nearest Gym
-          </button>
+          <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
+            <button type="button" class="btn btn-primary" onclick="getLocation()">
+              Locate Nearest Gym
+            </button>
+          </form>
         </div>
       </div>
       <br />
@@ -76,15 +78,26 @@
 <script>
   function getLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
+      navigator.geolocation.getCurrentPosition(sendPosition);
     } else {
       console.log("Geolocation is not supported by this browser.");
     }
   }
 
-  function showPosition(position) {
-    console.log("Latitude: " + position.coords.latitude +
-      " Longitude: " + position.coords.longitude);
+  function sendPosition(position) {
+    // Add fields to form
+    var lat_input = document.createElement("input");
+    lat_input.setAttribute("type", "hidden");
+    lat_input.setAttribute("name", "latitude");
+    lat_input.setAttribute("value", position.coords.latitude);
+    var long_input = document.createElement("input");
+    long_input.setAttribute("type", "hidden");
+    long_input.setAttribute("name", "longitude");
+    long_input.setAttribute("value", position.coords.longitude);
+    //append to form element that you want .
+    document.getElementById("nearest_gym_form").appendChild(lat_input);
+    document.getElementById("nearest_gym_form").appendChild(long_input);
+    document.getElementById("nearest_gym_form").submit();
   }
 </script>
 {% endblock %}
