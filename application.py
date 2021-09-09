@@ -442,7 +442,7 @@ def get_nearest_gym():
     closest_gym = get_closest_gym(
         float(dict(request.form)['longitude']), 
         float(dict(request.form)['latitude'])
-        )
+    )
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
