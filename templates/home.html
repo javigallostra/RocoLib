@@ -36,8 +36,10 @@
         </div>
         <div class="col-4">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
-            <button type="button" class="btn btn-primary" onclick="getLocation()">
-              Locate Nearest Gym
+            <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
+              <span class="button-text">
+                Locate Nearest Gym
+              </span>
             </button>
           </form>
         </div>
@@ -85,6 +87,9 @@
   }
 
   function sendPosition(position) {
+    var button = document.getElementById('locate-button');
+    button.classList.add('button-loading');
+
     // Add fields to form
     var lat_input = document.createElement("input");
     lat_input.setAttribute("type", "hidden");
@@ -133,5 +138,41 @@
       max-width: 40%;
     }
   }
+
+.button-loading .button-text {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.button-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: 4px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: button-loading-spinner 1s ease infinite;
+}
+
+.cstm-button {
+  position: relative;
+  cursor: pointer;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
+}
 </style>
 {% endblock %}

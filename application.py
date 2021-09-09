@@ -439,15 +439,10 @@ def delete_ticklist_problem():
 
 @app.route('/get_nearest_gym', methods = ['POST'])
 def get_nearest_gym():
-    data = dict(request.form)
-    # gyms = db_controller.get_gyms(get_db())
-    closest_gym = get_closest_gym(float(data['longitude']), float(data['latitude']))
-    # return render_template(
-    #     'home.html',
-    #     gyms=gyms,
-    #     selected=closest_gym,
-    #     current_gym=[gym['name'] for gym in gyms if gym['id'] == closest_gym][0],
-    #     stats=utils.get_stats(get_db()))
+    closest_gym = get_closest_gym(
+        float(dict(request.form)['longitude']), 
+        float(dict(request.form)['latitude'])
+        )
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
