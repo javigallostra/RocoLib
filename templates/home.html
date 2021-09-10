@@ -17,14 +17,14 @@
       </div>
       <div class="row">
         <div class="container">
-          <h5>Current Gym: </h5>
+          <h5 style="margin-bottom:0.5rem;">Current Gym: </h5>
           <p>{{ current_gym }}</p>
         </div>
       </div>
-      <hr />
+      <hr style="margin-top: 0; margin-bottom: 1rem;"></hr>
       <label>Select Gym: </label>
       <div class="row">
-        <div class="form-group col-4" style="margin: inherit;">
+        <div class="form-group col" style="margin-bottom: 0.5rem;">
           <form action="/" method="POST">
             <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
               {% for gym in gyms %}
@@ -34,13 +34,16 @@
             </select>
           </form>
         </div>
-        <div class="col-4">
+        <div class="w-100"></div>
+        <div class="col">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
+            <div class="btn-group d-flex">
             <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
               <span class="button-text">
                 Locate Nearest Gym
               </span>
             </button>
+          </div>
           </form>
         </div>
       </div>
@@ -128,7 +131,7 @@
   /* 100% Image Width on Smaller Screens */
   @media only screen and (max-width: 700px) {
     #logo-img {
-      max-width: 70%;
+      max-width: 50%;
     }
   }
 
