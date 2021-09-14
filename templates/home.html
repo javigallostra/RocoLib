@@ -21,7 +21,8 @@
           <p>{{ current_gym }}</p>
         </div>
       </div>
-      <hr style="margin-top: 0; margin-bottom: 1rem;"></hr>
+      <hr style="margin-top: 0; margin-bottom: 1rem;">
+      </hr>
       <label>Select Gym: </label>
       <div class="row">
         <div class="form-group col" style="margin-bottom: 0.5rem;">
@@ -38,12 +39,12 @@
         <div class="col">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
             <div class="btn-group d-flex">
-            <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
-              <span class="button-text">
-                Locate Nearest Gym
-              </span>
-            </button>
-          </div>
+              <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
+                <span class="button-text">
+                  Locate Nearest Gym
+                </span>
+              </button>
+            </div>
           </form>
         </div>
       </div>

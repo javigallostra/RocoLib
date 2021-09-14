@@ -3,61 +3,48 @@
 {% block title %}Explore{% endblock %}
 
 {% block content %}
-    <br />
-    <div id="holder">
-      <div id="body">
-        <div class="container">
+<br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/explore">Back</a></p>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/">Home</a></p>
             </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
-          {% for route in routes_list %}
-          <div class="card">
-            <div class="row">
-              <div
-                class="dot"
-                style="background-color: {{ route['difficulty'] }};"
-              ></div>
-              <!-- TODO: Add safename field to boulder -->
-              <div style="padding-left: 0.5rem;">
-                <form action="/load_route" method="post">
-                  <input
-                    type="hidden"
-                    name="route_data"
-                    id="holds-array"
-                    value="{{route}}"
-                  />
-                  <button
-                    type="submit"
-                    name="route"
-                    value="{{ route['name'] }}"
-                    class="btn-link"
-                  >
-                    <h5>{{route['name']}}</h5>
-                  </button>
-                </form>
-              </div>
+            <div class="col">
+              <p><a href="/explore">Back</a></p>
             </div>
-            <ul>
-              <li>Section: {{route["section"]}}</li>
-              <li>Creator: {{route["creator"]}}</li>
-              <li>Feet: {{route["feet"]}}</li>
-            </ul>
           </div>
-          {% endfor %}
         </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
+      {% for route in routes_list %}
+      <div class="card">
+        <div class="row">
+          <div class="dot" style="background-color: {{ route['difficulty'] }};"></div>
+          <!-- TODO: Add safename field to boulder -->
+          <div style="padding-left: 0.5rem;">
+            <form action="/load_route" method="post">
+              <input type="hidden" name="route_data" id="holds-array" value="{{route}}" />
+              <button type="submit" name="route" value="{{ route['name'] }}" class="btn-link">
+                <h5>{{route['name']}}</h5>
+              </button>
+            </form>
+          </div>
+        </div>
+        <ul>
+          <li>Section: {{route["section"]}}</li>
+          <li>Creator: {{route["creator"]}}</li>
+          <li>Feet: {{route["feet"]}}</li>
+        </ul>
+      </div>
+      {% endfor %}
     </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block styles %}
@@ -73,6 +60,7 @@
     font-family: inherit;
     font-size: inherit;
   }
+
   .dot {
     height: 25px;
     width: 25px;
@@ -80,6 +68,7 @@
     position: relative;
     display: inline-block;
   }
+
   .card {
     border: 0.1em solid dimgray;
     padding: 0.5em;

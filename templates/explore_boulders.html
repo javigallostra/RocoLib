@@ -61,8 +61,10 @@
             <!-- TODO: Add safename field to boulder -->
             <div style="padding-left: 0.5rem;">
               <form action="/load_boulder" method="post">
-                <input type="hidden" name="boulder_data" id="{{ boulder['_id'] + boulder['name'] }}" value="{{boulder}}" />
-                <input type="hidden" name="origin" id="{{ boulder['name'] + boulder['_id'] }}" value="explore_boulders" />
+                <input type="hidden" name="boulder_data" id="{{ boulder['_id'] + boulder['name'] }}"
+                  value="{{boulder}}" />
+                <input type="hidden" name="origin" id="{{ boulder['name'] + boulder['_id'] }}"
+                  value="explore_boulders" />
                 <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
                   <h5>{{boulder['name']}}</h5>
                 </button>

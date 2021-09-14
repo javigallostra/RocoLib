@@ -3,180 +3,147 @@
 {% block title %}Tick List{% endblock %}
 
 {% block content %}
-    <br />
-    <div id="holder">
-      <div id="body">
-        <div class="container">
-          <div class=" form-group row text-left">
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-              Sort by:
+<br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class=" form-group row text-left">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+          Sort by:
+        </div>
+        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
+          <div class="row">
+            <div class="col-6 col-md-4">
+              <select class="form-control" id="sortTickListCriteria">
+                <option value="date-recent" selected>Creation Date</option>
+                <option value="rating">Rating</option>
+                <option value="difficulty">Difficulty</option>
+                <option value="section">Wall Section</option>
+              </select>
             </div>
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
-              <div class="row">
-                <div class="col-6 col-md-4">
-                  <select class="form-control" id="sortTickListCriteria">
-                    <option value="date-recent" selected>Creation Date</option>
-                    <option value="rating">Rating</option>
-                    <option value="difficulty">Difficulty</option>
-                    <option value="section">Wall Section</option>
-                  </select>
-                </div>
-                <div class="col-6 col-md-4">
-                  <select class="form-control" id="sortTickListAscending">
-                    <option value="increasing">Increasing</option>
-                    <option value="decreasing" selected>Decreasing</option>
-                  </select>
-                </div>
-              </div>
+            <div class="col-6 col-md-4">
+              <select class="form-control" id="sortTickListAscending">
+                <option value="increasing">Increasing</option>
+                <option value="decreasing" selected>Decreasing</option>
+              </select>
             </div>
-          </div>
-          <div class="row text-left">
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-              Show:
-            </div>
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
-              <div class="row">
-                <div class="col-6 col-md-4">
-                    <select class="form-control" id="hideDone">
-                    <option value="all">All</option>
-                    <option value="todo" selected>To Do</option>
-                    <option value="done">Done</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% if not boulder_list %}
-          <br />
-          <br />
-          <div class="d-flex justify-content-center">
-            <h5>No boulders in ticklist</h5>
-          </div>
-          {% endif %}
-          <div id="tickList">
-            {% for boulder in boulder_list %}
-            <div class="card" id="{{ boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
-              <div class="row">
-                <div
-                  class="dot"
-                  style="background-color: {{ boulder['color'] }};"
-                ></div>
-                <!-- TODO: Add safename field to boulder -->
-                <div style="padding-left: 0.5rem;">
-                  <form action="/load_boulder" method="post">
-                    <input
-                      type="hidden"
-                      name="boulder_data"
-                      value="{{boulder}}"
-                    />
-                    <input
-                      type="hidden"
-                      name="origin"
-                      value="tick_list"
-                    />
-                    <button
-                      type="submit"
-                      name="boulder"
-                      value="{{ boulder['name'] }}"
-                      class="btn-link"
-                    >
-                      <h5>{{boulder['name']}}</h5>
-                    </button>
-                  </form>
-                </div>
-                <div style="display: flex; justify-content: flex-end; flex-grow: 1;">
-                  <form action="/delete_ticklist_problem" method="post">
-                      <input
-                        type="hidden"
-                        name="boulder_data"
-                        value="{{boulder}}"
-                      />
-                      <button
-                        type="submit"
-                        name="name"
-                        class="btn"
-                        value="{{ boulder['name'] }}" class="btn" style="margin-right: 0.5rem;">
-                          <i class="far fa-trash-alt fa-lg" style="vertical-align: top;"></i>
-                      </button>
-                  </form>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-8" style="padding-left: 0;">
-                  <ul>
-                    {%- for wall in walls_list -%}
-                    {%- if  wall['image'] == boulder['section'] -%}
-                    <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
-                    {%- endif -%}
-                    {% endfor %}
-                    <li>Creator: {{boulder["creator"]}}</li>
-                    <li>Feet: {{boulder["feet"]}}</li>
-                    <li>
-                      <div class="container">
-                        <div class="row d-flex justify-content-left">
-                          <div class="col-lg-12 d-flex justify-content-left">
-                            <div class="star-rating-fixed">
-                              <span
-                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"
-                              ></span>
-                              <span
-                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"
-                              ></span>
-                              <span
-                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"
-                              ></span>
-                              <span
-                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"
-                              ></span>
-                              <span
-                                class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"
-                              ></span>
-                            </div>
-                            <p style="margin-left: 10px; margin-top: 0px;">
-                              {{ boulder.get('raters', 0) }} ratings
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-            </div>
-            <div class="col-4" style="display: flex; justify-content: right;">
-              {%- if  boulder['is_done'] -%}
-                <span id="date-climbed">Date Climbed: {{ boulder['date_climbed'] }}</span>
-              {%- endif -%}
-            </div>
-            </div>
-            </div>
-            {% endfor %}
           </div>
         </div>
       </div>
+      <div class="row text-left">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
+          Show:
+        </div>
+        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
+          <div class="row">
+            <div class="col-6 col-md-4">
+              <select class="form-control" id="hideDone">
+                <option value="all">All</option>
+                <option value="todo" selected>To Do</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if not boulder_list %}
+      <br />
+      <br />
+      <div class="d-flex justify-content-center">
+        <h5>No boulders in ticklist</h5>
+      </div>
+      {% endif %}
+      <div id="tickList">
+        {% for boulder in boulder_list %}
+        <div class="card" id="{{ boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
+          <div class="row">
+            <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
+            <!-- TODO: Add safename field to boulder -->
+            <div style="padding-left: 0.5rem;">
+              <form action="/load_boulder" method="post">
+                <input type="hidden" name="boulder_data" value="{{boulder}}" />
+                <input type="hidden" name="origin" value="tick_list" />
+                <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
+                  <h5>{{boulder['name']}}</h5>
+                </button>
+              </form>
+            </div>
+            <div style="display: flex; justify-content: flex-end; flex-grow: 1;">
+              <form action="/delete_ticklist_problem" method="post">
+                <input type="hidden" name="boulder_data" value="{{boulder}}" />
+                <button type="submit" name="name" class="btn" value="{{ boulder['name'] }}" class="btn"
+                  style="margin-right: 0.5rem;">
+                  <i class="far fa-trash-alt fa-lg" style="vertical-align: top;"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8" style="padding-left: 0;">
+              <ul>
+                {%- for wall in walls_list -%}
+                {%- if wall['image'] == boulder['section'] -%}
+                <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
+                {%- endif -%}
+                {% endfor %}
+                <li>Creator: {{boulder["creator"]}}</li>
+                <li>Feet: {{boulder["feet"]}}</li>
+                <li>
+                  <div class="container">
+                    <div class="row d-flex justify-content-left">
+                      <div class="col-lg-12 d-flex justify-content-left">
+                        <div class="star-rating-fixed">
+                          <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1 else 'fas fa-star' }}"></span>
+                          <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2 else 'fas fa-star' }}"></span>
+                          <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3 else 'fas fa-star' }}"></span>
+                          <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4 else 'fas fa-star' }}"></span>
+                          <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"></span>
+                        </div>
+                        <p style="margin-left: 10px; margin-top: 0px;">
+                          {{ boulder.get('raters', 0) }} ratings
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="col-4" style="display: flex; justify-content: right;">
+              {%- if boulder['is_done'] -%}
+              <span id="date-climbed">Date Climbed: {{ boulder['date_climbed'] }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
+  </div>
+</div>
 
 <script>
-  window.addEventListener('load', 
-  function () {
-    var list = $("#tickList");
-    var listItems = list.children('div');
-    listItems.each(
-      function(index) {
-        var item = listItems[index];
-        item.removeAttribute('hidden');
-        if ($("#hideDone")[0].value === "all") {
-          return;
-        // hide done
-        } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True"){
-          item.setAttribute("hidden", true);
-          return;
-        // hide to do
-        } else if ($("#hideDone")[0].value === "todo" && item.getAttribute("data-done") === "True") {
-          item.setAttribute("hidden", true);
-          return;
+  window.addEventListener('load',
+    function () {
+      var list = $("#tickList");
+      var listItems = list.children('div');
+      listItems.each(
+        function (index) {
+          var item = listItems[index];
+          item.removeAttribute('hidden');
+          if ($("#hideDone")[0].value === "all") {
+            return;
+            // hide done
+          } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True") {
+            item.setAttribute("hidden", true);
+            return;
+            // hide to do
+          } else if ($("#hideDone")[0].value === "todo" && item.getAttribute("data-done") === "True") {
+            item.setAttribute("hidden", true);
+            return;
+          }
         }
-      }
-    );
-  }, false);
+      );
+    }, false);
 
   function decodeHtml(html) {
     var txt = document.createElement("textarea");
@@ -192,16 +159,16 @@
     var list = $("#tickList");
     var listItems = list.children('div');
     listItems.each(
-      function(index) {
+      function (index) {
         var item = listItems[index];
         item.removeAttribute('hidden');
         if ($("#hideDone")[0].value === "all") {
           return;
-        // hide done
-        } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True"){
+          // hide done
+        } else if ($("#hideDone")[0].value === "done" && item.getAttribute("data-done") != "True") {
           item.setAttribute("hidden", true);
           return;
-        // hide to do
+          // hide to do
         } else if ($("#hideDone")[0].value === "todo" && item.getAttribute("data-done") === "True") {
           item.setAttribute("hidden", true);
           return;
@@ -242,8 +209,8 @@
         return a["section"] < b["section"]
           ? 1
           : b["section"] < a["section"]
-          ? -1
-          : 0;
+            ? -1
+            : 0;
       }
     } else if (this.value === "rating") {
       function sortBoulders(a, b) {
@@ -280,6 +247,7 @@
     font-family: inherit;
     font-size: inherit;
   }
+
   .dot {
     height: 25px;
     width: 25px;
@@ -287,27 +255,32 @@
     position: relative;
     display: inline-block;
   }
+
   .card {
     border: 0.1em solid dimgray;
     padding: 0.5em;
     padding-left: 1.2em;
     margin: 0.5em;
   }
+
   .star-rating-fixed .fas {
     color: yellow;
   }
+
   #date-climbed {
     padding-right: 3rem;
   }
+
   @media (max-width: 600px) {
     .star-rating-fixed {
       line-height: 15px;
       font-size: 0.8em;
       margin-top: 4px;
     }
+
     #date-climbed {
-    padding-right: 0rem;
-  }
+      padding-right: 0rem;
+    }
 
   }
 </style>

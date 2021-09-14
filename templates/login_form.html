@@ -3,47 +3,47 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <div class="container" style="margin-top: 1rem;">
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
-            <div class="row">
-                <div class="col-6">
-                    <div style="width: 50%;">
-                        {{ form.email.label }}
-                    </div>
-                    <div style="width: 50%;">
-                        {{ form.email }}
-                    </div>
+<div class="container" style="margin-top: 1rem;">
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-6">
+                <div style="width: 50%;">
+                    {{ form.email.label }}
+                </div>
+                <div style="width: 50%;">
+                    {{ form.email }}
                 </div>
             </div>
-            <div>
-                {% for error in form.email.errors %}
-                <span style="color: red;">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-6">
-                    <div style="width: 50%;">
-                        {{ form.password.label }}
-                    </div>
-                    <div style="width: 50%;">
+        </div>
+        <div>
+            {% for error in form.email.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-6">
+                <div style="width: 50%;">
+                    {{ form.password.label }}
+                </div>
+                <div style="width: 50%;">
                     {{ form.password }}
-                    </div>
                 </div>
             </div>
-            <div>
-                {% for error in form.password.errors %}
-                <span style="color: red;">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <br>
-            <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
-            <div>
-                {{ form.submit() }}
-            </div>
-        </form>
-    </div>
-    <br>
-    <div class="container">¿Don't have an account? <a href="{{ url_for('show_signup_form') }}">Sign up</a></div>
+        </div>
+        <div>
+            {% for error in form.password.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <br>
+        <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</div>
+<br>
+<div class="container">¿Don't have an account? <a href="{{ url_for('show_signup_form') }}">Sign up</a></div>
 {% endblock %}

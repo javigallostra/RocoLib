@@ -3,100 +3,98 @@
 {% block title %}Create{% endblock %}
 
 {% block content %}
-    <div id="holder">
-      <div id="body">
-        <div class="container">
-          <br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <br />
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/">Back</a></p>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/">Home</a></p>
             </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
-          <br />
-          <h3>Choose wall</h3>
-          {% for wall in walls %}
-          <br />
-          <div class="container">
-            <p>
-              &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
-                {{ wall["name"] }}</a
-              >
-            </p>
-            <img
-              id="{{ wall['image'] }}-img"
-              class="thumbnail"
-              src="{{ wall['image_path'] }}"
-              alt="Preview"
-            />
-            <!-- The Modal -->
-            <div id="{{ wall['image'] }}-modal" class="modal">
-              <!-- The Close Button -->
-              <span class="{{ wall['image'] }}-close close">&times;</span>
-              <!-- Modal Content (The Image) -->
-              <img id="{{ wall['image'] }}" />
-              <!-- Modal Caption (Image Text) -->
-              <div class="modal-caption" id="{{ wall['image'] }}-caption"></div>
+            <div class="col">
+              <p><a href="/">Back</a></p>
             </div>
           </div>
-          <!-- JS -->
-          <script>
-            // Get the modal
-            var modal = document.getElementById("{{ wall['image'] }}-modal");
-
-            // Get the image and insert it inside the modal - use its "alt" text as a caption
-            var img = document.getElementById("{{ wall['image'] }}-img");
-
-            var modalImg = document.getElementById("{{ wall['image'] }}");
-
-            var captionText = document.getElementById(
-              "{{ wall['image'] }}-caption"
-            );
-            img.onclick = function () {
-              modal.style.display = "block";
-              modalImg.src = this.src;
-              console.log(this);
-              if (this.width >= this.height) {
-                modalImg.className = "";
-                modalImg.classList.add("modal-content-landscape");
-              } else {
-                modalImg.className = "";
-                modalImg.classList.add("modal-content-portrait");
-              }
-              captionText.innerHTML = this.alt;
-            };
-
-            // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName(
-              "{{ wall['image'] }}-close"
-            )[0];
-
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function () {
-              modal.style.display = "none";
-            };
-          </script>
-          {% endfor %}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+      </div>
+      <br />
+      <h3>Choose wall</h3>
+      {% for wall in walls %}
+      <br />
+      <div class="container">
+        <p>
+          &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
+            {{ wall["name"] }}</a>
+        </p>
+        <img id="{{ wall['image'] }}-img" class="thumbnail" src="{{ wall['image_path'] }}" alt="Preview" />
+        <!-- The Modal -->
+        <div id="{{ wall['image'] }}-modal" class="modal">
+          <!-- The Close Button -->
+          <span class="{{ wall['image'] }}-close close">&times;</span>
+          <!-- Modal Content (The Image) -->
+          <img id="{{ wall['image'] }}" />
+          <!-- Modal Caption (Image Text) -->
+          <div class="modal-caption" id="{{ wall['image'] }}-caption"></div>
         </div>
       </div>
+      <!-- JS -->
+      <script>
+        // Get the modal
+        var modal = document.getElementById("{{ wall['image'] }}-modal");
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById("{{ wall['image'] }}-img");
+
+        var modalImg = document.getElementById("{{ wall['image'] }}");
+
+        var captionText = document.getElementById(
+          "{{ wall['image'] }}-caption"
+        );
+        img.onclick = function () {
+          modal.style.display = "block";
+          modalImg.src = this.src;
+          console.log(this);
+          if (this.width >= this.height) {
+            modalImg.className = "";
+            modalImg.classList.add("modal-content-landscape");
+          } else {
+            modalImg.className = "";
+            modalImg.classList.add("modal-content-portrait");
+          }
+          captionText.innerHTML = this.alt;
+        };
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName(
+          "{{ wall['image'] }}-close"
+        )[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+          modal.style.display = "none";
+        };
+      </script>
+      {% endfor %}
     </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block styles %}
 <style>
   .thumbnail {
-    border: 1px solid #ddd; /* Gray border */
-    border-radius: 4px; /* Rounded border */
-    padding: 5px; /* Some padding */
-    width: 150px; /* Set a small width */
+    border: 1px solid #ddd;
+    /* Gray border */
+    border-radius: 4px;
+    /* Rounded border */
+    padding: 5px;
+    /* Some padding */
+    width: 150px;
+    /* Set a small width */
     cursor: pointer;
     transition: 0.3s;
   }
@@ -109,17 +107,26 @@
 
   /* The Modal (background) */
   .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0); /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9);
+    /* Black w/ opacity */
   }
 
   /* Modal Content (Image) */
@@ -160,6 +167,7 @@
     from {
       transform: scale(0);
     }
+
     to {
       transform: scale(1);
     }
@@ -188,6 +196,7 @@
     .modal-content-landscape {
       width: 100%;
     }
+
     .modal-content-portrait {
       height: 100%;
     }

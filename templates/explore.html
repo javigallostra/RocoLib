@@ -3,110 +3,105 @@
 {% block title %}Explore{% endblock %}
 
 {% block content %}
-    <br />
-    <div id="holder">
-      <div id="body">
-        <div class="container">
-          <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <p><a href="/">Home</a></p>
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+<br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
+          <p><a href="/">Home</a></p>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+      </div>
+      <div class="custom-link" id="baseDiv">Choose filters</div>
+      <div id="popUpDiv">
+        <div class="row popupItem">
+          <div class="col-4 col-md-1 mt-1">
+            Difficulty:
           </div>
-          <div class="custom-link" id="baseDiv">Choose filters</div>
-          <div id="popUpDiv">
-            <div class="row popupItem">
-              <div class="col-4 col-md-1 mt-1">
-                Difficulty:
-              </div>
-              <div class="col-6 col-md-4 mr-3">
-                <div class="form-group">
-                  <select class="form-control" id="popupSelectDiff">
-                    <option value="all" selected>All</option>
-                    <option value="green">Green</option>
-                    <option value="blue">Blue</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="red">Red</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <br />
-            <div class="row popupItem">
-              <div class="col-4 col-md-1 mt-1">
-                Section:
-              </div>
-              <div class="col-6 col-md-4 mr-3">
-                <div class="form-group">
-                  <select class="form-control" id="popupSelectSection">
-                    <option value="all" selected>All</option>
-                    {% for wall in walls %}
-                    <option value="{{ wall['image'] }}">{{ wall['name'] }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-            </div>
-            <br />
-            <div class="row popupItem">
-              <div class="col-4 col-md-1 mt-1">
-                Rating:
-              </div>
-              <div class="col-6 col-md-4 mr-3">
-                <div class="form-group">
-                  <select class="form-control" id="popupSelectRating">
-                    <option value="all" selected>All</option>
-                    <option value="0">0 stars</option>
-                    <option value="1">1 star</option>
-                    <option value="2">2 stars</option>
-                    <option value="3">3 stars</option>
-                    <option value="4">4 stars</option>
-                    <option value="5">5 stars</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <br />
-            <div class="row popupItem">
-              <div class="col-4 col-md-1 mt-1">
-                Creator:
-              </div>
-              <div class="col-6 col-md-4 mr-3">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="popupCreator"></input>
-                </div>
-              </div>
-            </div>
-            <br /><br />
-            <div class="row popupItem">
-              <div class="col-12 col-md-6" style="display: grid; justify-content: center;">
-                <button id="btnApply" class="btn btn-light">
-                  Apply
-                </button>
-              </div>
+          <div class="col-6 col-md-4 mr-3">
+            <div class="form-group">
+              <select class="form-control" id="popupSelectDiff">
+                <option value="all" selected>All</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="yellow">Yellow</option>
+                <option value="red">Red</option>
+              </select>
             </div>
           </div>
-          <hr/>
-          <!-- TODO: Add safename field to boulder -->
-          <form id="bForm" action="/explore_boulders" method="post">
-            <p>
-              &bull;
-              <button
-                type="submit"
-                name="explore"
-                value="explore-boulders"
-                class="custom-link"
-              >
-                Explore Boulders
-              </button>
-            </p>
-          </form>
-          <!-- <p>&bull;<a href="/explore_routes"> Explore Routes</a></p> -->
-          <p>&bull;<a href=""> Explore Routes (Coming soon)</a></p>
+        </div>
+        <br />
+        <div class="row popupItem">
+          <div class="col-4 col-md-1 mt-1">
+            Section:
+          </div>
+          <div class="col-6 col-md-4 mr-3">
+            <div class="form-group">
+              <select class="form-control" id="popupSelectSection">
+                <option value="all" selected>All</option>
+                {% for wall in walls %}
+                <option value="{{ wall['image'] }}">{{ wall['name'] }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="row popupItem">
+          <div class="col-4 col-md-1 mt-1">
+            Rating:
+          </div>
+          <div class="col-6 col-md-4 mr-3">
+            <div class="form-group">
+              <select class="form-control" id="popupSelectRating">
+                <option value="all" selected>All</option>
+                <option value="0">0 stars</option>
+                <option value="1">1 star</option>
+                <option value="2">2 stars</option>
+                <option value="3">3 stars</option>
+                <option value="4">4 stars</option>
+                <option value="5">5 stars</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="row popupItem">
+          <div class="col-4 col-md-1 mt-1">
+            Creator:
+          </div>
+          <div class="col-6 col-md-4 mr-3">
+            <div class="form-group">
+              <input type="text" class="form-control" id="popupCreator"></input>
+            </div>
+          </div>
+        </div>
+        <br /><br />
+        <div class="row popupItem">
+          <div class="col-12 col-md-6" style="display: grid; justify-content: center;">
+            <button id="btnApply" class="btn btn-light">
+              Apply
+            </button>
+          </div>
         </div>
       </div>
+      <hr />
+      <!-- TODO: Add safename field to boulder -->
+      <form id="bForm" action="/explore_boulders" method="post">
+        <p>
+          &bull;
+          <button type="submit" name="explore" value="explore-boulders" class="custom-link">
+            Explore Boulders
+          </button>
+        </p>
+      </form>
+      <!-- <p>&bull;<a href="/explore_routes"> Explore Routes</a></p> -->
+      <p>&bull;<a href=""> Explore Routes (Coming soon)</a></p>
     </div>
+  </div>
+</div>
 
 <script>
   var filters = {
@@ -114,10 +109,10 @@
     section: "all",
     creator: "",
   };
-  $("#baseDiv").click(function(e) {
+  $("#baseDiv").click(function (e) {
     $("#popUpDiv").show();
   });
-  $("#btnApply").click(function(e) {
+  $("#btnApply").click(function (e) {
     filters.difficulty = $("#popupSelectDiff").val();
     filters.section = $("#popupSelectSection").val();
     filters.creator = $("#popupCreator").val();
@@ -125,7 +120,7 @@
     // $("#popUpDiv").hide();
     $("#bForm").submit()
   });
-  $("#bForm").submit(function(e) {
+  $("#bForm").submit(function (e) {
     $("#form-filters").remove();
     $("<input />")
       .attr("type", "hidden")
@@ -151,12 +146,14 @@
     width: 97vw;
     height: 95vh;
   }
+
   .popupItem {
     z-index: 100;
     position: relative;
     padding-left: 3%;
     padding-top: 1%;
   }
+
   /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
   .custom-link {
     border: none;
@@ -168,6 +165,7 @@
     font-family: inherit;
     font-size: inherit;
   }
+
   .custom-link:hover {
     text-decoration: underline;
   }

@@ -1,68 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <!-- favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon//favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon//favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='images/favicon//favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='images/favicon//favicon-16x16.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='images/favicon//site.webmanifest') }}">
-    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon//safari-pinned-tab.svg') }}" color="#5bbad5">
+    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon//safari-pinned-tab.svg') }}"
+        color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <!-- Navigation bar title-->
     <title>{% block title %}{% endblock %}</title>
-    <meta
-      name="viewport"
-        content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8" />
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
+
 <body>
-<div class="container">
-    <ul class="user-info">
-        <li><a href="{{ url_for('home') }}">Home</a></li>
-        <li> | </li>
-        <li><a href="{{ url_for('add_gym') }}">Add your Gym</a></li>
-        <li> | </li>
-        {% if current_user.is_anonymous %}
+    <div class="container">
+        <ul class="user-info">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li> | </li>
+            <li><a href="{{ url_for('add_gym') }}">Add your Gym</a></li>
+            <li> | </li>
+            {% if current_user.is_anonymous %}
             <li><a href="{{ url_for('login') }}">Login</a></li>
             <li> | </li>
             <li><a href="{{ url_for('show_signup_form') }}">Sign up</a></li>
-        {% else %}
+            {% else %}
             <li>{{ current_user.name }}</li>
             <li> | </li>
             <li><a href="{{ url_for('tick_list') }}">Tick List</a></li>
             <li> | </li>
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        {% endif %}
-    </ul>
-</div>
-{% block content %}{% endblock %}
+            {% endif %}
+        </ul>
+    </div>
+    {% block content %}{% endblock %}
 </body>
+
 </html>
 
 {% block scripts %} {% endblock %}
 
 <style>
-.user-info {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
+    .user-info {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
 
-.user-info li {
-    display: inline-block;
-    margin: 0;
-    padding: 0 10px 0 0;
-}
+    .user-info li {
+        display: inline-block;
+        margin: 0;
+        padding: 0 10px 0 0;
+    }
 </style>
 
 {% block styles %}{% endblock %}

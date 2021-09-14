@@ -3,22 +3,22 @@
 {% block title %}Add new Gym{% endblock %}
 
 {% block content %}
-  {% if not current_user.is_anonymous and current_user.is_admin %}
-    <div id="holder">
-      <div id="body">
-        <div class="container" style="margin-top: 1rem;">
-            This page is where new Gym additions will be performed, and it is accessible only for registered users.
-        </div>
-      </div>
+{% if not current_user.is_anonymous and current_user.is_admin %}
+<div id="holder">
+  <div id="body">
+    <div class="container" style="margin-top: 1rem;">
+      This page is where new Gym additions will be performed, and it is accessible only for registered users.
     </div>
-  {% else %}
-    <div id="holder">
-      <div id="body">
-        <div class="container" style="margin-top: 1rem;">
-          You must have admin privileges to add a new Gym. If you would like to request the required privileges fill
-          in the form shown below.
-        </div>
-      </div>
+  </div>
+</div>
+{% else %}
+<div id="holder">
+  <div id="body">
+    <div class="container" style="margin-top: 1rem;">
+      You must have admin privileges to add a new Gym. If you would like to request the required privileges fill
+      in the form shown below.
     </div>
-  {% endif %}
+  </div>
+</div>
+{% endif %}
 {% endblock %}

@@ -3,100 +3,86 @@
 {% block title %}Create{% endblock %}
 
 {% block content %}
-    <div id="holder">
-      <div id="body">
-        <div class="container">
-          <br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <br />
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/create?options=boulder">Back</a></p>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/">Home</a></p>
             </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
-          <br />
-          <div class="row">
-            <div class="col-sm">
-              <div style="text-align: center;">
-                <h3>
-                  Section: {{ wall_name }}
-                </h3>
-              </div>
-              <br />
-              <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
-              <canvas id="wall-canvas"></canvas>
-            </div>
-            <br />
-            <div class="col-sm">
-              <div style="text-align: center;">
-                <h5>Hold type</h5>
-                <div class="row">
-                  <div class="col-4">
-                    <input
-                      type="radio"
-                      name="hold_type"
-                      value="#00ff00"
-                      checked
-                    />
-                    Start<br />
-                  </div>
-                  <div class="col-4">
-                    <input type="radio" name="hold_type" value="#0000ff" />
-                    Normal<br />
-                  </div>
-                  <div class="col-4">
-                    <input type="radio" name="hold_type" value="#ff0000" />
-                    Top<br />
-                  </div>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/create?options=boulder">Back</a></p>
             </div>
           </div>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-sm">
+          <div style="text-align: center;">
+            <h3>
+              Section: {{ wall_name }}
+            </h3>
+          </div>
           <br />
-          <br />
-          <div class="container">
+          <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
+          <canvas id="wall-canvas"></canvas>
+        </div>
+        <br />
+        <div class="col-sm">
+          <div style="text-align: center;">
+            <h5>Hold type</h5>
             <div class="row">
-              <div class="col-2">
-                <button class="btn btn-outline-dark" onclick="undoMove()">
-                  Undo
-                </button>
+              <div class="col-4">
+                <input type="radio" name="hold_type" value="#00ff00" checked />
+                Start<br />
               </div>
-            </div>
-            <br />
-            <div class="row">
-              <div class="col-2">
-                <form
-                  action="/save_boulder?section={{section}}"
-                  onsubmit="return validateForm()"
-                  method="POST"
-                >
-                  <input
-                    class="btn btn-outline-dark"
-                    type="submit"
-                    value="Done"
-                    name="Submit"
-                    onclick="return setHolds();"
-                  />
-                  <input type="hidden" name="holds" id="holds-array" value="" />
-                </form>
+              <div class="col-4">
+                <input type="radio" name="hold_type" value="#0000ff" />
+                Normal<br />
               </div>
-              <div class="col-2"></div>
-              <div class="col-2">
-                <a href="/" class="btn btn-outline-dark">Cancel</a>
+              <div class="col-4">
+                <input type="radio" name="hold_type" value="#ff0000" />
+                Top<br />
               </div>
-              <div class="col-8"></div>
             </div>
           </div>
         </div>
       </div>
+      <br />
+      <br />
+      <div class="container">
+        <div class="row">
+          <div class="col-2">
+            <button class="btn btn-outline-dark" onclick="undoMove()">
+              Undo
+            </button>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-2">
+            <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST">
+              <input class="btn btn-outline-dark" type="submit" value="Done" name="Submit"
+                onclick="return setHolds();" />
+              <input type="hidden" name="holds" id="holds-array" value="" />
+            </form>
+          </div>
+          <div class="col-2"></div>
+          <div class="col-2">
+            <a href="/" class="btn btn-outline-dark">Cancel</a>
+          </div>
+          <div class="col-8"></div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
 <script>
   var holds = [];
@@ -154,9 +140,9 @@
 
   // clear the canvas
   function clear() {
-      var cnvs = document.getElementById("wall-canvas");
-      var ctx = cnvs.getContext("2d");
-      ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+    var cnvs = document.getElementById("wall-canvas");
+    var ctx = cnvs.getContext("2d");
+    ctx.clearRect(0, 0, cnvs.width, cnvs.height);
   }
 
   // redraw the scene
@@ -166,12 +152,12 @@
     var ctx = cnvs.getContext("2d");
     // redraw each rect in the holds array
     for (var i = 0; i < holds.length; i++) {
-        var hold = holds[i];
-        ctx.beginPath();
-        ctx.arc(hold.x*ctx.width, hold.y*ctx.height, hold.radius, 0, 2 * Math.PI, false);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = hold.color;
-        ctx.stroke();
+      var hold = holds[i];
+      ctx.beginPath();
+      ctx.arc(hold.x * ctx.width, hold.y * ctx.height, hold.radius, 0, 2 * Math.PI, false);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = hold.color;
+      ctx.stroke();
     }
   }
 
@@ -193,10 +179,10 @@
     dragok = false;
     for (var i = 0; i < holds.length; i++) {
       var h = holds[i];
-      if (((mx - h.x*ctx.width)**2 + (my - h.y*ctx.height)**2) < h.radius**2) {
-          // if yes, set that hold marker isDragging=true
-          dragok = true;
-          h.isDragging = true;
+      if (((mx - h.x * ctx.width) ** 2 + (my - h.y * ctx.height) ** 2) < h.radius ** 2) {
+        // if yes, set that hold marker isDragging=true
+        dragok = true;
+        h.isDragging = true;
       }
     }
     // save the current mouse position
@@ -221,9 +207,9 @@
       // If the clicked element doesn't have the right selector, bail
       if (
         !(
-            e.target.matches("#wall-image") ||
-            e.target.matches("#wall-canvas")
-          )
+          e.target.matches("#wall-image") ||
+          e.target.matches("#wall-canvas")
+        )
       ) return;
       // Don't follow the link
       // event.preventDefault();
@@ -253,18 +239,18 @@
       var cnvs = document.getElementById("wall-canvas");
       const ctx = cnvs.getContext("2d");
 
-      var dx = (mx - startX)/ctx.width;
-      var dy = (my - startY)/ctx.height;
+      var dx = (mx - startX) / ctx.width;
+      var dy = (my - startY) / ctx.height;
 
       // move each hold marker that isDragging 
       // by the distance the mouse has moved
       // since the last mousemove
       for (var i = 0; i < holds.length; i++) {
-          var hold = holds[i];
-          if (hold.isDragging) {
-              hold.x += dx;
-              hold.y += dy;
-          }
+        var hold = holds[i];
+        if (hold.isDragging) {
+          hold.x += dx;
+          hold.y += dy;
+        }
       }
 
       // redraw the scene with the new hold marker positions
@@ -323,6 +309,7 @@
     display: block;
     width: 90%;
   }
+
   @media (max-width: 600px) {
     img {
       width: 95%;

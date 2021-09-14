@@ -3,91 +3,64 @@
 {% block title %}Save{% endblock %}
 
 {% block content %}
-    <div id="holder">
-      <div id="body">
-        <div class="container">
-          <br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <br />
+      <div class="row text-center">
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+        <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-            <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
-              <div class="row text-center">
-                <div class="col">
-                  <p><a href="/">Home</a></p>
-                </div>
-                <div class="col">
-                  <p><a href="/walls/{{ section }}?options=boulder">Back</a></p>
-                </div>
-              </div>
+            <div class="col">
+              <p><a href="/">Home</a></p>
             </div>
-            <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
-          </div>
-          <br />
-          <div class="row" style="display: grid; justify-content: center;">
-            <div class="col-sm"></div>
-            <div class="col-sm">
-              <h3>Save Boulder</h3>
-
-              <form
-                action="/save"
-                onsubmit="return validateForm()"
-                method="POST"
-              >
-                Boulder name:<br />
-                <input
-                  id="name-field"
-                  type="text"
-                  name="name"
-                  value=""
-                  maxlength="26"
-                  required
-                /><br /><br />
-                Creator:<br />
-                <input
-                  id="creator-field"
-                  type="text"
-                  name="creator"
-                  value="{{ username }}"
-                  maxlength="26"
-                  required
-                /><br /><br />
-                Suggested difficulty:<br />
-                <input type="radio" name="difficulty" value="green" checked />
-                Green<br />
-                <input type="radio" name="difficulty" value="blue" />
-                Blue<br />
-                <input type="radio" name="difficulty" value="yellow" />
-                Yellow<br />
-                <input type="radio" name="difficulty" value="red" />
-                Red<br /><br />
-                Feet:<br />
-                <input type="radio" name="feet" value="follow" checked /> Feet
-                Follow Hands<br />
-                <input type="radio" name="feet" value="free" /> Free Feet<br />
-                <input type="radio" name="feet" value="no-feet" />
-                Campus<br /><br />
-                Notes:<br />
-                <textarea rows="5" cols="26" name="Notes"></textarea>
-                <br/><br />
-                <input type="submit" value="Submit" />
-                <input
-                  type="hidden"
-                  name="holds"
-                  id="holds-array"
-                  value="{{holds}}"
-                />
-                <input
-                  type="hidden"
-                  name="section"
-                  id="section"
-                  value="{{section}}"
-                />
-              </form>
+            <div class="col">
+              <p><a href="/walls/{{ section }}?options=boulder">Back</a></p>
             </div>
-            <div class="col-sm"></div>
           </div>
         </div>
+        <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
+      </div>
+      <br />
+      <div class="row" style="display: grid; justify-content: center;">
+        <div class="col-sm"></div>
+        <div class="col-sm">
+          <h3>Save Boulder</h3>
+
+          <form action="/save" onsubmit="return validateForm()" method="POST">
+            Boulder name:<br />
+            <input id="name-field" type="text" name="name" value="" maxlength="26" required /><br /><br />
+            Creator:<br />
+            <input id="creator-field" type="text" name="creator" value="{{ username }}" maxlength="26"
+              required /><br /><br />
+            Suggested difficulty:<br />
+            <input type="radio" name="difficulty" value="green" checked />
+            Green<br />
+            <input type="radio" name="difficulty" value="blue" />
+            Blue<br />
+            <input type="radio" name="difficulty" value="yellow" />
+            Yellow<br />
+            <input type="radio" name="difficulty" value="red" />
+            Red<br /><br />
+            Feet:<br />
+            <input type="radio" name="feet" value="follow" checked /> Feet
+            Follow Hands<br />
+            <input type="radio" name="feet" value="free" /> Free Feet<br />
+            <input type="radio" name="feet" value="no-feet" />
+            Campus<br /><br />
+            Notes:<br />
+            <textarea rows="5" cols="26" name="Notes"></textarea>
+            <br /><br />
+            <input type="submit" value="Submit" />
+            <input type="hidden" name="holds" id="holds-array" value="{{holds}}" />
+            <input type="hidden" name="section" id="section" value="{{section}}" />
+          </form>
+        </div>
+        <div class="col-sm"></div>
       </div>
     </div>
+  </div>
+</div>
 
 <script>
   function validateForm() {
