@@ -6,7 +6,7 @@
     <br />
     <div id="holder">
       <div id="body">
-        <div class="container">
+        <div id="wrapper" class="container">
           <div class="row text-center">
             <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
             <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
@@ -77,9 +77,9 @@
                 <button onclick="$('#bForm').submit();" class="btn btn-outline-dark">Submit</button>
               </div>
             </div>
-            {% if not current_user.is_anonymous %}
-              <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
-                <ul class="user-info">
+            <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
+              <ul class="user-info">
+                  {% if not current_user.is_anonymous %}
                   <li>          
                     <!-- TODO: Add safename field to boulder -->
                     <form id="addForm" action="/tick_list" method="post">
@@ -159,9 +159,23 @@
                       </p>
                     </form>
                   </li>
+                  <li> | </li>
+                  {% endif %}
+                  <li>
+                      <p>
+                        &bull;
+                        <button
+                          type="button"
+                          onclick="downloadProblem()"
+                          class="custom-link"
+                        >
+                          Export as image
+                        </button>
+                      </p>
+                    </form>
+                  </li>
                 </ul>
               </div>
-            {% endif %}
         </div>
         <br />
       </div>
@@ -174,28 +188,32 @@
   var boulder_data = JSON.parse(data);
   const RADIUS = boulder_data.radius;
   // const RADIUS = 15 / 473;
-  window.onload = () => {
-    var img = document.getElementById("wall-image");
-    var cnvs = document.getElementById("wall-canvas");
-    cnvs.style.position = "absolute";
-    cnvs.style.left = img.offsetLeft + "px";
-    cnvs.style.top = img.offsetTop + "px";
-    cnvs.width = img.offsetWidth;
-    cnvs.height = img.offsetHeight;
 
-    var ctx = cnvs.getContext("2d");
-    ctx.width = cnvs.width;
-    ctx.height = cnvs.height;
-    boulder_data.holds.forEach((hold) =>
-      drawHold(
-        ctx,
-        hold.x * ctx.width,
-        hold.y * ctx.height,
-        RADIUS * ctx.width,
-        hold.color
-      )
-    );
+  function loadBoulder() {
+      var img = document.getElementById("wall-image");
+      var cnvs = document.getElementById("wall-canvas");
+      cnvs.style.position = "absolute";
+      cnvs.style.left = img.offsetLeft + "px";
+      cnvs.style.top = img.offsetTop + "px";
+      cnvs.width = img.offsetWidth;
+      cnvs.height = img.offsetHeight;
+
+      var ctx = cnvs.getContext("2d");
+      // ctx.width = cnvs.width;
+      // ctx.height = cnvs.height;
+      boulder_data.holds.forEach((hold) =>
+        drawHold(
+          ctx,
+          hold.x * cnvs.width,
+          hold.y * cnvs.height,
+          RADIUS * cnvs.width,
+          hold.color
+        )
+      );
   };
+
+  window.onresize = loadBoulder;
+  window.onload = loadBoulder;
 
   function drawHold(ctx, x, y, radius, color) {
     // Draw circle
@@ -204,6 +222,48 @@
     ctx.lineWidth = 3;
     ctx.strokeStyle = color;
     ctx.stroke();
+  }
+
+  function downloadProblem() {
+    // create canvas, load image, add holds, and set to download
+    var downloadCanvas = document.createElement('canvas');
+    var img_ref = document.getElementById('wall-image')
+    
+    document.getElementById('wrapper').insertBefore(downloadCanvas, img_ref);
+
+    downloadCanvas.id = "download-canvas";
+    downloadCanvas.style.position = "absolute";
+    downloadCanvas.style.left = img_ref.offsetLeft + "px";
+    downloadCanvas.style.top = img_ref.offsetTop + "px";
+    downloadCanvas.width = img_ref.offsetWidth;
+    downloadCanvas.height = img_ref.offsetHeight;
+
+    dcctx = downloadCanvas.getContext('2d');
+
+    // load image on canvas
+    var img1 = new Image();
+    img1.onload = function () {
+      //draw background image
+      dcctx.drawImage(img1, 0, 0, downloadCanvas.width, downloadCanvas.height);
+      boulder_data.holds.forEach((hold) =>
+        drawHold(
+          dcctx,
+          hold.x * downloadCanvas.width,
+          hold.y * downloadCanvas.height,
+          RADIUS * downloadCanvas.width,
+          hold.color
+        )
+      );
+      var link = document.createElement('a');
+      link.id = "download-a";
+      link.download = "{{ boulder_data['name'] }}.png";
+      link.href = document.getElementById('download-canvas').toDataURL()
+      link.click();
+      $("#download-canvas").remove();
+      $("#download-a").remove();
+    };
+
+    img1.src = '{{ wall_image }}';
   }
 
   var $star_rating = $(".star-rating .fa");
