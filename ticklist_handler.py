@@ -28,7 +28,7 @@ def delete_problem_from_ticklist(request, current_user, database):
                 request.form.get('name'),
                 database
         ).get('_id', ''),
-        's_done': boulder_data.get('is_done'),
+        'is_done': boulder_data.get('is_done'),
         'section': boulder_data.get('section')
     }
     # update user's ticklist
