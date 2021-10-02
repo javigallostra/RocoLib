@@ -42,7 +42,11 @@ def get_db():
     if not hasattr(top, 'database'):
         client = pymongo.MongoClient(
             os.environ['MONGO_DB'],
-            connectTimeoutMS=30000, socketTimeoutMS=None, socketKeepAlive=True, connect=False, maxPoolsize=1)
+            connectTimeoutMS=30000, 
+            socketTimeoutMS=None, 
+            # socketKeepAlive=True, 
+            connect=False, 
+            maxPoolsize=1)
         top.database = client["RocoLib"]
     return top.database
 
