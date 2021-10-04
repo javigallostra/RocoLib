@@ -78,5 +78,5 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     delete_gym(args.code)

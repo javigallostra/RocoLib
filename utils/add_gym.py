@@ -67,7 +67,7 @@ def create_walls_collection(gym_code, radius=0.02):
     with open('creds.txt') as f:
         creds = f.readline()
     myclient = pymongo.MongoClient(creds)
-    db = myclient["RocoLib"]
+    db = myclient['RocoLib']
     gym_collection = db[f'{gym_code}_walls']
     # Prompt user for wall names
     for wall in os.listdir(f'{walls_path}/{gym_code}'):
@@ -92,7 +92,7 @@ def add_gym_to_gyms_list(gym_code, gym_name, coordinates=Coordinates()):
     with open('creds.txt') as f:
         creds = f.readline()
     myclient = pymongo.MongoClient(creds)
-    db = myclient["RocoLib"]
+    db = myclient['RocoLib']
     walls_collection = db['walls']
     wall_data = {'name': gym_name, 'id': gym_code,
                  'coordinates':  coordinates.get_coords()}
@@ -145,7 +145,7 @@ def create_gym_folder(gym_code):
     Create a new folder inside the wall images directory
     """
     try:
-        os.makedirs(f"./static/images/walls/{gym_code}")
+        os.makedirs(f'./static/images/walls/{gym_code}')
         return True
     except FileExistsError:
         print('Gym code already in use, please use a different one')
@@ -185,5 +185,5 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     add_new_gym(args.code, args.name, args.images, args.location)
