@@ -4,6 +4,8 @@ import os
 from PIL import Image
 from shutil import copyfile
 
+# TODO: warn user if gym name already exists
+
 # gym name as command line args -> gym_code, gym_name, images_path
 
 walls_path = './static/images/walls'
@@ -97,7 +99,10 @@ def create_gym_folder(gym_code):
     """
     Create a new folder inside the wall images directory
     """
-    os.makedirs(f"./static/images/walls/{gym_code}")
+    try:
+        os.makedirs(f"./static/images/walls/{gym_code}")
+    except FileExistsError:
+        print('Gym code already in use, please use a different one')
 
 
 parser = argparse.ArgumentParser(description='Rocolib gym creation tool')
