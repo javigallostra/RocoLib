@@ -1,10 +1,12 @@
 import argparse
 import os
+import pymongo
 
 from PIL import Image
 from shutil import copyfile
 
 # TODO: warn user if gym name already exists
+# TODO: check DDBB operation results
 
 # gym name as command line args -> gym_code, gym_name, images_path
 
@@ -19,6 +21,9 @@ class Coordinates():
 
     def has_values(self):
         return self.latitude != None and self.longitude != None
+
+    def get_coords(self):
+        return [self.latitude, self.longitude]
 
 
 def is_image(filename):
@@ -55,16 +60,43 @@ def move_to_gym_dir(filename, images_path, gym_code):
     return copyfile(f'{images_path}/{filename}', f'{walls_path}/{gym_code}/{filename}')
 
 
-def create_walls_collection(gym_code):
-    pass
+def create_walls_collection(gym_code, radius=0.02):
+    """
+    Create the new gym collection and include its walls
+    """
+    with open('creds.txt') as f:
+        creds = f.readline()
+    myclient = pymongo.MongoClient(creds)
+    db = myclient["RocoLib"]
+    gym_collection = db[f'{gym_code}_walls']
+    # Prompt user for wall names
+    for wall in os.listdir(f'{walls_path}/{gym_code}'):
+        name = input(f'Wall name for image {wall}: ')
+        wall_data = {'image': os.path.splitext(
+            wall)[0], 'name': name, 'radius':  radius}
+        gym_collection.insert_one(wall_data)
 
 
 def create_boulders_collection(gym_code):
+    """
+    Not sure this is required. The collection will be created
+    when the first boulder is inserted.
+    """
     pass
 
 
-def add_gym_to_gyms_list(gym_code, gym_name, radius=0.02, coordinates=Coordinates()):
-    pass
+def add_gym_to_gyms_list(gym_code, gym_name, coordinates=Coordinates()):
+    """
+    Add the new gym to the list of supported gyms
+    """
+    with open('creds.txt') as f:
+        creds = f.readline()
+    myclient = pymongo.MongoClient(creds)
+    db = myclient["RocoLib"]
+    walls_collection = db['walls']
+    wall_data = {'name': gym_name, 'id': gym_code,
+                 'coordinates':  coordinates.get_coords()}
+    walls_collection.insert_one(wall_data)
 
 
 def add_new_gym(gym_code, gym_name, images_path, location):
