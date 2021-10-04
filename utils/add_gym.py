@@ -115,12 +115,14 @@ def add_new_gym(gym_code, gym_name, images_path, location):
 
 
     # Local work
+    print(f'Creating {gym_code} folder...')
     created = create_gym_folder(gym_code)
     if not created:
         return
     if images_path:
         # Find all images, convert them to JPG and move them to the
         # gym folder
+        print(f'Adding images to folder...')
         for filename in os.listdir(images_path):
             if is_image(filename):
                 new_path = move_to_gym_dir(filename, images_path, gym_code)
@@ -130,10 +132,12 @@ def add_new_gym(gym_code, gym_name, images_path, location):
     coords = Coordinates()
     if location:
         coords = Coordinates(location[0], location[1])
-
+    print(f'Creating collection...')
     create_walls_collection(gym_code)
     create_boulders_collection(gym_code)
+    print(f'Listing gym...')
     add_gym_to_gyms_list(gym_code, gym_name, coordinates=coords)
+    print(f'Done! {gym_name} successfully created!')
 
 
 def create_gym_folder(gym_code):
