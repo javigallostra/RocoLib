@@ -9,10 +9,12 @@ from shutil import copyfile
 walls_path = './static/images/walls'
 image_extensions = ('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')
 
+
 class Coordinates():
     def __init__(self, latitude=None, longitude=None):
         self.latitude = latitude
         self.longitude = longitude
+
 
 def is_image(filename):
     """
@@ -20,11 +22,13 @@ def is_image(filename):
     """
     return filename.lower().endswith(image_extensions)
 
+
 def is_JPG(filename):
     """
     Test if an image is in JPG format
     """
     return filename.endswith('.JPG')
+
 
 def convert_to_JPG(filename, gym_code=None, is_fullpath=True):
     """
@@ -35,7 +39,7 @@ def convert_to_JPG(filename, gym_code=None, is_fullpath=True):
     im = Image.open(filename)
     rgb_im = im.convert('RGB')
     rgb_im.save(f'{os.path.splitext(filename)[0]}.JPG')
-    os.remove(filename) 
+    os.remove(filename)
 
 
 def move_to_gym_dir(filename, images_path, gym_code):
@@ -45,14 +49,18 @@ def move_to_gym_dir(filename, images_path, gym_code):
     """
     return copyfile(f'{images_path}/{filename}', f'{walls_path}/{gym_code}/{filename}')
 
+
 def create_walls_collection(gym_code):
     pass
+
 
 def create_boulders_collection(gym_code):
     pass
 
+
 def add_gym_to_gyms_list(gym_code, gym_name, radius=0.02, coordinates=Coordinates()):
     pass
+
 
 def add_new_gym(gym_code, gym_name, images_path):
     # Required steps:
@@ -63,7 +71,7 @@ def add_new_gym(gym_code, gym_name, images_path):
     # 3. Add gym to walls collection
     create_gym_folder(gym_code)
     if images_path:
-        # Find all images, convert them to JPG and move them to the 
+        # Find all images, convert them to JPG and move them to the
         # gym folder
         for filename in os.listdir(images_path):
             if is_image(filename):
@@ -75,32 +83,34 @@ def add_new_gym(gym_code, gym_name, images_path):
     create_boulders_collection(gym_code)
     add_gym_to_gyms_list(gym_code, gym_name)
 
+
 def create_gym_folder(gym_code):
     """
     Create a new folder inside the wall images directory
     """
     os.makedirs(f"./static/images/walls/{gym_code}")
 
+
 parser = argparse.ArgumentParser(description='Rocolib gym creation tool')
 parser.add_argument(
     '-c',
     '--code',
     help='New Gym internal code',
-    type=str, 
+    type=str,
     required=True
 )
 parser.add_argument(
     '-n',
     '--name',
     help='New Gym name to display',
-    type=str, 
+    type=str,
     required=True
 )
 parser.add_argument(
     '-i',
     '--images',
     help='Path to the folder that contains gym wall images',
-    type=str, 
+    type=str,
     required=False
 )
 args = parser.parse_args()
