@@ -100,12 +100,19 @@ def add_gym_to_gyms_list(gym_code, gym_name, coordinates=Coordinates()):
 
 
 def add_new_gym(gym_code, gym_name, images_path, location):
-    # Required steps:
-    # 1. Create folder
-    # 2. Get wall images, tranform them if required,
-    #    and move them to the gym's folder
-    # 2. Create collections and fill data
-    # 3. Add gym to walls collection
+    """
+    Add a new gym to the application. To do so, at least 
+    the gym_code and gym_name are required. The location and
+    path to wall images is optional. The process consists in
+    the following steps:
+        1. Create new gym's dir inside the static folder
+        2. Get wall images, tranform them if required,
+           and move them to the gym's dir
+        2. Create gym walls collections and add the 
+           specified walls
+        3. Add gym to walls collection
+    """
+
 
     # Local work
     created = create_gym_folder(gym_code)
