@@ -113,7 +113,6 @@ def add_new_gym(gym_code, gym_name, images_path, location):
         3. Add gym to walls collection
     """
 
-
     # Local work
     print(f'Creating {gym_code} folder...')
     created = create_gym_folder(gym_code)

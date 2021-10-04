@@ -11,6 +11,7 @@ import shutil
 
 walls_path = './static/images/walls'
 
+
 def delete_walls_collection(gym_code):
     """
     Create the new gym collection and include its walls
@@ -22,6 +23,7 @@ def delete_walls_collection(gym_code):
     gym_walls_collection = db[f'{gym_code}_walls']
     return gym_walls_collection.drop()
 
+
 def delete_boulders_collection(gym_code):
     """
     """
@@ -32,6 +34,7 @@ def delete_boulders_collection(gym_code):
     boulders_collection = db[f'{gym_code}_boulders']
     return boulders_collection.drop()
 
+
 def delete_gym_from_gyms_list(gym_code):
     """
     Delete the gym from the list of supported gyms
@@ -41,21 +44,23 @@ def delete_gym_from_gyms_list(gym_code):
     myclient = pymongo.MongoClient(creds)
     db = myclient['RocoLib']
     walls_collection = db['walls']
-    wall_to_delete = { 'id': gym_code }
-    walls_collection.delete_one(wall_to_delete) 
-    
+    wall_to_delete = {'id': gym_code}
+    walls_collection.delete_one(wall_to_delete)
+
 
 def delete_gym_folder(gym_code):
     """
     Delete the gym static folder and its contents
     """
-    shutil.rmtree(f'{walls_path}/{gym_code}') 
+    shutil.rmtree(f'{walls_path}/{gym_code}')
+
 
 def delete_gym(gym_code):
     """
     Delete a gym and its related content from the DDBB
     """
-    sure = input('This action cannot be undone. Are you sure you want to proceed? [Y/N]: ')
+    sure = input(
+        'This action cannot be undone. Are you sure you want to proceed? [Y/N]: ')
     if sure == 'Y':
         print('Deleting folder...')
         delete_gym_folder(gym_code)
@@ -66,6 +71,7 @@ def delete_gym(gym_code):
         print('Unlisting gym...')
         delete_gym_from_gyms_list(gym_code)
         print(f'Done! {gym_code} has been permanently removed.')
+
 
 parser = argparse.ArgumentParser(description='Rocolib gym deletion tool')
 parser.add_argument(
