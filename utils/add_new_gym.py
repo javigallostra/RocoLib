@@ -15,6 +15,9 @@ class Coordinates():
         self.latitude = latitude
         self.longitude = longitude
 
+    def has_values(self):
+        return self.latitude != None and self.longitude != None
+
 
 def is_image(filename):
     """
@@ -62,13 +65,17 @@ def add_gym_to_gyms_list(gym_code, gym_name, radius=0.02, coordinates=Coordinate
     pass
 
 
-def add_new_gym(gym_code, gym_name, images_path):
+def add_new_gym(gym_code, gym_name, images_path, location):
     # Required steps:
     # 1. Create folder
     # 2. Get wall images, tranform them if required,
     #    and move them to the gym's folder
     # 2. Create collections and fill data
     # 3. Add gym to walls collection
+    coordinates = Coordinates()
+    if location:
+        coordinates = Coordinates(location[0], location[1])
+
     create_gym_folder(gym_code)
     if images_path:
         # Find all images, convert them to JPG and move them to the
@@ -113,7 +120,16 @@ parser.add_argument(
     type=str,
     required=False
 )
+parser.add_argument(
+    '-l',
+    '--location',
+    help='Gym coordinates',
+    nargs=2,
+    metavar=('latitude', 'longitude'),
+    type=float,
+    required=False
+)
 args = parser.parse_args()
 
 if __name__ == "__main__":
-    add_new_gym(args.code, args.name, args.images)
+    add_new_gym(args.code, args.name, args.images, args.location)
