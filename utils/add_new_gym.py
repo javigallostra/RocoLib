@@ -72,10 +72,8 @@ def add_new_gym(gym_code, gym_name, images_path, location):
     #    and move them to the gym's folder
     # 2. Create collections and fill data
     # 3. Add gym to walls collection
-    coordinates = Coordinates()
-    if location:
-        coordinates = Coordinates(location[0], location[1])
 
+    # Local work
     create_gym_folder(gym_code)
     if images_path:
         # Find all images, convert them to JPG and move them to the
@@ -86,9 +84,13 @@ def add_new_gym(gym_code, gym_name, images_path, location):
                 if not is_JPG(new_path):
                     convert_to_JPG(new_path, is_fullpath=True)
     # Add gym to DDBB
+    coords = Coordinates()
+    if location:
+        coords = Coordinates(location[0], location[1])
+
     create_walls_collection(gym_code)
     create_boulders_collection(gym_code)
-    add_gym_to_gyms_list(gym_code, gym_name)
+    add_gym_to_gyms_list(gym_code, gym_name, coordinates=coords)
 
 
 def create_gym_folder(gym_code):
