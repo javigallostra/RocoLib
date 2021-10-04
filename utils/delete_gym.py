@@ -55,10 +55,17 @@ def delete_gym(gym_code):
     """
     Delete a gym and its related content from the DDBB
     """
-    delete_gym_folder(gym_code)
-    delete_walls_collection(gym_code)
-    delete_boulders_collection(gym_code)
-    delete_gym_from_gyms_list(gym_code)
+    sure = input('This action cannot be undone. Are you sure you want to proceed? [Y/N]: ')
+    if sure == 'Y':
+        print('Deleting folder...')
+        delete_gym_folder(gym_code)
+        print('Deleting walls collection...')
+        delete_walls_collection(gym_code)
+        print('Deleting problems collection...')
+        delete_boulders_collection(gym_code)
+        print('Unlisting gym...')
+        delete_gym_from_gyms_list(gym_code)
+        print(f'Done! {gym_code} has been permanently removed.')
 
 parser = argparse.ArgumentParser(description='Rocolib gym deletion tool')
 parser.add_argument(
