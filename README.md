@@ -19,7 +19,7 @@ Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hoste
 
 Would like to contribute? PRs and feature requests are welcome!
 
-Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) to see what features are being worked on or submit your request.
+Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [project board](https://github.com/javigallostra/RocoLib/projects/2) to see what features are being worked on or submit your request.
 
 ###### Some of the features on our TODO list are:
 
