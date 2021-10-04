@@ -76,7 +76,9 @@ def add_new_gym(gym_code, gym_name, images_path, location):
     # 3. Add gym to walls collection
 
     # Local work
-    create_gym_folder(gym_code)
+    created = create_gym_folder(gym_code)
+    if not created:
+        return
     if images_path:
         # Find all images, convert them to JPG and move them to the
         # gym folder
@@ -101,8 +103,10 @@ def create_gym_folder(gym_code):
     """
     try:
         os.makedirs(f"./static/images/walls/{gym_code}")
+        return True
     except FileExistsError:
         print('Gym code already in use, please use a different one')
+    return False
 
 
 parser = argparse.ArgumentParser(description='Rocolib gym creation tool')
