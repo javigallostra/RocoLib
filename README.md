@@ -17,11 +17,24 @@ Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hoste
 * Sort problems by difficulty, rating, creation date or setter and find your ideal climb or project.
 * Rate problems so that other users can get feedback and find the best climbs.
 
-Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) to see what features are being worked on or submit your request.
+Would like to contribute? PRs and feature requests are welcome!
 
-Would like to help? PRs are welcome!
+Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [project board](https://github.com/javigallostra/RocoLib/projects/2) to see what features are being worked on or submit your request.
 
-## Captures
+###### Some of the features on our TODO list are:
+
+* Localize app
+* Include a map to locate registered gyms
+* Enable setting routes as well as problems
+* Enable setting routes that span multiple images
+* Make a more flexible grading system
+* For registered users: Include a stats page
+* Enable logging a climb more than once
+* Add a comments section for each problem
+* Enable users to suggest a difficulty after climbing a problem
+
+
+## Screenshots
 
 #### Home
 
