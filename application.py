@@ -2,7 +2,6 @@ import os
 import json
 import ast
 import datetime
-import math
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
@@ -88,17 +87,6 @@ def get_gym():
     if session.get('gym', ''):
         return session['gym']
     return 'sancu'
-
-def get_closest_gym(long, lat):
-    gyms = db_controller.get_gyms(get_db())
-    min_distance = -1
-    closest_gym = None
-    for gym in gyms:
-        dst = math.sqrt(abs(long - gym['coordinates'][0])**2 + abs(lat - gym['coordinates'][1])**2)
-        if min_distance == -1 or dst < min_distance:
-            min_distance = dst
-            closest_gym = gym
-    return closest_gym['id']
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -449,10 +437,12 @@ def delete_ticklist_problem():
 
 @app.route('/get_nearest_gym', methods = ['POST'])
 def get_nearest_gym():
-    closest_gym = get_closest_gym(
+    closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']), 
-        float(dict(request.form)['latitude'])
+        float(dict(request.form)['latitude'],
+        get_db())
     )
+    # Set closest gym as actual gym
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
