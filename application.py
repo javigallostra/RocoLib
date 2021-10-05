@@ -40,7 +40,7 @@ def get_db():
     top = _app_ctx_stack.top
     if not hasattr(top, 'database'):
         client = pymongo.MongoClient(
-            os.environ['MONGO_DB'],
+            get_creds(),
             connectTimeoutMS=30000, 
             socketTimeoutMS=None, 
             # socketKeepAlive=True, 
@@ -75,12 +75,18 @@ def favicon():
 
 def get_creds():
     creds = None
-    if session.get('creds', ''):
-        creds = session['creds']
+    if os.path.isfile('creds.txt'):
+        if session.get('creds', ''):
+            creds = session['creds']
+        else:
+            with open('creds.txt', 'r') as f:
+                creds = f.readline()
+            session['creds'] = creds
     else:
-        with open('creds.txt', 'r') as f:
-            creds = f.readline()
-        session['creds'] = creds
+        try:
+            creds = os.environ['MONGO_DB']
+        except:
+            pass
     return creds
 
 def get_gym():
@@ -470,4 +476,7 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=80)
+    if os.environ['DOCKER_ENV'] == "True":
+        app.run(debug=False, host='0.0.0.0', port=80)
+    else:
+        app.run(debug=False)

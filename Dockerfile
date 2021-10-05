@@ -11,6 +11,8 @@ COPY ./requirements.txt /rocolib/requirements.txt
 
 WORKDIR /rocolib
 
+ENV DOCKER_ENV=True 
+
 RUN pip3 install -r requirements.txt
 
 COPY . /rocolib
