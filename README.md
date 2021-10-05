@@ -9,6 +9,20 @@ Check it out at:
 Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/).
 Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home).
 
+### Run from Docker image
+
+A docker image to run the app locally can be found [here](https://hub.docker.com/repository/docker/juangallostra/rocolib). To run it execute in a terminal:
+
+```
+> docker pull juangallostra/rocolib
+> docker run -p 9090:80 juangallostra/rocolib
+```
+
+Once the container is up and running, the app can be accessed at http://localhost:9090. Note that you can replace 9090 by the port of your choice.
+
+### Run locally
+
+
 ## Features
 
 * Create problems on any climbing wall, just from an image.
