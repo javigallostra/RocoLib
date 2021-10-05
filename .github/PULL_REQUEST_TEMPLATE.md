@@ -1,6 +1,6 @@
 ## Description of the issue/feature this PR addresses
 
-Linked issue: https://github.com/javigallostra/RocoLib/issues/
+Linked issue: <https://github.com/javigallostra/RocoLib/issues/>
 
 ## Current behavior before PR
 

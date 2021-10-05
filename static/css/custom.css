@@ -70,7 +70,7 @@ footer {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 10px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
@@ -103,6 +103,7 @@ footer {
   .dropdown .dropbtn {
     display: none;
   }
+
   .topnav a.icon {
     float: right;
     display: block;
@@ -113,22 +114,27 @@ footer {
   .topnav.responsive {
     position: relative;
   }
+
   .topnav.responsive .icon {
     position: absolute;
     right: 0;
     top: 0;
   }
+
   .topnav.responsive a {
     float: none;
     display: block;
     text-align: left;
   }
+
   .topnav.responsive .dropdown {
     float: none;
   }
+
   .topnav.responsive .dropdown-content {
     position: relative;
   }
+
   .topnav.responsive .dropdown .dropbtn {
     display: block;
     width: 100%;

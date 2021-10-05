@@ -7,7 +7,7 @@ Check it out at:
 - [https://rocolib.herokuapp.com/](https://rocolib.herokuapp.com/)
 
 Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/).
-Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home). 
+Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home).
 
 ## Features
 
