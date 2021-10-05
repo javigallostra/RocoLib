@@ -437,6 +437,11 @@ def delete_ticklist_problem():
 
 @app.route('/get_nearest_gym', methods = ['POST'])
 def get_nearest_gym():
+    """
+    Given a set of coordinates in the form of
+    latitude, longitude, return the closest gym
+    to the given position
+    """
     closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']), 
         float(dict(request.form)['latitude'],
