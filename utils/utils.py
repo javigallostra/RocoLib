@@ -20,6 +20,9 @@ def load_boulder_from_request(request):
 
 
 def get_wall_image(gym, section, walls_path, static_assets_path='static'):
+    """
+    Given a gym section, return its image url
+    """
     return url_for(
         static_assets_path,
         filename='{}{}/{}.JPG'.format(walls_path, gym, section)
