@@ -94,6 +94,7 @@ def get_boulders_list(gym, filters, database, session):
         reverse=True
     )
 
+
 def get_closest_gym(long, lat, database):
     """
     Given a set of coordinates, return the closest gym
