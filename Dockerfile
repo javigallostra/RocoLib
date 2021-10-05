@@ -13,9 +13,8 @@ WORKDIR /rocolib
 
 ENV DOCKER_ENV=True 
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /rocolib
 
 CMD [ "python3", "./application.py" ]
-
