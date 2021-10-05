@@ -33,7 +33,6 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 * Add a comments section for each problem
 * Enable users to suggest a difficulty after climbing a problem
 
-
 ## Screenshots
 
 #### Home
@@ -71,13 +70,36 @@ Load Boulders
 A docker image to run the app locally can be found [here](https://hub.docker.com/repository/docker/juangallostra/rocolib). To run it execute in a terminal:
 
 ```
-> docker pull juangallostra/rocolib
-> docker run -p 9090:80 juangallostra/rocolib
+docker pull juangallostra/rocolib
+docker run -p 9090:80 juangallostra/rocolib
 ```
 
 Once the container is up and running, the app can be accessed at http://localhost:9090. Note that you can replace 9090 by the port of your choice.
 
 ### Run locally
+
+1. Clone the repository and, optionally, a virtual environment -recommended but not shown here-.
+   ```
+   git clone https://github.com/javigallostra/RocoLib.git
+   ```
+2. Install dependencies
+   ```
+   pip install -r requirements.txt
+   ```
+3. Set up [MongoDB](https://www.mongodb.com). This can either be a local instance of MongoDB or an instance running on the cloud. We are currently using MongoDB Atlas free tier.
+4. Configure MongoDB connection so that the application code can talk with the DDBB.
+5. Set required environment variables. On windows, if you just want to set them for the current session:
+   ```
+   $env:DOCKER_ENV="False"
+   ```
+   Alternatively, if you want to set them permamently -You will need admin privileges and a terminal restart after executing the command-:
+   ```
+   [Environment]::SetEnvironmentVariable("DOCKER_ENV", "False", "Machine")
+   ```
+6. Run
+   ```
+   python application.py
+   ```
 
 ## Links of interest
 
