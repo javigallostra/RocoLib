@@ -2,7 +2,6 @@ import os
 import json
 import ast
 import datetime
-import math
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
@@ -41,7 +40,7 @@ def get_db():
     top = _app_ctx_stack.top
     if not hasattr(top, 'database'):
         client = pymongo.MongoClient(
-            os.environ['MONGO_DB'],
+            get_creds(),
             connectTimeoutMS=30000, 
             socketTimeoutMS=None, 
             # socketKeepAlive=True, 
@@ -74,6 +73,21 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+def get_creds():
+    creds = None
+    if os.path.isfile('creds.txt'):
+        if session.get('creds', ''):
+            creds = session['creds']
+        else:
+            with open('creds.txt', 'r') as f:
+                creds = f.readline()
+            session['creds'] = creds
+    else:
+        try:
+            creds = os.environ['MONGO_DB']
+        except:
+            pass
+    return creds
 
 def get_gym():
     """
@@ -82,17 +96,6 @@ def get_gym():
     if session.get('gym', ''):
         return session['gym']
     return 'sancu'
-
-def get_closest_gym(long, lat):
-    gyms = db_controller.get_gyms(get_db())
-    min_distance = -1
-    closest_gym = None
-    for gym in gyms:
-        dst = math.sqrt(abs(long - gym['coordinates'][0])**2 + abs(lat - gym['coordinates'][1])**2)
-        if min_distance == -1 or dst < min_distance:
-            min_distance = dst
-            closest_gym = gym
-    return closest_gym['id']
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -443,10 +446,17 @@ def delete_ticklist_problem():
 
 @app.route('/get_nearest_gym', methods = ['POST'])
 def get_nearest_gym():
-    closest_gym = get_closest_gym(
+    """
+    Given a set of coordinates in the form of
+    latitude, longitude, return the closest gym
+    to the given position
+    """
+    closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']), 
-        float(dict(request.form)['latitude'])
+        float(dict(request.form)['latitude'],
+        get_db())
     )
+    # Set closest gym as actual gym
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
@@ -466,4 +476,7 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    app.run(debug=False)
+    if os.environ['DOCKER_ENV'] == "True":
+        app.run(debug=False, host='0.0.0.0', port=80)
+    else:
+        app.run(debug=False)

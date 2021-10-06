@@ -1,4 +1,5 @@
 import json
+import math
 from flask import url_for
 import datetime
 from werkzeug.utils import secure_filename
@@ -19,6 +20,9 @@ def load_boulder_from_request(request):
 
 
 def get_wall_image(gym, section, walls_path, static_assets_path='static'):
+    """
+    Given a gym section, return its image url
+    """
     return url_for(
         static_assets_path,
         filename='{}{}/{}.JPG'.format(walls_path, gym, section)
@@ -89,3 +93,28 @@ def get_boulders_list(gym, filters, database, session):
             x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
         reverse=True
     )
+
+
+def get_closest_gym(long, lat, database):
+    """
+    Given a set of coordinates, return the closest gym
+    to that pair of coordinates.
+
+    This is a naive solution. If the number of gyms 
+    gets too big, this algorithm can be sped up 
+    by sorting the coordinates beforehand
+    """
+    gyms = db_controller.get_gyms(database)
+    closest_gym = None
+    min_distance = -1
+    for gym in gyms:
+        coords = gym.get('coordinates', [])
+        if not coords:
+            continue
+        dst = math.sqrt(abs(long - coords[0])**2 + abs(lat - coords[1])**2)
+        if min_distance == -1 or dst < min_distance:
+            min_distance = dst
+            closest_gym = gym
+    if closest_gym:
+        return closest_gym['id']
+    return gyms[0]['id']

@@ -102,10 +102,13 @@
     long_input.setAttribute("type", "hidden");
     long_input.setAttribute("name", "longitude");
     long_input.setAttribute("value", position.coords.longitude);
-    //append to form element that you want .
-    document.getElementById("nearest_gym_form").appendChild(lat_input);
-    document.getElementById("nearest_gym_form").appendChild(long_input);
-    document.getElementById("nearest_gym_form").submit();
+    //append to form element
+    var nearest_gym_form = document.getElementById("nearest_gym_form");
+    if (nearest_gym_form != null) {
+      nearest_gym_form.appendChild(lat_input);
+      nearest_gym_form.appendChild(long_input);
+      nearest_gym_form.submit();
+    }
   }
 </script>
 {% endblock %}
