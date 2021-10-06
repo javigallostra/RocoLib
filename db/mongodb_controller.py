@@ -3,7 +3,6 @@ from bson.objectid import ObjectId
 import functools
 from datetime import datetime
 
-
 def serializable(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
