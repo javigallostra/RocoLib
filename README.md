@@ -78,7 +78,7 @@ Once the container is up and running, the app can be accessed at http://localhos
 
 ### Run locally
 
-1. Clone the repository and, optionally, a virtual environment -recommended but not shown here-.
+1. Clone the repository and, optionally, create a [virtual environment](https://docs.python.org/3/tutorial/venv.html) -recommended but not shown here-.
    ```
    git clone https://github.com/javigallostra/RocoLib.git
    ```
