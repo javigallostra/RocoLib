@@ -124,11 +124,11 @@ def put_route(route_data, gym, database):
     return database[f'{gym}_routes'].insert_one(route_data)
 
 @serializable
-def put_boulder_in_ticklist(boulder_data, user_id, database):
-    # TODO: split in two functions
+def put_boulder_in_ticklist(boulder_data, user_id, database, mark_as_done_clicked=False):
+    # TODO: split in two functions, urgent refactor
     """
-    Store a new boulder in the user's ticklist or change its
-    is_done status
+    Store a new boulder in the user's ticklist, change its
+    is_done status or add a new climbed date
     """
     IS_DONE = 'is_done'
     IDEN = 'iden'
@@ -139,17 +139,34 @@ def put_boulder_in_ticklist(boulder_data, user_id, database):
     boulder = list(filter(lambda x: x[IDEN]==boulder_data[IDEN], ticklist))
     # nothing changed, boulder already in ticklist and no status change
     if boulder and boulder[0][IS_DONE] == boulder_data[IS_DONE]:
+        # boulder is in ticklist, has already been climbed, but a new mark as done event
+        # has been triggered
+        if boulder_data[IS_DONE] and mark_as_done_clicked:
+            # add a new climbed date
+            for index, t_boulder in enumerate(ticklist):
+                if t_boulder[IDEN] == boulder_data[IDEN]:
+                    ticklist[index][IS_DONE] = boulder_data[IS_DONE]
+                    # if string, change to list
+                    if type(ticklist[index]['date_climbed']) == str:
+                        ticklist[index]['date_climbed'] = [
+                            ticklist[index]['date_climbed'], 
+                            datetime.today().strftime('%Y-%m-%d')
+                        ]
+                    else:
+                        ticklist[index]['date_climbed'] += [datetime.today().strftime('%Y-%m-%d')]
+                    user['ticklist'] = ticklist
+                    database['users'].update_one({'id':user_id}, {'$set' : user})
         return ticklist
     # boulder is in ticklist but is_done has changed:
     elif boulder and boulder[0][IS_DONE] != boulder_data[IS_DONE]:
         for index, t_boulder in enumerate(ticklist):
             if t_boulder[IDEN] == boulder_data[IDEN]:
                 ticklist[index][IS_DONE] = boulder_data[IS_DONE]
-                ticklist[index]['date_climbed'] = datetime.today().strftime('%Y-%m-%d')
-    # boulder is not in ticklist, add to ticklist
-    else:
-        if boulder_data[IS_DONE] == True:
-            boulder_data['date_climbed'] = datetime.today().strftime('%Y-%m-%d')
+                ticklist[index]['date_climbed'] = [datetime.today().strftime('%Y-%m-%d')]
+    # boulder is not in ticklist but it has been marked 
+    # as climbed, add to ticklist
+    elif boulder_data[IS_DONE]:
+        boulder_data['date_climbed'] = [datetime.today().strftime('%Y-%m-%d')]
         ticklist.append(boulder_data)
     # update user's ticklist and return it
     user['ticklist'] = ticklist
@@ -180,7 +197,11 @@ def get_ticklist_boulder(boulder, database):
     boulder_data = database[f'{boulder.gym}_boulders'].find_one(ObjectId(boulder.iden))
     boulder_data['gym'] = boulder.gym
     boulder_data['is_done'] = boulder.is_done
-    boulder_data['date_climbed'] = boulder.date_climbed if boulder.date_climbed else ""
+    # backwards compatibility
+    if boulder.date_climbed:
+        boulder_data['date_climbed'] = boulder.date_climbed if type(boulder.date_climbed) == list else [boulder.date_climbed]
+    else:
+        boulder_data['date_climbed'] = []
     return boulder_data
     
 @serializable

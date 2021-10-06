@@ -63,7 +63,7 @@ def load_user_ticklist(current_user, database):
     return boulder_list, walls_list
 
 
-def add_boulder_to_ticklist(request, current_user, database):
+def add_boulder_to_ticklist(request, current_user, database, mark_as_done_clicked=False):
     """
     Add a boulder to a user's ticklist
     """
@@ -81,5 +81,10 @@ def add_boulder_to_ticklist(request, current_user, database):
     }
     # update user's ticklist
     return [
-        TickListProblem(p) for p in mongodb_controller.put_boulder_in_ticklist(boulder, current_user.id, database)
+        TickListProblem(p) for p in mongodb_controller.put_boulder_in_ticklist(
+            boulder, 
+            current_user.id, 
+            database, 
+            mark_as_done_clicked
+            )
     ]

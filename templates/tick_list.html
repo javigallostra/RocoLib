@@ -110,7 +110,12 @@
             </div>
             <div class="col-4" style="display: flex; justify-content: right;">
               {%- if boulder['is_done'] -%}
-              <span id="date-climbed">Date Climbed: {{ boulder['date_climbed'] }}</span>
+              <span id="date-climbed">Dates Climbed:</span>
+              {%- for date in boulder['date_climbed'] -%}
+              <span class="date-climbed-span">
+                {{ date }}
+              </span>
+              {% endfor %}
               {%- endif -%}
             </div>
           </div>
@@ -270,6 +275,10 @@
   #date-climbed {
     padding-right: 3rem;
   }
+  
+  .date-climbed-span {
+    padding-right: 3rem;
+  }
 
   @media (max-width: 600px) {
     .star-rating-fixed {
@@ -281,6 +290,11 @@
     #date-climbed {
       padding-right: 0rem;
     }
+
+    .date-climbed-span {
+      padding-right: 0rem;
+    }
+
 
   }
 </style>
