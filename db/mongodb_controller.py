@@ -23,6 +23,9 @@ def serializable(func):
 
 
 def make_object_serializable(element):
+    """
+    Make sure an element can be serialized
+    """
     if not element:
         return {}
     if '_id' in element:
@@ -31,6 +34,10 @@ def make_object_serializable(element):
 
 
 def make_list_serializable(data):
+    """
+    Given a list, make sure all of its
+    elements are serializable
+    """
     if not data:
         return []
     for element in data:
