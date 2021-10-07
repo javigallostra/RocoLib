@@ -271,7 +271,14 @@ def update_boulder_by_id(gym, boulder_id, data, database):
 
 
 @serializable
-def get_boulders_filtered(gym, database, conditions=None, equals=None, ranged=None, contains=None):
+def get_boulders_filtered(
+        gym,
+        database,
+        conditions=None,
+        equals=None,
+        ranged=None,
+        contains=None
+    ):
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them
