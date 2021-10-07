@@ -5,6 +5,14 @@ from datetime import datetime
 
 
 def serializable(func):
+    """
+    Make sure that the value returned by a function
+    is serializable. The main problem is that objects
+    retrieved from the DDBB have an _id key whose value
+    is an ObjectId(), which is not serializable.
+    Another option would be to use json_util:
+    https://pymongo.readthedocs.io/en/stable/api/bson/json_util.html 
+    """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         value = func(*args, **kwargs)
@@ -180,7 +188,6 @@ def put_boulder_in_ticklist(boulder_data, user_id, database, mark_as_done_clicke
     return ticklist
 
 
-@serializable
 def update_user_ticklist(database, ticklist, user, user_id):
     """
     Update a user's ticklist, both DDBB and in memory projections
@@ -189,7 +196,6 @@ def update_user_ticklist(database, ticklist, user, user_id):
     database['users'].update_one({'id': user_id}, {'$set': user})
 
 
-@serializable
 def find_boulder_index(boulder_data, boulders):
     """
     Given a list of boulders and the data from a single boulder,
