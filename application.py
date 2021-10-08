@@ -410,7 +410,6 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-
 # User related
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
@@ -419,8 +418,16 @@ def tick_list():
     Tick list page handler.
     """
     if request.method == 'POST':
-        current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-            request, current_user, get_db())
+        if 'add_boulder_to_tick_list' in request.form:
+            # Just add boulder to ticklist, it hasn't been climbed yet
+            current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
+                request, current_user, get_db())
+        elif 'mark_boulder_as_done' in request.form:
+            # Add boulder to ticklist if not present, mark as done or add new
+            # climbed date
+            current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
+                request, current_user, get_db(),  mark_as_done_clicked=True
+            )
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
             return redirect(url_for('explore_boulders', gym=get_gym()))

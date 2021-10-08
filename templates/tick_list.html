@@ -110,7 +110,16 @@
             </div>
             <div class="col-4" style="display: flex; justify-content: right;">
               {%- if boulder['is_done'] -%}
-              <span id="date-climbed">Date Climbed: {{ boulder['date_climbed'] }}</span>
+              <div class="col-4">
+                <span id="date-climbed">Dates Climbed:</span>
+              </div>
+              {%- for date in boulder['date_climbed'] -%}
+              <div class="col-8" style="display: flex; flex-direction: column;">
+                <span class="date-climbed-span">
+                  {{ date }}
+                </span>
+              </div>
+              {% endfor %}
               {%- endif -%}
             </div>
           </div>
@@ -269,6 +278,13 @@
 
   #date-climbed {
     padding-right: 3rem;
+    /* font-size: 1em; */
+  }
+  
+  .date-climbed-span {
+    padding-right: 3rem;
+    font-size: 0.8em;
+    max-width: 100%;
   }
 
   @media (max-width: 600px) {
@@ -281,6 +297,12 @@
     #date-climbed {
       padding-right: 0rem;
     }
+
+    .date-climbed-span {
+      padding-right: 0rem;
+      font-size: 0.7em;
+    }
+
 
   }
 </style>
