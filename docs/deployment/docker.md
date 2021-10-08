@@ -21,4 +21,4 @@ docker run -p 9090:80 juangallostra/rocolib
 
 Replace `9090` by the port of your choice
 
-Go to `http://localhost:9090` to access the application
+Go to `http://localhost:9090` to access the application.
