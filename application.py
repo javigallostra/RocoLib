@@ -6,6 +6,7 @@ import datetime
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, jsonify
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from flask_swagger_ui import get_swaggerui_blueprint
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -487,6 +488,8 @@ def get_gyms():
     """Gym list.
     ---
     get:
+      tags:
+        - Gyms
       responses:
         200:
           description:
@@ -503,20 +506,37 @@ def get_gyms():
     """
     return jsonify(db_controller.get_gyms(get_db()))
 
+@app.route('/api/docs/swagger.json')
+def api_docs():
+    """
+    Swagger document endpoint
+    """
+    return send_from_directory('static','openapi/swagger.json')
 
 # start the server
 if __name__ == '__main__':
+    # Generate API documentation
+    from docs.openapi import spec, GymListSchema
+    spec.components.schema("Gyms", schema=GymListSchema)
+    with app.test_request_context():
+        spec.path(view=get_gyms)
+    # We're good to go! Save this to a file for now.
+    with open('./static/openapi/swagger.json', 'w') as f:
+        json.dump(spec.to_dict(), f)
+
+    SWAGGER_URL = '/api/docs'
+    API_URL = '/api/docs/swagger.json' 
     
-    # from docs.openapi import spec, GymListSchema
-    # spec.components.schema("Gyms", schema=GymListSchema)
-    # print("This is app")
-    # print(app)
-    # with app.test_request_context():
-    #     spec.path(view=get_gyms)
-    # # We're good to go! Save this to a file for now.
-    # with open('swagger.json', 'w') as f:
-    #     json.dump(spec.to_dict(), f)
-    
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={
+            'app_name': "RocoLib API"
+        }
+    )
+
+    app.register_blueprint(swaggerui_blueprint)
+
     if os.environ['DOCKER_ENV'] == "True":
         app.run(debug=False, host='0.0.0.0', port=80)
     else:
