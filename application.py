@@ -516,13 +516,13 @@ def api_docs():
 # start the server
 if __name__ == '__main__':
     # Generate API documentation
-    from docs.openapi import spec, GymListSchema
-    spec.components.schema("Gyms", schema=GymListSchema)
-    with app.test_request_context():
-        spec.path(view=get_gyms)
-    # We're good to go! Save this to a file for now.
-    with open('./static/openapi/swagger.json', 'w') as f:
-        json.dump(spec.to_dict(), f)
+    # from docs.openapi import spec, GymListSchema
+    # spec.components.schema("Gyms", schema=GymListSchema)
+    # with app.test_request_context():
+    #     spec.path(view=get_gyms)
+    # # We're good to go! Save this to a file for now.
+    # with open('./static/openapi/swagger.json', 'w') as f:
+    #     json.dump(spec.to_dict(), f)
 
     SWAGGER_URL = '/api/docs'
     API_URL = '/api/docs/swagger.json' 
