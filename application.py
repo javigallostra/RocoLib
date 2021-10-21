@@ -3,7 +3,7 @@ import json
 import ast
 import datetime
 
-from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
+from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, jsonify
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from models import User
@@ -481,8 +481,42 @@ def bad_request(error):
     return render_template('errors/400.html'), 400
 
 
+########## Test endpoint
+@app.route("/gyms", methods = ['GET'])
+def get_gyms():
+    """Gym list.
+    ---
+    get:
+      responses:
+        200:
+          description:
+            List of gyms
+          content:
+            application/json:
+              schema: GymListSchema
+        201:
+          description:
+            List of gyms
+          content:
+            application/json:
+              schema: GymListSchema
+    """
+    return jsonify(db_controller.get_gyms(get_db()))
+
+
 # start the server
 if __name__ == '__main__':
+    
+    # from docs.openapi import spec, GymListSchema
+    # spec.components.schema("Gyms", schema=GymListSchema)
+    # print("This is app")
+    # print(app)
+    # with app.test_request_context():
+    #     spec.path(view=get_gyms)
+    # # We're good to go! Save this to a file for now.
+    # with open('swagger.json', 'w') as f:
+    #     json.dump(spec.to_dict(), f)
+    
     if os.environ['DOCKER_ENV'] == "True":
         app.run(debug=False, host='0.0.0.0', port=80)
     else:
