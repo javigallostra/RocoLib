@@ -22,6 +22,19 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
+SWAGGER_URL = '/api/docs'
+API_URL = '/api/docs/swagger.json' 
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "RocoLib API"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint)
+
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -523,19 +536,6 @@ if __name__ == '__main__':
     # # We're good to go! Save this to a file for now.
     # with open('./static/openapi/swagger.json', 'w') as f:
     #     json.dump(spec.to_dict(), f)
-
-    SWAGGER_URL = '/api/docs'
-    API_URL = '/api/docs/swagger.json' 
-    
-    swaggerui_blueprint = get_swaggerui_blueprint(
-        SWAGGER_URL,
-        API_URL,
-        config={
-            'app_name': "RocoLib API"
-        }
-    )
-
-    app.register_blueprint(swaggerui_blueprint)
 
     if os.environ['DOCKER_ENV'] == "True":
         app.run(debug=False, host='0.0.0.0', port=80)
