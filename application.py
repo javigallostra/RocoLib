@@ -495,8 +495,8 @@ def bad_request(error):
     return render_template('errors/400.html'), 400
 
 
-########## Test endpoint
-@app.route("/gyms", methods = ['GET'])
+########## Public API
+@app.route('/api/gym/list', methods = ['GET'])
 def get_gyms():
     """Gym list.
     ---
@@ -510,12 +510,19 @@ def get_gyms():
           content:
             application/json:
               schema: GymListSchema
-        201:
-          description:
-            List of gyms
-          content:
-            application/json:
+            text/plain:
               schema: GymListSchema
+            text/json:
+              schema: GymListSchema
+        400:
+          description:
+            Bad request
+        404;
+          description:
+            Not found
+        500:
+          description:
+            Server Error
     """
     return jsonify(db_controller.get_gyms(get_db()))
 
