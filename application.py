@@ -3,10 +3,12 @@ import json
 import ast
 import datetime
 
-from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, jsonify
+from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from api_blueprint import api_blueprint
+from api_blueprint import get_gyms
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -34,6 +36,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(swaggerui_blueprint)
+app.register_blueprint(api_blueprint)
 
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
@@ -494,48 +497,9 @@ def bad_request(error):
     app.logger.error('Bad request: %s', (request.path))
     return render_template('errors/400.html'), 400
 
-
-########## Public API
-@app.route('/api/gym/list', methods = ['GET'])
-def get_gyms():
-    """Gym list.
-    ---
-    get:
-      tags:
-        - Gyms
-      responses:
-        200:
-          description:
-            List of gyms
-          content:
-            application/json:
-              schema: GymListSchema
-            text/plain:
-              schema: GymListSchema
-            text/json:
-              schema: GymListSchema
-        400:
-          description:
-            Bad request
-        404;
-          description:
-            Not found
-        500:
-          description:
-            Server Error
-    """
-    return jsonify(db_controller.get_gyms(get_db()))
-
-@app.route('/api/docs/swagger.json')
-def api_docs():
-    """
-    Swagger document endpoint
-    """
-    return send_from_directory('static','openapi/swagger.json')
-
 # start the server
 if __name__ == '__main__':
-    # Generate API documentation
+    # # Generate API documentation
     # from docs.openapi import spec, GymListSchema
     # spec.components.schema("Gyms", schema=GymListSchema)
     # with app.test_request_context():

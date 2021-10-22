@@ -8,7 +8,7 @@ class GymSchema(Schema):
     _id = fields.Str()
     id = fields.Str()
     name = fields.Str()
-    coordinates = fields.List(fields.Float())
+    coordinates = fields.List(fields.Float(), validate=fields.Length(min=2, max=2))
 
 
 class GymListSchema(Schema):
