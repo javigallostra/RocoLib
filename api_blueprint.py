@@ -41,7 +41,7 @@ def get_creds():
     return creds
 
 
-@api_blueprint.route('/gyms/list', methods=['GET'])
+@api_blueprint.route('/gym/list', methods=['GET'])
 def get_gyms():
     """Gym list.
     ---
@@ -70,6 +70,39 @@ def get_gyms():
             Server Error
     """
     return jsonify(db_controller.get_gyms(get_db()))
+
+@api_blueprint.route('/gym/<string:gym_id>/walls', methods=['GET'])
+def get_gym_walls(gym_id):
+    """Walls associated to the given gym.
+    ---
+    get:
+      tags:
+        - Gyms
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      responses:
+        200:
+          description:
+            List of walls associated to the specified gym
+          content:
+            application/json:
+              schema: WallListSchema
+            text/plain:
+              schema: WallListSchema
+            text/json:
+              schema: WallListSchema
+        400:
+          description:
+            Bad request
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    return jsonify(db_controller.get_gym_walls(gym_id, get_db()))
 
 @api_blueprint.route('/docs/swagger.json')
 def api_docs():

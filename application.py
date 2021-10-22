@@ -7,8 +7,8 @@ from flask import Flask, render_template, request, url_for, redirect, abort, ses
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from api_blueprint import get_gyms, get_gym_walls
 from api_blueprint import api_blueprint
-from api_blueprint import get_gyms
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -25,7 +25,8 @@ import ticklist_handler
 app = Flask(__name__)
 
 SWAGGER_URL = '/api/docs'
-API_URL = '/api/docs/swagger.json' 
+API_URL = '/api/docs/swagger.json'
+GENERATE_API_DOCS = False
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -499,14 +500,16 @@ def bad_request(error):
 
 # start the server
 if __name__ == '__main__':
-    # # Generate API documentation
-    # from docs.openapi import spec, GymListSchema
-    # spec.components.schema("Gyms", schema=GymListSchema)
-    # with app.test_request_context():
-    #     spec.path(view=get_gyms)
-    # # We're good to go! Save this to a file for now.
-    # with open('./static/openapi/swagger.json', 'w') as f:
-    #     json.dump(spec.to_dict(), f)
+    if GENERATE_API_DOCS:
+        # Generate API documentation
+        from docs.rocolib_api_schema_spec import spec, GymListSchema, WallListSchema
+        spec.components.schema("Gyms", schema=GymListSchema)
+        spec.components.schema("Walls", schema=WallListSchema)
+        with app.test_request_context():
+            spec.path(view=get_gyms)
+            spec.path(view=get_gym_walls)
+        with open('./static/openapi/swagger.json', 'w') as f:
+            json.dump(spec.to_dict(), f)
 
     if os.environ['DOCKER_ENV'] == "True":
         app.run(debug=False, host='0.0.0.0', port=80)
