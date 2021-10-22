@@ -1,8 +1,15 @@
+import os
+from config import PORT
+
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from marshmallow import Schema, fields
 
+host = 'http://localhost:'
+localhost_port = PORT
+if os.environ['DOCKER_ENV'] == "True":
+    localhost_port = 9090
 
 class GymSchema(Schema):
     """
@@ -54,7 +61,7 @@ spec = APISpec(
         ),
         dict(
             description="Local Test server",
-            url="http://localhost:5000"
+            url=f"{host}{localhost_port}"
         )
     ],
     tags=[

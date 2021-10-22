@@ -26,7 +26,7 @@ app = Flask(__name__)
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
-GENERATE_API_DOCS = False
+GENERATE_API_DOCS = True
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -514,4 +514,4 @@ if __name__ == '__main__':
     if os.environ['DOCKER_ENV'] == "True":
         app.run(debug=False, host='0.0.0.0', port=80)
     else:
-        app.run(debug=False)
+        app.run(debug=False, port=PORT)
