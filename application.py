@@ -27,6 +27,7 @@ app = Flask(__name__)
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
 GENERATE_API_DOCS = True
+RUN_SERVER = False
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -528,8 +529,8 @@ if __name__ == '__main__':
             spec.path(view=get_gym_boulders)
         with open('./static/openapi/swagger.json', 'w') as f:
             json.dump(spec.to_dict(), f)
-
-    if os.environ['DOCKER_ENV'] == "True":
-        app.run(debug=False, host='0.0.0.0', port=80)
-    else:
-        app.run(debug=False, port=PORT)
+    if RUN_SERVER:
+        if os.environ['DOCKER_ENV'] == "True":
+            app.run(debug=False, host='0.0.0.0', port=80)
+        else:
+            app.run(debug=False, port=PORT)
