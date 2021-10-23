@@ -39,11 +39,31 @@ class GymNameSchema(Schema):
     """
     name = fields.Str()
 
+
 class WallNameSchema(Schema):
     """
     Data schema of a Wall Name
     """
     name = fields.Str()
+
+
+class HoldSchema(Schema):
+    color = fields.Str()
+    x = fields.Float()
+    y = fields.Float()
+
+
+class BoulderSchema(Schema):
+    _id = fields.Str()
+    creator = fields.Str()
+    difficulty = fields.Str()
+    feet = fields.Str()
+    name = fields.Str()
+    section = fields.Str()
+    raters = fields.Int()
+    rating = fields.Float()
+    time = fields.Str()
+    holds = fields.List(fields.Nested(HoldSchema))
 
 
 class GymIDParameter(Schema):
@@ -60,6 +80,10 @@ class GymListSchema(Schema):
 
 class WallListSchema(Schema):
     walls = fields.List(fields.Nested(WallSchema))
+
+
+class GymBoulderListSchema(Schema):
+    boulders = fields.List(fields.Nested(BoulderSchema))
 
 
 spec = APISpec(
@@ -91,6 +115,10 @@ spec = APISpec(
         dict(
             name="Gyms",
             description="Endpoints related to Gyms"
+        ),
+        dict(
+            name="Boulders",
+            description="Endpoints related to Boulder Problems"
         )
     ],
     plugins=[FlaskPlugin(), MarshmallowPlugin()],

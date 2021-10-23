@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, url_for, redirect, abort, ses
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api_blueprint import get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls
+from api_blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls
 from api_blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
@@ -514,9 +514,10 @@ def bad_request(error):
 if __name__ == '__main__':
     if GENERATE_API_DOCS:
         # Generate API documentation
-        from docs.rocolib_api_schema_spec import spec, GymListSchema, WallListSchema, GymNameSchema, WallNameSchema
+        from docs.rocolib_api_schema_spec import spec, GymListSchema, WallListSchema, GymNameSchema, WallNameSchema, GymBoulderListSchema
         spec.components.schema("Gyms", schema=GymListSchema)
         spec.components.schema("Walls", schema=WallListSchema)
+        spec.components.schema("Boulders", schema=GymBoulderListSchema)
         spec.components.schema("Gym Name", schema=GymNameSchema)
         spec.components.schema("Wall Name", schema=WallNameSchema)
         with app.test_request_context():
@@ -524,6 +525,7 @@ if __name__ == '__main__':
             spec.path(view=get_gym_walls)
             spec.path(view=get_gym_pretty_name)
             spec.path(view=get_gym_wall_name)
+            spec.path(view=get_gym_boulders)
         with open('./static/openapi/swagger.json', 'w') as f:
             json.dump(spec.to_dict(), f)
 

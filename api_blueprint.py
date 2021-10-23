@@ -118,7 +118,7 @@ def get_gym_walls(gym_id):
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
 def get_gym_pretty_name(gym_id):
-    """Walls associated to the given gym.
+    """Given a gym id get its display name
     ---
     get:
       tags:
@@ -151,7 +151,7 @@ def get_gym_pretty_name(gym_id):
 
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
 def get_gym_wall_name(gym_id, wall_section):
-    """Walls associated to the given gym.
+    """Get a wall name given the gym and the section
     ---
     get:
       tags:
@@ -183,4 +183,37 @@ def get_gym_wall_name(gym_id, wall_section):
             Server Error
     """
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db())))
+
+@api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
+def get_gym_boulders(gym_id):
+    """Boulders associated to the given gym.
+    ---
+    get:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      responses:
+        200:
+          description:
+            List of gym boulders
+          content:
+            application/json:
+              schema: GymBoulderListSchema
+            text/plain:
+              schema: GymBoulderListSchema
+            text/json:
+              schema: GymBoulderListSchema
+        400:
+          description:
+            Bad request
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
 
