@@ -11,6 +11,7 @@ localhost_port = PORT
 if os.environ['DOCKER_ENV'] == "True":
     localhost_port = 9090
 
+
 class GymSchema(Schema):
     """
     Data schema of a gym
@@ -18,7 +19,9 @@ class GymSchema(Schema):
     _id = fields.Str()
     id = fields.Str()
     name = fields.Str()
-    coordinates = fields.List(fields.Float(), validate=fields.Length(min=2, max=2))
+    coordinates = fields.List(
+        fields.Float(), validate=fields.Length(min=2, max=2))
+
 
 class WallSchema(Schema):
     """
@@ -29,11 +32,31 @@ class WallSchema(Schema):
     name = fields.Str()
     radius = fields.Float()
 
+
+class GymNameSchema(Schema):
+    """
+    Data schema of a Gym Name
+    """
+    name = fields.Str()
+
+class WallNameSchema(Schema):
+    """
+    Data schema of a Wall Name
+    """
+    name = fields.Str()
+
+
 class GymIDParameter(Schema):
     gym_id = fields.Str()
 
+
+class WallSectionParameter(Schema):
+    wall_section = fields.Str()
+
+
 class GymListSchema(Schema):
     gyms = fields.List(fields.Nested(GymSchema))
+
 
 class WallListSchema(Schema):
     walls = fields.List(fields.Nested(WallSchema))
