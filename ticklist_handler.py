@@ -82,9 +82,9 @@ def add_boulder_to_ticklist(request, current_user, database, mark_as_done_clicke
     # update user's ticklist
     return [
         TickListProblem(p) for p in mongodb_controller.put_boulder_in_ticklist(
-            boulder, 
-            current_user.id, 
-            database, 
+            boulder,
+            current_user.id,
+            database,
             mark_as_done_clicked
-            )
+        )
     ]

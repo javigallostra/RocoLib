@@ -5,6 +5,7 @@ import pymongo
 from PIL import Image
 from shutil import copyfile
 
+
 # TODO: warn user if gym name already exists
 # TODO: check DDBB operation results
 
@@ -19,28 +20,28 @@ class Coordinates():
         self.latitude = latitude
         self.longitude = longitude
 
-    def has_values(self):
-        return self.latitude != None and self.longitude != None
+    def has_values(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
 
     def get_coords(self):
         return [self.latitude, self.longitude]
 
 
-def is_image(filename):
+def is_image(filename: str) -> bool:
     """
     Test if a file is an image
     """
     return filename.lower().endswith(image_extensions)
 
 
-def is_JPG(filename):
+def is_JPG(filename: str) -> bool:
     """
     Test if an image is in JPG format
     """
     return filename.endswith('.JPG')
 
 
-def convert_to_JPG(filename, gym_code=None, is_fullpath=True):
+def convert_to_JPG(filename: str, gym_code=None, is_fullpath: bool = True) -> None:
     """
     Convert an image to JPG
     """
@@ -52,7 +53,7 @@ def convert_to_JPG(filename, gym_code=None, is_fullpath=True):
     os.remove(filename)
 
 
-def move_to_gym_dir(filename, images_path, gym_code):
+def move_to_gym_dir(filename: str, images_path: str, gym_code):
     """
     Move a file from a source directory (images_path + filename) to
     the directory inside the application were wall images will be searched
@@ -60,7 +61,7 @@ def move_to_gym_dir(filename, images_path, gym_code):
     return copyfile(f'{images_path}/{filename}', f'{walls_path}/{gym_code}/{filename}')
 
 
-def create_walls_collection(gym_code, radius=0.02):
+def create_walls_collection(gym_code, radius: float = 0.02) -> None:
     """
     Create the new gym collection and include its walls
     """
@@ -73,7 +74,7 @@ def create_walls_collection(gym_code, radius=0.02):
     for wall in os.listdir(f'{walls_path}/{gym_code}'):
         name = input(f'Wall name for image {wall}: ')
         wall_data = {'image': os.path.splitext(
-            wall)[0], 'name': name, 'radius':  radius}
+            wall)[0], 'name': name, 'radius': radius}
         gym_collection.insert_one(wall_data)
 
 
@@ -85,7 +86,7 @@ def create_boulders_collection(gym_code):
     pass
 
 
-def add_gym_to_gyms_list(gym_code, gym_name, coordinates=Coordinates()):
+def add_gym_to_gyms_list(gym_code, gym_name, coordinates: Coordinates = Coordinates()) -> None:
     """
     Add the new gym to the list of supported gyms
     """
@@ -95,20 +96,20 @@ def add_gym_to_gyms_list(gym_code, gym_name, coordinates=Coordinates()):
     db = myclient['RocoLib']
     walls_collection = db['walls']
     wall_data = {'name': gym_name, 'id': gym_code,
-                 'coordinates':  coordinates.get_coords()}
+                 'coordinates': coordinates.get_coords()}
     walls_collection.insert_one(wall_data)
 
 
-def add_new_gym(gym_code, gym_name, images_path, location):
+def add_new_gym(gym_code, gym_name, images_path, location) -> None:
     """
-    Add a new gym to the application. To do so, at least 
+    Add a new gym to the application. To do so, at least
     the gym_code and gym_name are required. The location and
     path to wall images is optional. The process consists in
     the following steps:
         1. Create new gym's dir inside the static folder
         2. Get wall images, tranform them if required,
            and move them to the gym's dir
-        2. Create gym walls collections and add the 
+        2. Create gym walls collections and add the
            specified walls
         3. Add gym to walls collection
     """
@@ -139,7 +140,7 @@ def add_new_gym(gym_code, gym_name, images_path, location):
     print(f'Done! {gym_name} successfully created!')
 
 
-def create_gym_folder(gym_code):
+def create_gym_folder(gym_code) -> bool:
     """
     Create a new folder inside the wall images directory
     """

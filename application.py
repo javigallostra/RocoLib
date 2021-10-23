@@ -78,12 +78,14 @@ def close_db_connection(exception):
     if hasattr(top, 'database'):
         top.database.client.close()
 
+
 # user loading callback
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id, get_db())
+
 
 # Load favicon
 
@@ -109,7 +111,7 @@ def get_creds():
     else:
         try:
             creds = os.environ['MONGO_DB']
-        except:
+        except Exception:
             pass
     return creds
 
@@ -140,7 +142,7 @@ def home():
 
 
 @app.route('/create')
-@cache.cached(timeout=60*60, key_prefix=make_cache_key_create)
+@cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
 def create():
     """
     Create page handler.
@@ -290,7 +292,7 @@ def load_boulder():
             boulder_data=boulder,
             origin=request.form.get('origin', 'explore_boulders')
         )
-    except:
+    except Exception:
         return abort(404)
 
 
@@ -436,6 +438,7 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+
 # User related
 
 
@@ -454,7 +457,7 @@ def tick_list():
             # Add boulder to ticklist if not present, mark as done or add new
             # climbed date
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                request, current_user, get_db(),  mark_as_done_clicked=True
+                request, current_user, get_db(), mark_as_done_clicked=True
             )
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
