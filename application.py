@@ -26,8 +26,8 @@ app = Flask(__name__)
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
-GENERATE_API_DOCS = True
-RUN_SERVER = False
+GENERATE_API_DOCS = False
+RUN_SERVER = True
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
