@@ -3,10 +3,12 @@ import json
 import ast
 import datetime
 
-from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, jsonify
+from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from api_blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls
+from api_blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -23,7 +25,9 @@ import ticklist_handler
 app = Flask(__name__)
 
 SWAGGER_URL = '/api/docs'
-API_URL = '/api/docs/swagger.json' 
+API_URL = '/api/docs/swagger.json'
+GENERATE_API_DOCS = True
+RUN_SERVER = True
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -34,6 +38,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(swaggerui_blueprint)
+app.register_blueprint(api_blueprint)
 
 # app.config.from_pyfile('config.py')
 app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
@@ -55,10 +60,10 @@ def get_db():
     if not hasattr(top, 'database'):
         client = pymongo.MongoClient(
             get_creds(),
-            connectTimeoutMS=30000, 
-            socketTimeoutMS=None, 
-            # socketKeepAlive=True, 
-            connect=False, 
+            connectTimeoutMS=30000,
+            socketTimeoutMS=None,
+            # socketKeepAlive=True,
+            connect=False,
             maxPoolsize=1)
         top.database = client["RocoLib"]
     return top.database
@@ -74,11 +79,15 @@ def close_db_connection(exception):
         top.database.client.close()
 
 # user loading callback
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id, get_db())
 
 # Load favicon
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -86,6 +95,7 @@ def favicon():
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
 
 def get_creds():
     creds = None
@@ -103,6 +113,7 @@ def get_creds():
             pass
     return creds
 
+
 def get_gym():
     """
     Get the current session's selected gym.
@@ -110,6 +121,7 @@ def get_gym():
     if session.get('gym', ''):
         return session['gym']
     return 'sancu'
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -425,6 +437,8 @@ def logout():
     return redirect(url_for('home'))
 
 # User related
+
+
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list():
@@ -465,7 +479,8 @@ def delete_ticklist_problem():
         return redirect(url_for('tick_list'))
     return abort(400)
 
-@app.route('/get_nearest_gym', methods = ['POST'])
+
+@app.route('/get_nearest_gym', methods=['POST'])
 def get_nearest_gym():
     """
     Given a set of coordinates in the form of
@@ -473,13 +488,14 @@ def get_nearest_gym():
     to the given position
     """
     closest_gym = utils.get_closest_gym(
-        float(dict(request.form)['longitude']), 
+        float(dict(request.form)['longitude']),
         float(dict(request.form)['latitude'],
-        get_db())
+              get_db())
     )
     # Set closest gym as actual gym
     session['gym'] = closest_gym
     return redirect(url_for('home'))
+
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -495,49 +511,26 @@ def bad_request(error):
     return render_template('errors/400.html'), 400
 
 
-########## Test endpoint
-@app.route("/gyms", methods = ['GET'])
-def get_gyms():
-    """Gym list.
-    ---
-    get:
-      tags:
-        - Gyms
-      responses:
-        200:
-          description:
-            List of gyms
-          content:
-            application/json:
-              schema: GymListSchema
-        201:
-          description:
-            List of gyms
-          content:
-            application/json:
-              schema: GymListSchema
-    """
-    return jsonify(db_controller.get_gyms(get_db()))
-
-@app.route('/api/docs/swagger.json')
-def api_docs():
-    """
-    Swagger document endpoint
-    """
-    return send_from_directory('static','openapi/swagger.json')
-
 # start the server
 if __name__ == '__main__':
-    # Generate API documentation
-    # from docs.openapi import spec, GymListSchema
-    # spec.components.schema("Gyms", schema=GymListSchema)
-    # with app.test_request_context():
-    #     spec.path(view=get_gyms)
-    # # We're good to go! Save this to a file for now.
-    # with open('./static/openapi/swagger.json', 'w') as f:
-    #     json.dump(spec.to_dict(), f)
-
-    if os.environ['DOCKER_ENV'] == "True":
-        app.run(debug=False, host='0.0.0.0', port=80)
-    else:
-        app.run(debug=False)
+    if GENERATE_API_DOCS:
+        # Generate API documentation
+        from docs.rocolib_api_schema_spec import spec, GymListSchema, WallListSchema, GymNameSchema, WallNameSchema, GymBoulderListSchema
+        spec.components.schema("Gyms", schema=GymListSchema)
+        spec.components.schema("Walls", schema=WallListSchema)
+        spec.components.schema("Boulders", schema=GymBoulderListSchema)
+        spec.components.schema("Gym Name", schema=GymNameSchema)
+        spec.components.schema("Wall Name", schema=WallNameSchema)
+        with app.test_request_context():
+            spec.path(view=get_gyms)
+            spec.path(view=get_gym_walls)
+            spec.path(view=get_gym_pretty_name)
+            spec.path(view=get_gym_wall_name)
+            spec.path(view=get_gym_boulders)
+        with open('./static/openapi/swagger.json', 'w') as f:
+            json.dump(spec.to_dict(), f)
+    if RUN_SERVER:
+        if os.environ['DOCKER_ENV'] == "True":
+            app.run(debug=False, host='0.0.0.0', port=80)
+        else:
+            app.run(debug=False, port=PORT)

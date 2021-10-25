@@ -1,3 +1,5 @@
+PORT = 5000
+
 WALLS_PATH = 'images/walls/'
 ITEMS = 'Items'
 
