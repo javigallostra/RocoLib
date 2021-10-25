@@ -48,12 +48,18 @@ class WallNameSchema(Schema):
 
 
 class HoldSchema(Schema):
+    """
+    Data Schema of a Hold in a Wall
+    """
     color = fields.Str()
     x = fields.Float()
     y = fields.Float()
 
 
 class BoulderSchema(Schema):
+    """
+    Data Schema of a Boulder Problem
+    """
     _id = fields.Str()
     creator = fields.Str()
     difficulty = fields.Str()
@@ -67,22 +73,37 @@ class BoulderSchema(Schema):
 
 
 class GymIDParameter(Schema):
+    """
+    Data Schema of a Gym ID parameter
+    """
     gym_id = fields.Str()
 
 
 class WallSectionParameter(Schema):
+    """
+    Data Schema of a Wall section parameter
+    """
     wall_section = fields.Str()
 
 
 class GymListSchema(Schema):
+    """
+    Gym List Data Schema
+    """
     gyms = fields.List(fields.Nested(GymSchema))
 
 
 class WallListSchema(Schema):
+    """
+    Wall List Data Schema
+    """
     walls = fields.List(fields.Nested(WallSchema))
 
 
 class GymBoulderListSchema(Schema):
+    """
+    Boulder List Data Schema
+    """
     boulders = fields.List(fields.Nested(BoulderSchema))
 
 
