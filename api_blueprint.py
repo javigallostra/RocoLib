@@ -265,6 +265,7 @@ def boulder_create(gym_id, wall_section):
           description:
             Server Error
     """
+    # TODO: Validate fields. Maybe use http://docs.python-cerberus.org/en/stable/ ?
     if request.method == 'POST':
         request.get_data()
         data = {'rating': 0, 'raters': 0}
