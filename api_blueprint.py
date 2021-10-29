@@ -1,5 +1,8 @@
-from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory
+import json
+from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory, request
 import os
+import ast
+import datetime
 import pymongo
 import db.mongodb_controller as db_controller
 
@@ -217,3 +220,68 @@ def get_gym_boulders(gym_id):
     """
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
 
+@api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
+def boulder_create(gym_id, wall_section):
+    """Create a new boulder
+    ---
+    post:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: WallSectionParameter
+      requestBody:
+        description: Create boulder request body
+        required: true
+        content:
+          application/json:
+            schema: CreateBoulderRequestBody
+          application/x-www-form-urlencoded:
+            schema: CreateBoulderRequestBody
+          text/json:
+            schema: CreateBoulderRequestBody
+          text/plain:
+            schema: CreateBoulderRequestBody
+      responses:
+        200:
+          description:
+            Creation successful
+          content:
+            text/plain:
+              schema: CreateBoulderResponseBody
+            text/json:
+              schema: CreateBoulderResponseBody
+            application/json:
+              schema: CreateBoulderResponseBody
+        400:
+          description:
+            Bad request
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    if request.method == 'POST':
+        request.get_data()
+        data = {'rating': 0, 'raters': 0}
+        if request.json is not None:
+          for key, val in request.json.items():
+              data[key.lower()] = val
+        if request.form is not None:
+          for key, val in request.form.items():
+              data[key.lower()] = val
+              if key.lower() == 'holds':
+                  data[key.lower()] = ast.literal_eval(val)
+        if request.data is not None:
+          request_data = json.loads(request.data)
+          for key, val in request_data.items():
+              data[key.lower()] = val
+        data['time'] = datetime.datetime.now().isoformat()
+        resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
+        if resp is not None:
+          return jsonify(dict(created=True, _id=resp))
+        return jsonify(dict(created=False))

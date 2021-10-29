@@ -56,21 +56,35 @@ class HoldSchema(Schema):
     y = fields.Float()
 
 
-class BoulderSchema(Schema):
+class BaseBoulderSchema(Schema):
     """
-    Data Schema of a Boulder Problem
+    Base Boulder Schema
     """
-    _id = fields.Str()
     creator = fields.Str()
     difficulty = fields.Str()
     feet = fields.Str()
     name = fields.Str()
     section = fields.Str()
-    raters = fields.Int()
-    rating = fields.Float()
     time = fields.Str()
+    notes = fields.Str()
     holds = fields.List(fields.Nested(HoldSchema))
 
+
+class BoulderSchema(BaseBoulderSchema):
+    """
+    Data Schema of a Boulder Problem
+    """
+    _id = fields.Str()
+    raters = fields.Int()
+    rating = fields.Float()
+
+
+class CreateBoulderRequestBody(BaseBoulderSchema):
+    pass
+
+class CreateBoulderResponseBody(Schema):
+    created = fields.Bool()
+    _id = fields.Str()
 
 class GymIDParameter(Schema):
     """
