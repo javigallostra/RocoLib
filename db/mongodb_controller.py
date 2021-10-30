@@ -53,7 +53,7 @@ def make_list_serializable(data):
     if not data:
         return []
     for element in data:
-       make_object_serializable(element)
+        make_object_serializable(element)
     return data
 
 
@@ -93,7 +93,7 @@ def get_wall_name(gym_name, wall_section, database):
 
 def get_gym_section_name(gym, section, database):
     """
-    Given a gym and a section image filename, return the 
+    Given a gym and a section image filename, return the
     proper name of the section
     """
     return get_wall_name(gym, section, database)
@@ -101,13 +101,13 @@ def get_gym_section_name(gym, section, database):
 
 def get_walls_radius_all(database):
     """
-    Get the list of all radius used to paint the 
+    Get the list of all radius used to paint the
     circles in the different wall sections:
     {
-        'sancu/s1': 0.0317124736, 
-        'sancu/s2': 0.0317124736, 
-        'sancu/s3': 0.0317124736, 
-        'sancu/s4': 0.0317124736, 
+        'sancu/s1': 0.0317124736,
+        'sancu/s2': 0.0317124736,
+        'sancu/s3': 0.0317124736,
+        'sancu/s4': 0.0317124736,
         [...]
     }
     """
@@ -204,7 +204,7 @@ def update_user_ticklist(database, ticklist, user, user_id):
     database['users'].update_one({'id': user_id}, {'$set': user})
 
 
-def find_boulder_index(boulder_data, boulders):
+def find_boulder_index(boulder_data, boulders) -> int:
     """
     Given a list of boulders and the data from a single boulder,
     find the boulder in the list and return its index if found.
@@ -327,7 +327,7 @@ def get_boulders_filtered(
                 to_be_removed.append(str(boulder['_id']))
             elif key in equals and val.lower() != boulder[key].lower():
                 to_be_removed.append(str(boulder['_id']))
-            elif key in ranged and (int(boulder[key]) < int(val)-0.5 or int(boulder[key]) > int(val)+0.5):
+            elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
                 to_be_removed.append(str(boulder['_id']))
 
     return {'Items': [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
