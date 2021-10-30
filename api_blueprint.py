@@ -51,7 +51,7 @@ def api_docs():
     """
     Raw swagger document endpoint
     """
-    return send_from_directory('static', 'openapi/swagger.json')
+    return send_from_directory('static', 'swagger/swagger.json')
 
 
 @api_blueprint.route('/gym/list', methods=['GET'])
@@ -265,7 +265,6 @@ def boulder_create(gym_id, wall_section):
           description:
             Server Error
     """
-    # TODO: Validate fields. Maybe use http://docs.python-cerberus.org/en/stable/ ?
     if request.method == 'POST':
         request.get_data()
         data = {'rating': 0, 'raters': 0}
@@ -282,6 +281,8 @@ def boulder_create(gym_id, wall_section):
           for key, val in request_data.items():
               data[key.lower()] = val
         data['time'] = datetime.datetime.now().isoformat()
+        # Data validation!
+        # TODO: Validate fields. Maybe use http://docs.python-cerberus.org/en/stable/ ?
         resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
         if resp is not None:
           return jsonify(dict(created=True, _id=resp))

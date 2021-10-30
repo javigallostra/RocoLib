@@ -537,7 +537,7 @@ if __name__ == '__main__':
             spec.path(view=get_gym_wall_name)
             spec.path(view=get_gym_boulders)
             spec.path(view=boulder_create)
-        with open('./static/openapi/swagger.json', 'w') as f:
+        with open('./static/swagger/swagger.json', 'w') as f:
             json.dump(spec.to_dict(), f)
     if RUN_SERVER:
         if os.environ['DOCKER_ENV'] == "True":
