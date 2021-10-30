@@ -19,7 +19,7 @@ def load_boulder_from_request(request):
         .replace('False', 'false'))
 
 
-def get_wall_image(gym, section, walls_path, static_assets_path='static'):
+def get_wall_image(gym, section, walls_path: str, static_assets_path: str = 'static') -> str:
     """
     Given a gym section, return its image url
     """
@@ -29,7 +29,7 @@ def get_wall_image(gym, section, walls_path, static_assets_path='static'):
     )
 
 
-def get_stats(database):
+def get_stats(database) -> dict[str, int]:
     """
     Gt current app stats from DDBB: Number of problems, routes and Gyms.
     """
@@ -41,12 +41,12 @@ def get_stats(database):
         try:
             total_boulders += len(
                 db_controller.get_boulders(gym['id'], database)[ITEMS])
-        except:
+        except Exception:
             pass
         try:
             total_routes += len(db_controller.get_routes(
                 gym['id'], database)[ITEMS])
-        except:
+        except Exception:
             pass
 
     return {
@@ -100,8 +100,8 @@ def get_closest_gym(long, lat, database):
     Given a set of coordinates, return the closest gym
     to that pair of coordinates.
 
-    This is a naive solution. If the number of gyms 
-    gets too big, this algorithm can be sped up 
+    This is a naive solution. If the number of gyms
+    gets too big, this algorithm can be sped up
     by sorting the coordinates beforehand
     """
     gyms = db_controller.get_gyms(database)
