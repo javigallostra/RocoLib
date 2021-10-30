@@ -1,8 +1,10 @@
+from typing import Union
 import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
 from datetime import datetime
+from __future__ import annotations
 
 TICKLIST = "ticklist"
 
@@ -48,7 +50,7 @@ class User(UserMixin):
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_by_id(user_id, database):
+    def get_by_id(user_id, database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
         if not user_data:
             return None
