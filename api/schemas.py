@@ -51,23 +51,22 @@ class HoldSchema(Schema):
     """
     Data Schema of a Hold in a Wall
     """
-    color = fields.Str()
-    x = fields.Float()
-    y = fields.Float()
+    color = fields.Str(required=True)
+    x = fields.Float(required=True)
+    y = fields.Float(required=True)
 
 
 class BaseBoulderSchema(Schema):
     """
     Base Boulder Schema
     """
-    creator = fields.Str()
-    difficulty = fields.Str()
-    feet = fields.Str()
-    name = fields.Str()
-    section = fields.Str()
-    time = fields.Str()
-    notes = fields.Str()
-    holds = fields.List(fields.Nested(HoldSchema))
+    creator = fields.Str(required=True)
+    difficulty = fields.Str(required=True)
+    feet = fields.Str(required=True)
+    name = fields.Str(required=True)
+    time = fields.Str(required=True)
+    notes = fields.Str(required=True)
+    holds = fields.List(fields.Nested(HoldSchema), required=True)
 
 
 class BoulderSchema(BaseBoulderSchema):
@@ -77,14 +76,27 @@ class BoulderSchema(BaseBoulderSchema):
     _id = fields.Str()
     raters = fields.Int()
     rating = fields.Float()
+    section = fields.Str()
 
 
 class CreateBoulderRequestBody(BaseBoulderSchema):
     pass
 
+
+class CreateBoulderRequestValidator(BaseBoulderSchema):
+    raters = fields.Int(required=True)
+    rating = fields.Float(required=True)
+    section = fields.Str(required=True)
+
+
 class CreateBoulderResponseBody(Schema):
     created = fields.Bool()
     _id = fields.Str()
+
+class CreateBoulderErrorResponse(Schema):
+    created = fields.Bool()
+    errors = fields.Dict()
+
 
 class GymIDParameter(Schema):
     """

@@ -523,6 +523,7 @@ if __name__ == '__main__':
         from api.schemas import GymBoulderListSchema
         from api.schemas import CreateBoulderRequestBody
         from api.schemas import CreateBoulderResponseBody
+        from api.schemas import CreateBoulderErrorResponse
         spec.components.schema("Gyms", schema=GymListSchema)
         spec.components.schema("Walls", schema=WallListSchema)
         spec.components.schema("Boulders", schema=GymBoulderListSchema)
@@ -530,6 +531,7 @@ if __name__ == '__main__':
         spec.components.schema("Wall Name", schema=WallNameSchema)
         spec.components.schema("Create Boulder", schema=CreateBoulderRequestBody)
         spec.components.schema("Create Boulder Response", schema=CreateBoulderResponseBody)
+        spec.components.schema("Create Boulder Error Response", schema=CreateBoulderErrorResponse)
         with app.test_request_context():
             spec.path(view=get_gyms)
             spec.path(view=get_gym_walls)

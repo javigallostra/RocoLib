@@ -5,6 +5,8 @@ import ast
 import datetime
 import pymongo
 import db.mongodb_controller as db_controller
+from marshmallow import ValidationError
+
 
 api_blueprint = Blueprint(
     'api_blueprint',
@@ -258,6 +260,13 @@ def boulder_create(gym_id, wall_section):
         400:
           description:
             Bad request
+          content:
+            text/plain:
+              schema: CreateBoulderErrorResponse
+            text/json:
+              schema: CreateBoulderErrorResponse
+            application/json:
+              schema: CreateBoulderErrorResponse
         404:
           description:
             Not found
@@ -265,9 +274,10 @@ def boulder_create(gym_id, wall_section):
           description:
             Server Error
     """
+    # TODO: Validate gym and section
     if request.method == 'POST':
         request.get_data()
-        data = {'rating': 0, 'raters': 0}
+        data = {'rating': 0, 'raters': 0, 'section': wall_section}
         if request.json is not None:
           for key, val in request.json.items():
               data[key.lower()] = val
@@ -281,9 +291,13 @@ def boulder_create(gym_id, wall_section):
           for key, val in request_data.items():
               data[key.lower()] = val
         data['time'] = datetime.datetime.now().isoformat()
-        # Data validation!
-        # TODO: Validate fields. Maybe use http://docs.python-cerberus.org/en/stable/ ?
-        resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
-        if resp is not None:
-          return jsonify(dict(created=True, _id=resp))
-        return jsonify(dict(created=False))
+        # Validate Boulder Schema
+        try:
+          from api.schemas import CreateBoulderRequestValidator
+          _ = CreateBoulderRequestValidator().load(data)
+          resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
+          if resp is not None:
+            return jsonify(dict(created=True, _id=resp))
+          return jsonify(dict(created=False))
+        except ValidationError as err:
+          return jsonify(dict(created=False, errors=err.messages)), 400          
