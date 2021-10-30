@@ -1,7 +1,9 @@
+from typing import Any
 from bson.objectid import ObjectId
 
 import functools
 from datetime import datetime
+from utils.typing import Element
 
 
 def serializable(func):
@@ -11,7 +13,7 @@ def serializable(func):
     retrieved from the DDBB have an _id key whose value
     is an ObjectId(), which is not serializable.
     Another option would be to use json_util:
-    https://pymongo.readthedocs.io/en/stable/api/bson/json_util.html 
+    https://pymongo.readthedocs.io/en/stable/api/bson/json_util.html
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -30,7 +32,7 @@ def serializable(func):
     return wrapper
 
 
-def make_object_serializable(element):
+def make_object_serializable(element: Element) -> Element:
     """
     Make sure an element can be serialized
     """
@@ -41,7 +43,7 @@ def make_object_serializable(element):
     return element
 
 
-def make_list_serializable(data):
+def make_list_serializable(data: list[Element]) -> list[Element]:
     """
     Given a list, make sure all of its
     elements are serializable
@@ -54,7 +56,7 @@ def make_list_serializable(data):
 
 
 @serializable
-def get_gyms(database):
+def get_gyms(database) -> list[str]:
     """
     Get the list of available gyms
     """
@@ -62,7 +64,7 @@ def get_gyms(database):
 
 
 @serializable
-def get_gym_walls(gym, database):
+def get_gym_walls(gym: str, database) -> list[str]:
     """
     Return the list of available walls for a specific
     Gym
@@ -70,7 +72,7 @@ def get_gym_walls(gym, database):
     return list(database[f'{gym}_walls'].find())
 
 
-def get_gym_pretty_name(gym, database):
+def get_gym_pretty_name(gym: str, database) -> str:
     """
     Get the actual Gym name from its path
     """
@@ -78,7 +80,7 @@ def get_gym_pretty_name(gym, database):
     return data.get('name', '') if data else ''
 
 
-def get_wall_name(gym_name, wall_section, database):
+def get_wall_name(gym_name: str, wall_section, database) -> str:
     """
     Get the actual wall name from its path
     """
@@ -87,7 +89,7 @@ def get_wall_name(gym_name, wall_section, database):
     return data.get('name', '') if data else ''
 
 
-def get_gym_section_name(gym, section, database):
+def get_gym_section_name(gym: str, section, database) -> str:
     """
     Given a gym and a section image filename, return the
     proper name of the section
@@ -291,7 +293,7 @@ def get_boulders_filtered(
         equals=None,
         ranged=None,
         contains=None
-    ):
+    ) -> dict[str, Any]:
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them

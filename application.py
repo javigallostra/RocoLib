@@ -19,7 +19,7 @@ from werkzeug.urls import url_parse
 import pymongo
 import db.mongodb_controller as db_controller
 from config import *
-from utils import utils
+import utils.utils as utils
 
 import ticklist_handler
 
