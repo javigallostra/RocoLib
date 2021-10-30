@@ -7,8 +7,8 @@ from flask import Flask, render_template, request, url_for, redirect, abort, ses
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api_blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
-from api_blueprint import api_blueprint
+from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
+from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -515,14 +515,14 @@ def bad_request(error):
 if __name__ == '__main__':
     if GENERATE_API_DOCS:
         # Generate API documentation
-        from docs.rocolib_api_schema_spec import spec
-        from docs.rocolib_api_schema_spec import GymListSchema
-        from docs.rocolib_api_schema_spec import WallListSchema
-        from docs.rocolib_api_schema_spec import GymNameSchema
-        from docs.rocolib_api_schema_spec import WallNameSchema
-        from docs.rocolib_api_schema_spec import GymBoulderListSchema
-        from docs.rocolib_api_schema_spec import CreateBoulderRequestBody
-        from docs.rocolib_api_schema_spec import CreateBoulderResponseBody
+        from api.schemas import spec
+        from api.schemas import GymListSchema
+        from api.schemas import WallListSchema
+        from api.schemas import GymNameSchema
+        from api.schemas import WallNameSchema
+        from api.schemas import GymBoulderListSchema
+        from api.schemas import CreateBoulderRequestBody
+        from api.schemas import CreateBoulderResponseBody
         spec.components.schema("Gyms", schema=GymListSchema)
         spec.components.schema("Walls", schema=WallListSchema)
         spec.components.schema("Boulders", schema=GymBoulderListSchema)
