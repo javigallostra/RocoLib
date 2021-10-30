@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Union
 import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,13 +14,13 @@ class User(UserMixin):
     User model
     """
 
-    def __init__(self, *initial_data, **kwargs):
+    def __init__(self, *initial_data, **kwargs) -> None:
         self.id = None
         self.name = None
         self.email = None
-        self.password = None
-        self.is_admin = False
-        self.ticklist = []
+        self.password: str = None
+        self.is_admin: bool = False
+        self.ticklist: list = []
 
         for dictionary in initial_data:
             for key in dictionary:
@@ -31,13 +31,13 @@ class User(UserMixin):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def set_password(self, password):
+    def set_password(self, password) -> None:
         self.password = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
 
-    def save(self, database):
+    def save(self, database) -> None:
         if not self.id:
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
@@ -57,7 +57,7 @@ class User(UserMixin):
         return User(user_data)
 
     @staticmethod
-    def get_user_by_email(email, database):
+    def get_user_by_email(email, database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None
@@ -72,7 +72,7 @@ class TickListProblem():
     Tick List problem model
     """
 
-    def __init__(self, *initial_data, **kwargs):
+    def __init__(self, *initial_data, **kwargs) -> None:
         self.iden = None
         self.gym = None
         self.section = None
@@ -84,9 +84,9 @@ class TickListProblem():
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def tick_problem(self):
+    def tick_problem(self) -> None:
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
 
-    def serialize(self):
+    def serialize(self) -> dict[str, Any]:
         return self.__dict__
