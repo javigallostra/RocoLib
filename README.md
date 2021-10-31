@@ -10,8 +10,7 @@ We also offer a public API. Its documentation can be found at:
 
 - [https://rocolib.herokuapp.com/api/docs](https://rocolib.herokuapp.com/api/docs)
 
-Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/).
-Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home).
+Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3](https://www.python.org/) and [Bootstrap](https://getbootstrap.com/). API docs are generated with [Swagger](https://swagger.io/). Also using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas2) and being hosted on [Heroku](https://www.heroku.com/home).
 
 ## Features
 
