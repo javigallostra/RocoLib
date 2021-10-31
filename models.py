@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Optional, Union
 import uuid
+from utils.typing import Data
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
@@ -16,12 +17,12 @@ class User(UserMixin):
     """
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        self.id = None
-        self.name = None
-        self.email = None
+        self.id: str = None
+        self.name: str = None
+        self.email: str = None
         self.password: str = None
         self.is_admin: bool = False
-        self.ticklist: list = []
+        self.ticklist: list[Union[TickListProblem, Data]] = []
 
         for dictionary in initial_data:
             for key in dictionary:
@@ -47,18 +48,18 @@ class User(UserMixin):
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 
-    def load_ticklist(self, ticklist_data):
+    def load_ticklist(self, ticklist_data: list[Data]) -> None:
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_by_id(user_id, database: Database) -> Union[User, None]:
+    def get_by_id(user_id: str, database: Database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
         if not user_data:
             return None
         return User(user_data)
 
     @staticmethod
-    def get_user_by_email(email, database: Database) -> Union[User, None]:
+    def get_user_by_email(email: str, database: Database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None
@@ -74,11 +75,11 @@ class TickListProblem():
     """
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        self.iden = None
-        self.gym = None
-        self.section = None
-        self.is_done = False
-        self.date_climbed = None
+        self.iden: str = None
+        self.gym: str = None
+        self.section: str = None
+        self.is_done: bool = False
+        self.date_climbed: str = None
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])

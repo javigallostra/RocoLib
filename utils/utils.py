@@ -2,14 +2,17 @@ import json
 import math
 from flask import url_for
 import datetime
+from flask.sessions import SessionMixin
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
+from werkzeug.wrappers.request import Request
 
 from db import mongodb_controller as db_controller
 from config import *
+from utils.typing import Data
 
 
-def load_boulder_from_request(request):
+def load_boulder_from_request(request: Request) -> Data:
     """
     Replace boulder data from valid Python to valid JS
     """
@@ -20,7 +23,7 @@ def load_boulder_from_request(request):
         .replace('False', 'false'))
 
 
-def get_wall_image(gym, section, walls_path: str, static_assets_path: str = 'static') -> str:
+def get_wall_image(gym: str, section: str, walls_path: str, static_assets_path: str = 'static') -> str:
     """
     Given a gym section, return its image url
     """
@@ -57,7 +60,7 @@ def get_stats(database: Database) -> dict[str, int]:
     }
 
 
-def get_wall_radius(session, database: Database, wall_path=None):
+def get_wall_radius(session: SessionMixin, database: Database, wall_path=None) -> float:
     """
     Gets the radius of the circe used to mark holds for
     a specific wall.
@@ -68,7 +71,7 @@ def get_wall_radius(session, database: Database, wall_path=None):
     return db_controller.get_walls_radius_all(database)[wall_path]
 
 
-def get_boulders_list(gym: str, filters, database: Database, session):
+def get_boulders_list(gym: str, filters: Data, database: Database, session) -> list[Data]:
     """
     Given a gym and a set of filters return the list of
     boulders that match the specified criteria.

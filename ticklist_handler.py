@@ -1,4 +1,5 @@
 from pymongo.database import Database
+from werkzeug.local import LocalProxy
 from werkzeug.utils import secure_filename
 
 from db import mongodb_controller
@@ -8,14 +9,14 @@ from config import *
 from models import TickListProblem
 
 
-def get_wall_radius(wall_path: str, database: Database):
+def get_wall_radius(wall_path: str, database: Database) -> float:
     """
     Wall path is expected to be: 'gym/wall'
     """
     return mongodb_controller.get_walls_radius_all(database)[wall_path]
 
 
-def delete_problem_from_ticklist(request, current_user, database: Database):
+def delete_problem_from_ticklist(request: Request, current_user: LocalProxy, database: Database):
     """
     Delete a problem from a user's ticklist
     """

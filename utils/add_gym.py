@@ -1,5 +1,6 @@
 import argparse
 import os
+from typing import Optional
 import pymongo
 
 from PIL import Image
@@ -16,14 +17,14 @@ image_extensions = ('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')
 
 
 class Coordinates():
-    def __init__(self, latitude=None, longitude=None):
-        self.latitude = latitude
-        self.longitude = longitude
+    def __init__(self, latitude: Optional[float] = None, longitude: Optional[float] = None):
+        self.latitude: float = latitude
+        self.longitude: float = longitude
 
     def has_values(self) -> bool:
         return self.latitude is not None and self.longitude is not None
 
-    def get_coords(self):
+    def get_coords(self) -> list[float]:
         return [self.latitude, self.longitude]
 
 
@@ -53,7 +54,7 @@ def convert_to_JPG(filename: str, gym_code=None, is_fullpath: bool = True) -> No
     os.remove(filename)
 
 
-def move_to_gym_dir(filename: str, images_path: str, gym_code):
+def move_to_gym_dir(filename: str, images_path: str, gym_code: str):
     """
     Move a file from a source directory (images_path + filename) to
     the directory inside the application were wall images will be searched
@@ -61,7 +62,7 @@ def move_to_gym_dir(filename: str, images_path: str, gym_code):
     return copyfile(f'{images_path}/{filename}', f'{walls_path}/{gym_code}/{filename}')
 
 
-def create_walls_collection(gym_code, radius: float = 0.02) -> None:
+def create_walls_collection(gym_code: str, radius: float = 0.02) -> None:
     """
     Create the new gym collection and include its walls
     """
@@ -78,7 +79,7 @@ def create_walls_collection(gym_code, radius: float = 0.02) -> None:
         gym_collection.insert_one(wall_data)
 
 
-def create_boulders_collection(gym_code):
+def create_boulders_collection(gym_code) -> None:
     """
     Not sure this is required. The collection will be created
     when the first boulder is inserted.
@@ -86,7 +87,7 @@ def create_boulders_collection(gym_code):
     pass
 
 
-def add_gym_to_gyms_list(gym_code, gym_name, coordinates: Coordinates = Coordinates()) -> None:
+def add_gym_to_gyms_list(gym_code: str, gym_name: str, coordinates: Coordinates = Coordinates()) -> None:
     """
     Add the new gym to the list of supported gyms
     """
@@ -100,7 +101,7 @@ def add_gym_to_gyms_list(gym_code, gym_name, coordinates: Coordinates = Coordina
     walls_collection.insert_one(wall_data)
 
 
-def add_new_gym(gym_code, gym_name, images_path, location) -> None:
+def add_new_gym(gym_code: str, gym_name: str, images_path: str, location: list[float]) -> None:
     """
     Add a new gym to the application. To do so, at least
     the gym_code and gym_name are required. The location and
@@ -140,7 +141,7 @@ def add_new_gym(gym_code, gym_name, images_path, location) -> None:
     print(f'Done! {gym_name} successfully created!')
 
 
-def create_gym_folder(gym_code) -> bool:
+def create_gym_folder(gym_code: str) -> bool:
     """
     Create a new folder inside the wall images directory
     """
