@@ -10,7 +10,7 @@ parser.add_argument('--directory', '-d', type=str,
                     help='image directory')
 
 
-def main(path):
+def main(path) -> None:
     files = []
     # r=root, d=directories, f = files
     for r, d, f in os.walk(path):
