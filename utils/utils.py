@@ -35,7 +35,7 @@ def get_wall_image(gym: str, section: str, walls_path: str, static_assets_path: 
 
 def get_stats(database: Database) -> dict[str, int]:
     """
-    Gt current app stats from DDBB: Number of problems, routes and Gyms.
+    Get current app stats from DDBB: Number of problems, routes and Gyms.
     """
     gyms = db_controller.get_gyms(database)
     total_gyms = len(gyms)
