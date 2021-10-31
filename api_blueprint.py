@@ -1,6 +1,9 @@
+from typing import Union
 from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory
 import os
 import pymongo
+from pymongo.database import Database
+from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 
 api_blueprint = Blueprint(
@@ -12,7 +15,7 @@ api_blueprint = Blueprint(
 )
 
 
-def get_db():
+def get_db() -> Database:
     """
     Opens a new database connection if there is none yet for the
     current application context.
@@ -30,7 +33,7 @@ def get_db():
     return top.database
 
 
-def get_creds():
+def get_creds() -> Union[str, None]:
     creds = None
     if os.path.isfile('creds.txt'):
         with open('creds.txt', 'r') as f:
@@ -38,13 +41,13 @@ def get_creds():
     else:
         try:
             creds = os.environ['MONGO_DB']
-        except:
+        except Exception:
             pass
     return creds
 
 
 @api_blueprint.route('/docs/swagger.json')
-def api_docs():
+def api_docs() -> Response:
     """
     Raw swagger document endpoint
     """
@@ -52,7 +55,7 @@ def api_docs():
 
 
 @api_blueprint.route('/gym/list', methods=['GET'])
-def get_gyms():
+def get_gyms() -> Response:
     """Gym list.
     ---
     get:
@@ -83,7 +86,7 @@ def get_gyms():
 
 
 @api_blueprint.route('/gym/<string:gym_id>/walls', methods=['GET'])
-def get_gym_walls(gym_id):
+def get_gym_walls(gym_id: str) -> Response:
     """Walls associated to the given gym.
     ---
     get:
@@ -117,7 +120,7 @@ def get_gym_walls(gym_id):
 
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
-def get_gym_pretty_name(gym_id):
+def get_gym_pretty_name(gym_id: str) -> Response:
     """Given a gym id get its display name
     ---
     get:
@@ -149,8 +152,9 @@ def get_gym_pretty_name(gym_id):
     """
     return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db())))
 
+
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
-def get_gym_wall_name(gym_id, wall_section):
+def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
     """Get a wall name given the gym and the section
     ---
     get:
@@ -184,8 +188,9 @@ def get_gym_wall_name(gym_id, wall_section):
     """
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db())))
 
+
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
-def get_gym_boulders(gym_id):
+def get_gym_boulders(gym_id: str) -> Response:
     """Boulders associated to the given gym.
     ---
     get:
@@ -216,4 +221,3 @@ def get_gym_boulders(gym_id):
             Server Error
     """
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
-

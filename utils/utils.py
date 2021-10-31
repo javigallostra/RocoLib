@@ -2,6 +2,7 @@ import json
 import math
 from flask import url_for
 import datetime
+from pymongo.database import Database
 from werkzeug.utils import secure_filename
 
 from db import mongodb_controller as db_controller
@@ -29,7 +30,7 @@ def get_wall_image(gym, section, walls_path: str, static_assets_path: str = 'sta
     )
 
 
-def get_stats(database) -> dict[str, int]:
+def get_stats(database: Database) -> dict[str, int]:
     """
     Gt current app stats from DDBB: Number of problems, routes and Gyms.
     """
@@ -56,7 +57,7 @@ def get_stats(database) -> dict[str, int]:
     }
 
 
-def get_wall_radius(session, database, wall_path=None):
+def get_wall_radius(session, database: Database, wall_path=None):
     """
     Gets the radius of the circe used to mark holds for
     a specific wall.
@@ -67,7 +68,7 @@ def get_wall_radius(session, database, wall_path=None):
     return db_controller.get_walls_radius_all(database)[wall_path]
 
 
-def get_boulders_list(gym, filters, database, session):
+def get_boulders_list(gym: str, filters, database: Database, session):
     """
     Given a gym and a set of filters return the list of
     boulders that match the specified criteria.
@@ -95,7 +96,7 @@ def get_boulders_list(gym, filters, database, session):
     )
 
 
-def get_closest_gym(long, lat, database):
+def get_closest_gym(long: float, lat: float, database: Database) -> str:
     """
     Given a set of coordinates, return the closest gym
     to that pair of coordinates.
