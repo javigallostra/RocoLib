@@ -1,10 +1,11 @@
-from typing import Any, Union
+from typing import Any, Optional, Union
 import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
 from datetime import datetime
 from __future__ import annotations
+from pymongo.database import Database
 
 TICKLIST = "ticklist"
 
@@ -31,13 +32,13 @@ class User(UserMixin):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def set_password(self, password) -> None:
+    def set_password(self, password: str) -> None:
         self.password = generate_password_hash(password)
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
 
-    def save(self, database) -> None:
+    def save(self, database: Database) -> None:
         if not self.id:
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
@@ -50,14 +51,14 @@ class User(UserMixin):
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_by_id(user_id, database) -> Union[User, None]:
+    def get_by_id(user_id, database: Database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
         if not user_data:
             return None
         return User(user_data)
 
     @staticmethod
-    def get_user_by_email(email, database) -> Union[User, None]:
+    def get_user_by_email(email, database: Database) -> Union[User, None]:
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None

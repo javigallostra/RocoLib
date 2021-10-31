@@ -1,9 +1,11 @@
-from typing import Any
+from typing import Any, Optional
 from bson.objectid import ObjectId
 
 import functools
 from datetime import datetime
-from utils.typing import Element
+
+from pymongo.database import Database
+from utils.typing import Data
 
 
 def serializable(func):
@@ -32,7 +34,7 @@ def serializable(func):
     return wrapper
 
 
-def make_object_serializable(element: Element) -> Element:
+def make_object_serializable(element: Data) -> Data:
     """
     Make sure an element can be serialized
     """
@@ -43,7 +45,7 @@ def make_object_serializable(element: Element) -> Element:
     return element
 
 
-def make_list_serializable(data: list[Element]) -> list[Element]:
+def make_list_serializable(data: list[Data]) -> list[Data]:
     """
     Given a list, make sure all of its
     elements are serializable
@@ -56,7 +58,7 @@ def make_list_serializable(data: list[Element]) -> list[Element]:
 
 
 @serializable
-def get_gyms(database) -> list[str]:
+def get_gyms(database: Database) -> list[Data]:
     """
     Get the list of available gyms
     """
@@ -64,7 +66,7 @@ def get_gyms(database) -> list[str]:
 
 
 @serializable
-def get_gym_walls(gym: str, database) -> list[str]:
+def get_gym_walls(gym: str, database: Database) -> list[Data]:
     """
     Return the list of available walls for a specific
     Gym
@@ -72,7 +74,7 @@ def get_gym_walls(gym: str, database) -> list[str]:
     return list(database[f'{gym}_walls'].find())
 
 
-def get_gym_pretty_name(gym: str, database) -> str:
+def get_gym_pretty_name(gym: str, database: Database) -> str:
     """
     Get the actual Gym name from its path
     """
@@ -80,7 +82,7 @@ def get_gym_pretty_name(gym: str, database) -> str:
     return data.get('name', '') if data else ''
 
 
-def get_wall_name(gym_name: str, wall_section, database) -> str:
+def get_wall_name(gym_name: str, wall_section: str, database: Database) -> str:
     """
     Get the actual wall name from its path
     """
@@ -89,7 +91,7 @@ def get_wall_name(gym_name: str, wall_section, database) -> str:
     return data.get('name', '') if data else ''
 
 
-def get_gym_section_name(gym: str, section, database) -> str:
+def get_gym_section_name(gym: str, section, database: Database) -> str:
     """
     Given a gym and a section image filename, return the
     proper name of the section
@@ -97,7 +99,7 @@ def get_gym_section_name(gym: str, section, database) -> str:
     return get_wall_name(gym, section, database)
 
 
-def get_walls_radius_all(database):
+def get_walls_radius_all(database: Database):
     """
     Get the list of all radius used to paint the
     circles in the different wall sections:
@@ -121,7 +123,7 @@ def get_walls_radius_all(database):
 
 
 @serializable
-def get_boulders(gym, database):
+def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of boulders for the specified gym
     """
@@ -130,7 +132,7 @@ def get_boulders(gym, database):
 
 
 @serializable
-def get_routes(gym, database):
+def get_routes(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of routes for the specified gym
     """
@@ -139,7 +141,7 @@ def get_routes(gym, database):
 
 
 @serializable
-def put_boulder(boulder_data, gym, database):
+def put_boulder(boulder_data: Data, gym: str, database: Database):
     """
     Store a new boulder for the specified gym
     """
@@ -147,7 +149,7 @@ def put_boulder(boulder_data, gym, database):
 
 
 @serializable
-def put_route(route_data, gym, database):
+def put_route(route_data: Data, gym: str, database: Database):
     """
     Store a new route for the specified gym
     """
@@ -155,7 +157,7 @@ def put_route(route_data, gym, database):
 
 
 @serializable
-def put_boulder_in_ticklist(boulder_data, user_id, database, mark_as_done_clicked=False):
+def put_boulder_in_ticklist(boulder_data: Data, user_id, database: Database, mark_as_done_clicked: bool = False) -> list[Data]:
     """
     Store a new boulder in the user's ticklist, change its
     is_done status or add a new climbed date
@@ -167,7 +169,7 @@ def put_boulder_in_ticklist(boulder_data, user_id, database, mark_as_done_clicke
     USERS = 'users'
     user = database[USERS].find_one({'id': user_id})
     # get ticklist
-    ticklist = user.get(TICKLIST, [])
+    ticklist: list[Data] = user.get(TICKLIST, [])
     # check if problem is already in the user's ticklist
     boulder = list(filter(lambda x: x[IDEN] == boulder_data[IDEN], ticklist))
     # Boulder is not in ticklist
@@ -190,7 +192,7 @@ def put_boulder_in_ticklist(boulder_data, user_id, database, mark_as_done_clicke
     return ticklist
 
 
-def update_user_ticklist(database, ticklist, user, user_id):
+def update_user_ticklist(database: Database, ticklist: list[Data], user, user_id) -> None:
     """
     Update a user's ticklist, both DDBB and in memory projections
     """
@@ -198,7 +200,7 @@ def update_user_ticklist(database, ticklist, user, user_id):
     database['users'].update_one({'id': user_id}, {'$set': user})
 
 
-def find_boulder_index(boulder_data, boulders) -> int:
+def find_boulder_index(boulder_data: Data, boulders: list[Data]) -> int:
     """
     Given a list of boulders and the data from a single boulder,
     find the boulder in the list and return its index if found.
@@ -212,7 +214,7 @@ def find_boulder_index(boulder_data, boulders) -> int:
 
 
 @serializable
-def set_climbed_date(ticklist, index, climbed_date=None):
+def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[datetime] = None) -> list[Data]:
     """
     Given a list of boulders and an index, update the climbed
     date of the boulder at the given index
@@ -231,12 +233,12 @@ def set_climbed_date(ticklist, index, climbed_date=None):
 
 
 @serializable
-def delete_boulder_in_ticklist(boulder_data, user_id, database):
+def delete_boulder_in_ticklist(boulder_data: Data, user_id, database: Database) -> list[Data]:
     """
     Delete the selected problem from the user's ticklist
     """
     user = database['users'].find_one({'id': user_id})
-    filtered_list = []
+    filtered_list: list[Data] = []
     if user:
         # get ticklist
         ticklist = user.get('ticklist', [])
@@ -249,7 +251,7 @@ def delete_boulder_in_ticklist(boulder_data, user_id, database):
 
 
 @serializable
-def get_ticklist_boulder(boulder, database):
+def get_ticklist_boulder(boulder, database: Database) -> Data:
     """
     Given a ticklist problem, get the remaining problem fields
     """
@@ -267,7 +269,7 @@ def get_ticklist_boulder(boulder, database):
 
 
 @serializable
-def get_boulder_by_name(gym, name, database):
+def get_boulder_by_name(gym, name, database: Database):
     """
     Given a boulder name and a Gym, return the boulder data
     """
@@ -276,7 +278,7 @@ def get_boulder_by_name(gym, name, database):
 
 
 @serializable
-def update_boulder_by_id(gym, boulder_id, data, database):
+def update_boulder_by_id(gym, boulder_id, data, database: Database):
     """
     Given a boulder id, a Gym, and new boulder data update the
     whole body of data for that boulder
@@ -287,13 +289,13 @@ def update_boulder_by_id(gym, boulder_id, data, database):
 
 @serializable
 def get_boulders_filtered(
-        gym,
-        database,
+        gym: str,
+        database: Database,
         conditions=None,
         equals=None,
         ranged=None,
         contains=None
-    ) -> dict[str, Any]:
+    ) -> dict[str, list[Data]]:
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them
@@ -330,7 +332,7 @@ def get_boulders_filtered(
 
 
 @serializable
-def save_user(user_data, database):
+def save_user(user_data: Data, database: Database):
     """
     Persist user data
     """
@@ -338,7 +340,7 @@ def save_user(user_data, database):
 
 
 @serializable
-def get_user_data_by_id(user_id, database):
+def get_user_data_by_id(user_id, database: Database):
     """
     Given a user id get its data
     """
@@ -347,7 +349,7 @@ def get_user_data_by_id(user_id, database):
 
 
 @serializable
-def get_user_data_by_email(email, database):
+def get_user_data_by_email(email, database: Database):
     """
     Given a user email get its data
     """

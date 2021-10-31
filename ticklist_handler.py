@@ -1,3 +1,4 @@
+from pymongo.database import Database
 from werkzeug.utils import secure_filename
 
 from db import mongodb_controller
@@ -7,14 +8,14 @@ from config import *
 from models import TickListProblem
 
 
-def get_wall_radius(wall_path, database):
+def get_wall_radius(wall_path: str, database: Database):
     """
     Wall path is expected to be: 'gym/wall'
     """
     return mongodb_controller.get_walls_radius_all(database)[wall_path]
 
 
-def delete_problem_from_ticklist(request, current_user, database):
+def delete_problem_from_ticklist(request, current_user, database: Database):
     """
     Delete a problem from a user's ticklist
     """
@@ -37,7 +38,7 @@ def delete_problem_from_ticklist(request, current_user, database):
     ]
 
 
-def load_user_ticklist(current_user, database):
+def load_user_ticklist(current_user, database: Database):
     """
     Load a user's ticklist
     """
@@ -63,7 +64,7 @@ def load_user_ticklist(current_user, database):
     return boulder_list, walls_list
 
 
-def add_boulder_to_ticklist(request, current_user, database, mark_as_done_clicked=False):
+def add_boulder_to_ticklist(request, current_user, database: Database, mark_as_done_clicked=False) -> list[TickListProblem]:
     """
     Add a boulder to a user's ticklist
     """

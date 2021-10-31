@@ -5,6 +5,7 @@ import datetime
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
+from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -15,6 +16,7 @@ from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
+from utils.typing import Data
 
 import pymongo
 import db.mongodb_controller as db_controller
@@ -53,7 +55,7 @@ def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
 
-def get_db():
+def get_db() -> Database:
     """
     Opens a new database connection if there is none yet for the
     current application context.
@@ -344,7 +346,7 @@ def save() -> Response:
     Save page handler
     """
     if request.method == 'POST':
-        data = {'rating': 0, 'raters': 0}
+        data: Data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
             data[key.lower()] = val
             if key.lower() == 'holds':
@@ -495,8 +497,8 @@ def get_nearest_gym() -> Response:
     """
     closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']),
-        float(dict(request.form)['latitude'],
-              get_db())
+        float(dict(request.form)['latitude']),
+        get_db()
     )
     # Set closest gym as actual gym
     session['gym'] = closest_gym
@@ -504,14 +506,14 @@ def get_nearest_gym() -> Response:
 
 
 @app.errorhandler(404)
-def page_not_found(error) -> str:
+def page_not_found(error) -> tuple[str, int]:
     # pylint: disable=no-member
     app.logger.error('Page not found: %s', (request.path))
     return render_template('errors/404.html'), 404
 
 
 @app.errorhandler(400)
-def bad_request(error) -> str:
+def bad_request(error) -> tuple[str, int]:
     # pylint: disable=no-member
     app.logger.error('Bad request: %s', (request.path))
     return render_template('errors/400.html'), 400
