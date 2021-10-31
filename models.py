@@ -1,10 +1,10 @@
+from __future__ import annotations
 from typing import Any, Optional, Union
 import uuid
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
 from datetime import datetime
-from __future__ import annotations
 from pymongo.database import Database
 
 TICKLIST = "ticklist"
