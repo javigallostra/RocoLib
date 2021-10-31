@@ -79,6 +79,8 @@ def get_gym_walls(gym: str, database: Database) -> list[Data]:
 def get_gym_pretty_name(gym: str, database: Database) -> str:
     """
     Get the actual Gym name from its path
+
+    IF the gym cannot be found, return an empty string
     """
     data = database['walls'].find_one({'id': gym}, {'name': 1})
     return data.get('name', '') if data else ''
@@ -86,7 +88,9 @@ def get_gym_pretty_name(gym: str, database: Database) -> str:
 
 def get_wall_name(gym_name: str, wall_section: str, database: Database) -> str:
     """
-    Get the actual wall name from its path
+    Get the actual wall name from its path as a string
+
+    If the wall cannot be found, return an empty string
     """
     data = database[f'{gym_name}_walls'].find_one(
         {'image': wall_section}, {'name': 1})
@@ -96,7 +100,7 @@ def get_wall_name(gym_name: str, wall_section: str, database: Database) -> str:
 def get_gym_section_name(gym: str, section, database: Database) -> str:
     """
     Given a gym and a section image filename, return the
-    proper name of the section
+    proper name of the section as a string
     """
     return get_wall_name(gym, section, database)
 
@@ -128,6 +132,9 @@ def get_walls_radius_all(database: Database) -> dict[str, float]:
 def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of boulders for the specified gym
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of raw boulder data.
     """
     raw_boulder_data = list(database[f'{gym}_boulders'].find())
     return {'Items': raw_boulder_data}
@@ -137,6 +144,9 @@ def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
 def get_routes(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of routes for the specified gym
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of raw route data.
     """
     raw_route_data = list(database[f'{gym}_routes'].find())
     return {'Items': raw_route_data}
@@ -163,6 +173,8 @@ def put_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database
     """
     Store a new boulder in the user's ticklist, change its
     is_done status or add a new climbed date
+
+    Return the updated ticklist
     """
     IS_DONE = 'is_done'
     IDEN = 'iden'
@@ -220,6 +232,8 @@ def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[da
     """
     Given a list of boulders and an index, update the climbed
     date of the boulder at the given index
+
+    Return the updated ticklist
     """
     DATE_CLIMBED = 'date_climbed'
     if not climbed_date:
@@ -238,6 +252,8 @@ def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[da
 def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database) -> list[Data]:
     """
     Delete the selected problem from the user's ticklist
+
+    Return the filtered list of boulders with the given one removed
     """
     user: Data = database['users'].find_one({'id': user_id})
     filtered_list: list[Data] = []
@@ -256,6 +272,8 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
 def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
     """
     Given a ticklist problem, get the remaining problem fields
+
+    Return a boulder data with 'gym', 'is_done', and 'date_climbed' fields
     """
     boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
         ObjectId(boulder.iden))
@@ -274,6 +292,8 @@ def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
 def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     """
     Given a boulder name and a Gym, return the boulder data
+
+    Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one({'name': name})
     return boulder if boulder else {}
@@ -301,6 +321,9 @@ def get_boulders_filtered(
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of boulder data.
     """
     # if there are no conditions, return everything
     if not conditions:
@@ -337,6 +360,8 @@ def get_boulders_filtered(
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
     Persist user data
+
+    Insert user_data in the given database
     """
     return database['users'].insert_one(user_data)
 
@@ -345,6 +370,8 @@ def save_user(user_data: Data, database: Database) -> InsertOneResult:
 def get_user_data_by_id(user_id: str, database: Database) -> Data:
     """
     Given a user id get its data
+
+    Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'id': user_id})
     return user if user else {}
@@ -354,6 +381,8 @@ def get_user_data_by_id(user_id: str, database: Database) -> Data:
 def get_user_data_by_email(email: str, database: Database) -> Data:
     """
     Given a user email get its data
+
+    Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'email': email})
     return user if user else {}
