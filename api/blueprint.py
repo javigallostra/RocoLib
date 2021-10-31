@@ -154,6 +154,7 @@ def get_gym_pretty_name(gym_id):
     """
     return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db())))
 
+
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
 def get_gym_wall_name(gym_id, wall_section):
     """Get a wall name given the gym and the section
@@ -189,6 +190,7 @@ def get_gym_wall_name(gym_id, wall_section):
     """
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db())))
 
+
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
 def get_gym_boulders(gym_id):
     """Boulders associated to the given gym.
@@ -221,6 +223,7 @@ def get_gym_boulders(gym_id):
             Server Error
     """
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
+
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
 def boulder_create(gym_id, wall_section):
@@ -300,4 +303,4 @@ def boulder_create(gym_id, wall_section):
             return jsonify(dict(created=True, _id=resp))
           return jsonify(dict(created=False))
         except ValidationError as err:
-          return jsonify(dict(created=False, errors=err.messages)), 400          
+          return jsonify(dict(created=False, errors=err.messages)), 400
