@@ -2,8 +2,11 @@ import os
 import json
 import ast
 import datetime
+from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
+from pymongo.database import Database
+from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -13,11 +16,12 @@ from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
+from utils.typing import Data
 
 import pymongo
 import db.mongodb_controller as db_controller
 from config import *
-from utils import utils
+import utils.utils as utils
 
 import ticklist_handler
 
@@ -47,11 +51,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-def make_cache_key_create():
+def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
 
-def get_db():
+def get_db() -> Database:
     """
     Opens a new database connection if there is none yet for the
     current application context.
@@ -70,7 +74,7 @@ def get_db():
 
 
 @app.teardown_appcontext
-def close_db_connection(exception):
+def close_db_connection(exception) -> None:
     """
     Closes the database again at the end of the request.
     """
@@ -83,7 +87,7 @@ def close_db_connection(exception):
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id) -> Union[User, None]:
     return User.get_by_id(user_id, get_db())
 
 
@@ -91,7 +95,7 @@ def load_user(user_id):
 
 
 @app.route('/favicon.ico')
-def favicon():
+def favicon() -> Response:
     return send_from_directory(
         os.path.join(app.root_path, 'static/images/favicon'),
         'favicon.ico',
@@ -99,7 +103,7 @@ def favicon():
     )
 
 
-def get_creds():
+def get_creds() -> Union[str, None]:
     creds = None
     if os.path.isfile('creds.txt'):
         if session.get('creds', ''):
@@ -116,7 +120,7 @@ def get_creds():
     return creds
 
 
-def get_gym():
+def get_gym() -> str:
     """
     Get the current session's selected gym.
     """
@@ -126,7 +130,7 @@ def get_gym():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+def home() -> str:
     """
     Homepage handler.
     """
@@ -138,12 +142,13 @@ def home():
         gyms=gyms,
         selected=get_gym(),
         current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
-        stats=utils.get_stats(get_db()))
+        stats=utils.get_stats(get_db())
+    )
 
 
 @app.route('/create')
 @cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
-def create():
+def create() -> str:
     """
     Create page handler.
     """
@@ -159,7 +164,7 @@ def create():
 
 
 @app.route('/create_boulder')
-def create_boulder():
+def create_boulder() -> str:
     """
     Create boulder page handler.
     """
@@ -167,7 +172,7 @@ def create_boulder():
 
 
 @app.route('/create_route')
-def create_route():
+def create_route() -> str:
     """
     Create route page handler.
     """
@@ -175,7 +180,7 @@ def create_route():
 
 
 @app.route('/explore')
-def explore():
+def explore() -> str:
     """
     Explore page handler.
     """
@@ -183,7 +188,7 @@ def explore():
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
-def explore_boulders():
+def explore_boulders() -> str:
     """
     Explore boulders page handler.
     """
@@ -224,7 +229,7 @@ def explore_boulders():
 
 
 @app.route('/rate_boulder', methods=['POST'])
-def rate_boulder():
+def rate_boulder() -> Union[Response, NoReturn]:
     """
     Rate boulder handler.
     """
@@ -254,7 +259,7 @@ def rate_boulder():
 
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
-def load_boulder():
+def load_boulder() -> Union[str, NoReturn]:
     """
     Load a boulder in the required format to be rendered in the page.
     """
@@ -297,7 +302,7 @@ def load_boulder():
 
 
 @app.route('/explore_routes')
-def explore_routes():
+def explore_routes() -> str:
     """
     Handler for explore_routes page.
     """
@@ -305,7 +310,7 @@ def explore_routes():
 
 
 @app.route('/about_us')
-def render_about_us():
+def render_about_us() -> str:
     """
     About us page handler.
     """
@@ -313,7 +318,7 @@ def render_about_us():
 
 
 @app.route('/walls/<string:wall_section>')
-def wall_section(wall_section):
+def wall_section(wall_section) -> str:
     """
     Load a wall section to create a boulder/route page handler.
     """
@@ -336,12 +341,12 @@ def wall_section(wall_section):
 
 
 @app.route('/save', methods=['POST'])
-def save():
+def save() -> Response:
     """
     Save page handler
     """
     if request.method == 'POST':
-        data = {'rating': 0, 'raters': 0}
+        data: Data = {'rating': 0, 'raters': 0}
         for key, val in request.form.items():
             data[key.lower()] = val
             if key.lower() == 'holds':
@@ -352,7 +357,7 @@ def save():
 
 
 @app.route('/save_boulder', methods=['POST'])
-def save_boulder():
+def save_boulder() -> Union[str, NoReturn]:
     """
     Save boulder page handler.
     """
@@ -373,7 +378,7 @@ def save_boulder():
 # route decorator should be the outermost decorator
 @app.route('/add_gym', methods=['GET', 'POST'])
 @login_required
-def add_gym():
+def add_gym() -> str:
     """
     Add gym page handler.
     """
@@ -382,7 +387,7 @@ def add_gym():
 
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login() -> Union[str, Response]:
     """
     Login page handler.
     """
@@ -401,7 +406,7 @@ def login():
 
 
 @app.route('/signup/', methods=['GET', 'POST'])
-def show_signup_form():
+def show_signup_form() -> Union[str, Response]:
     """
     Sign up form page handler.
     """
@@ -431,7 +436,7 @@ def show_signup_form():
 
 
 @app.route('/logout')
-def logout():
+def logout() -> Response:
     """
     Logout page handler
     """
@@ -444,7 +449,7 @@ def logout():
 
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
-def tick_list():
+def tick_list() -> Union[str, Response]:
     """
     Tick list page handler.
     """
@@ -472,7 +477,7 @@ def tick_list():
 
 
 @app.route('/delete_ticklist_problem', methods=['POST'])
-def delete_ticklist_problem():
+def delete_ticklist_problem() -> Union[Response, NoReturn]:
     """
     Delete tick list problem page handler.
     """
@@ -484,7 +489,7 @@ def delete_ticklist_problem():
 
 
 @app.route('/get_nearest_gym', methods=['POST'])
-def get_nearest_gym():
+def get_nearest_gym() -> Response:
     """
     Given a set of coordinates in the form of
     latitude, longitude, return the closest gym
@@ -492,8 +497,8 @@ def get_nearest_gym():
     """
     closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']),
-        float(dict(request.form)['latitude'],
-              get_db())
+        float(dict(request.form)['latitude']),
+        get_db()
     )
     # Set closest gym as actual gym
     session['gym'] = closest_gym
@@ -501,14 +506,14 @@ def get_nearest_gym():
 
 
 @app.errorhandler(404)
-def page_not_found(error):
+def page_not_found(error) -> tuple[str, int]:
     # pylint: disable=no-member
     app.logger.error('Page not found: %s', (request.path))
     return render_template('errors/404.html'), 404
 
 
 @app.errorhandler(400)
-def bad_request(error):
+def bad_request(error) -> tuple[str, int]:
     # pylint: disable=no-member
     app.logger.error('Bad request: %s', (request.path))
     return render_template('errors/400.html'), 400

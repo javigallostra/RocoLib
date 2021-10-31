@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 LABEL maintainer="Juan Gallostra <juangallostra@gmail.com>"
 
 RUN apt-get update -y && \
-    apt-get install -y python3.8 python3.8-dev python3-pip
+    apt-get install -y python3.10 python3.10-dev python3-pip
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /rocolib/requirements.txt
