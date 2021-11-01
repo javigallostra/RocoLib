@@ -34,6 +34,10 @@ def get_db() -> Database:
 
 
 def get_creds() -> Union[str, None]:
+    """
+    Get the credentials for MongoDB either from a local file
+    or from an evironment variable
+    """
     creds = None
     if os.path.isfile('creds.txt'):
         with open('creds.txt', 'r') as f:

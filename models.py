@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Optional, Union
 import uuid
+from utils.typing import Data
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
@@ -16,12 +17,15 @@ class User(UserMixin):
     """
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        self.id = None
-        self.name = None
-        self.email = None
+        """
+        Initialise attributes
+        """
+        self.id: str = None
+        self.name: str = None
+        self.email: str = None
         self.password: str = None
         self.is_admin: bool = False
-        self.ticklist: list = []
+        self.ticklist: list[Union[TickListProblem, Data]] = []
 
         for dictionary in initial_data:
             for key in dictionary:
@@ -33,12 +37,21 @@ class User(UserMixin):
             setattr(self, key, kwargs[key])
 
     def set_password(self, password: str) -> None:
+        """
+        Set the password for the current user
+        """
         self.password = generate_password_hash(password)
 
     def check_password(self, password: str) -> bool:
+        """
+        Return True if the password matches the one from the user
+        """
         return check_password_hash(self.password, password)
 
     def save(self, database: Database) -> None:
+        """
+        Save the current user data to the database
+        """
         if not self.id:
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
@@ -47,18 +60,32 @@ class User(UserMixin):
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 
-    def load_ticklist(self, ticklist_data):
+    def load_ticklist(self, ticklist_data: list[Data]) -> None:
+        """
+        Overwrite the ticklist attribute with new TickListProblems
+        created using the data given
+        """
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_by_id(user_id, database: Database) -> Union[User, None]:
+    def get_by_id(user_id: str, database: Database) -> Union[User, None]:
+        """
+        Return a User object if the user id is found in the database.
+        
+        Otherwise, return None.
+        """
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
         if not user_data:
             return None
         return User(user_data)
 
     @staticmethod
-    def get_user_by_email(email, database: Database) -> Union[User, None]:
+    def get_user_by_email(email: str, database: Database) -> Union[User, None]:
+        """
+        Return a User object if the user email is found in the database.
+
+        Otherwise, return None.
+        """
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None
@@ -74,11 +101,14 @@ class TickListProblem():
     """
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        self.iden = None
-        self.gym = None
-        self.section = None
-        self.is_done = False
-        self.date_climbed = None
+        """
+        Initialise attributes
+        """
+        self.iden: str = None
+        self.gym: str = None
+        self.section: str = None
+        self.is_done: bool = False
+        self.date_climbed: str = None
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
@@ -86,8 +116,15 @@ class TickListProblem():
             setattr(self, key, kwargs[key])
 
     def tick_problem(self) -> None:
+        """
+        Set the problem is_done value to True and
+        the date_climbed value to the current date
+        """
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
 
     def serialize(self) -> dict[str, Any]:
+        """
+        Return a serialized version of itself (a dictionary)
+        """
         return self.__dict__

@@ -12,7 +12,7 @@ import shutil
 walls_path = './static/images/walls'
 
 
-def delete_walls_collection(gym_code):
+def delete_walls_collection(gym_code: str) -> None:
     """
     Create the new gym collection and include its walls
     """
@@ -24,8 +24,9 @@ def delete_walls_collection(gym_code):
     return gym_walls_collection.drop()
 
 
-def delete_boulders_collection(gym_code):
+def delete_boulders_collection(gym_code: str) -> None:
     """
+    Delete the whole boulder collection from the given gym
     """
     with open('creds.txt') as f:
         creds = f.readline()
@@ -35,7 +36,7 @@ def delete_boulders_collection(gym_code):
     return boulders_collection.drop()
 
 
-def delete_gym_from_gyms_list(gym_code):
+def delete_gym_from_gyms_list(gym_code: str) -> None:
     """
     Delete the gym from the list of supported gyms
     """
@@ -48,16 +49,19 @@ def delete_gym_from_gyms_list(gym_code):
     walls_collection.delete_one(wall_to_delete)
 
 
-def delete_gym_folder(gym_code):
+def delete_gym_folder(gym_code: str) -> None:
     """
     Delete the gym static folder and its contents
     """
     shutil.rmtree(f'{walls_path}/{gym_code}')
 
 
-def delete_gym(gym_code):
+def delete_gym(gym_code: str) -> None:
     """
     Delete a gym and its related content from the DDBB
+
+    The related content includes boulders and walls data.
+    Also remove the gym from the gym list.
     """
     sure = input(
         'This action cannot be undone. Are you sure you want to proceed? [Y/N]: ')
