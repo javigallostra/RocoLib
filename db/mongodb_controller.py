@@ -1,10 +1,12 @@
 from typing import Any, Optional
-from bson.objectid import ObjectId
 
 import functools
 from datetime import datetime
+from bson.objectid import ObjectId
 
 from pymongo.database import Database
+from pymongo.results import InsertOneResult, UpdateResult
+from models import TickListProblem
 from utils.typing import Data
 
 
@@ -81,6 +83,8 @@ def get_gym_walls(gym: str, database: Database) -> list[Data]:
 def get_gym_pretty_name(gym: str, database: Database) -> str:
     """
     Get the actual Gym name from its path
+
+    IF the gym cannot be found, return an empty string
     """
     data = database['walls'].find_one({'id': gym}, {'name': 1})
     return data.get('name', '') if data else ''
@@ -88,7 +92,9 @@ def get_gym_pretty_name(gym: str, database: Database) -> str:
 
 def get_wall_name(gym_name: str, wall_section: str, database: Database) -> str:
     """
-    Get the actual wall name from its path
+    Get the actual wall name from its path as a string
+
+    If the wall cannot be found, return an empty string
     """
     data = database[f'{gym_name}_walls'].find_one(
         {'image': wall_section}, {'name': 1})
@@ -98,12 +104,12 @@ def get_wall_name(gym_name: str, wall_section: str, database: Database) -> str:
 def get_gym_section_name(gym: str, section, database: Database) -> str:
     """
     Given a gym and a section image filename, return the
-    proper name of the section
+    proper name of the section as a string
     """
     return get_wall_name(gym, section, database)
 
 
-def get_walls_radius_all(database: Database):
+def get_walls_radius_all(database: Database) -> dict[str, float]:
     """
     Get the list of all radius used to paint the
     circles in the different wall sections:
@@ -130,6 +136,9 @@ def get_walls_radius_all(database: Database):
 def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of boulders for the specified gym
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of raw boulder data.
     """
     raw_boulder_data = list(database[f'{gym}_boulders'].find())
     return {'Items': raw_boulder_data}
@@ -139,13 +148,16 @@ def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
 def get_routes(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of routes for the specified gym
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of raw route data.
     """
     raw_route_data = list(database[f'{gym}_routes'].find())
     return {'Items': raw_route_data}
 
 
 @serializable
-def put_boulder(boulder_data: Data, gym: str, database: Database):
+def put_boulder(boulder_data: Data, gym: str, database: Database) -> InsertOneResult:
     """
     Store a new boulder for the specified gym
     """
@@ -155,7 +167,7 @@ def put_boulder(boulder_data: Data, gym: str, database: Database):
 
 
 @serializable
-def put_route(route_data: Data, gym: str, database: Database):
+def put_route(route_data: Data, gym: str, database: Database) -> InsertOneResult:
     """
     Store a new route for the specified gym
     """
@@ -165,17 +177,19 @@ def put_route(route_data: Data, gym: str, database: Database):
 
 
 @serializable
-def put_boulder_in_ticklist(boulder_data: Data, user_id, database: Database, mark_as_done_clicked: bool = False) -> list[Data]:
+def put_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database, mark_as_done_clicked: bool = False) -> list[Data]:
     """
     Store a new boulder in the user's ticklist, change its
     is_done status or add a new climbed date
+
+    Return the updated ticklist
     """
     IS_DONE = 'is_done'
     IDEN = 'iden'
     DATE_CLIMBED = 'date_climbed'
     TICKLIST = 'ticklist'
     USERS = 'users'
-    user = database[USERS].find_one({'id': user_id})
+    user: Data = database[USERS].find_one({'id': user_id})
     # get ticklist
     ticklist: list[Data] = user.get(TICKLIST, [])
     # check if problem is already in the user's ticklist
@@ -200,7 +214,7 @@ def put_boulder_in_ticklist(boulder_data: Data, user_id, database: Database, mar
     return ticklist
 
 
-def update_user_ticklist(database: Database, ticklist: list[Data], user, user_id) -> None:
+def update_user_ticklist(database: Database, ticklist: list[Data], user: Data, user_id: str) -> None:
     """
     Update a user's ticklist, both DDBB and in memory projections
     """
@@ -226,6 +240,8 @@ def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[da
     """
     Given a list of boulders and an index, update the climbed
     date of the boulder at the given index
+
+    Return the updated ticklist
     """
     DATE_CLIMBED = 'date_climbed'
     if not climbed_date:
@@ -241,11 +257,13 @@ def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[da
 
 
 @serializable
-def delete_boulder_in_ticklist(boulder_data: Data, user_id, database: Database) -> list[Data]:
+def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database) -> list[Data]:
     """
     Delete the selected problem from the user's ticklist
+
+    Return the filtered list of boulders with the given one removed
     """
-    user = database['users'].find_one({'id': user_id})
+    user: Data = database['users'].find_one({'id': user_id})
     filtered_list: list[Data] = []
     if user:
         # get ticklist
@@ -259,11 +277,13 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id, database: Database) 
 
 
 @serializable
-def get_ticklist_boulder(boulder, database: Database) -> Data:
+def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
     """
     Given a ticklist problem, get the remaining problem fields
+
+    Return a boulder data with 'gym', 'is_done', and 'date_climbed' fields
     """
-    boulder_data = database[f'{boulder.gym}_boulders'].find_one(
+    boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
         ObjectId(boulder.iden))
     boulder_data['gym'] = boulder.gym
     boulder_data['is_done'] = boulder.is_done
@@ -277,16 +297,18 @@ def get_ticklist_boulder(boulder, database: Database) -> Data:
 
 
 @serializable
-def get_boulder_by_name(gym, name, database: Database):
+def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     """
     Given a boulder name and a Gym, return the boulder data
+
+    Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one({'name': name})
     return boulder if boulder else {}
 
 
 @serializable
-def update_boulder_by_id(gym, boulder_id, data, database: Database):
+def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Database) -> UpdateResult:
     """
     Given a boulder id, a Gym, and new boulder data update the
     whole body of data for that boulder
@@ -299,14 +321,17 @@ def update_boulder_by_id(gym, boulder_id, data, database: Database):
 def get_boulders_filtered(
         gym: str,
         database: Database,
-        conditions=None,
-        equals=None,
-        ranged=None,
-        contains=None
+        conditions: Optional[dict] = None,
+        equals: Optional[list] = None,
+        ranged: Optional[list] = None,
+        contains: Optional[list] = None
     ) -> dict[str, list[Data]]:
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of boulder data.
     """
     # if there are no conditions, return everything
     if not conditions:
@@ -336,30 +361,36 @@ def get_boulders_filtered(
 
     return {'Items': [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
 
-## User related functions
+# User related functions
 
 
 @serializable
-def save_user(user_data: Data, database: Database):
+def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
     Persist user data
+
+    Insert user_data in the given database
     """
     return database['users'].insert_one(user_data)
 
 
 @serializable
-def get_user_data_by_id(user_id, database: Database):
+def get_user_data_by_id(user_id: str, database: Database) -> Data:
     """
     Given a user id get its data
+
+    Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'id': user_id})
     return user if user else {}
 
 
 @serializable
-def get_user_data_by_email(email, database: Database):
+def get_user_data_by_email(email: str, database: Database) -> Data:
     """
     Given a user email get its data
+
+    Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'email': email})
     return user if user else {}
