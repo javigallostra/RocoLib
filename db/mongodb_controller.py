@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
-from RocoLib.models import TickListProblem
+from models import TickListProblem
 from utils.typing import Data
 
 
