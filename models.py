@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Any, Union
 import uuid
 from utils.typing import Data
 from flask_login import UserMixin
