@@ -9,6 +9,7 @@ from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from marshmallow import ValidationError
+from api.validation import is_gym_valid, is_section_valid
 
 
 api_blueprint = Blueprint(
@@ -284,8 +285,16 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           description:
             Server Error
     """
-    # TODO: Validate gym and section
     if request.method == 'POST':
+        # Validate gym and wall section
+        valid_gym = is_gym_valid(gym_id, get_db()) 
+        valid_section = is_section_valid(gym_id, wall_section, get_db())
+        if not valid_gym or not valid_section:
+            errors = []
+            errors.append(f'Gym {gym_id} does not exist') if not valid_gym else None
+            errors.append(f'Wall section {wall_section} does not exist') if not valid_section else None
+            return jsonify(dict(created=False, erorrs=errors)), 400  
+        # Get boulder data from request
         request.get_data()
         data = {'rating': 0, 'raters': 0, 'section': wall_section}
         if request.json is not None:
