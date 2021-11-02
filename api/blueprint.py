@@ -92,7 +92,7 @@ def get_gyms() -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(gyms=db_controller.get_gyms(get_db())))
+    return jsonify(dict(gyms=db_controller.get_gyms(get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/walls', methods=['GET'])
@@ -126,7 +126,7 @@ def get_gym_walls(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db())))
+    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
@@ -160,7 +160,7 @@ def get_gym_pretty_name(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db())))
+    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
@@ -196,7 +196,7 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db())))
+    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db()))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
@@ -230,7 +230,7 @@ def get_gym_boulders(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
+    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', []))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
@@ -293,7 +293,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
             errors = []
             errors.append({'gym_id': f'Gym {gym_id} does not exist'}) if not valid_gym else None
             errors.append({'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
-            return jsonify(dict(created=False, erorrs=errors)), 400  
+            return jsonify(dict(created=False, errors=errors)), 400  
         # Get boulder data from request
         request.get_data()
         data = {'rating': 0, 'raters': 0, 'section': wall_section}
@@ -313,10 +313,10 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         # Validate Boulder Schema
         try:
           from api.schemas import CreateBoulderRequestValidator
-          _ = CreateBoulderRequestValidator().load(data)
+          _ = CreateBoulderRequestValidator().load(data) # Will raise ValidationError if not valid
           resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
-          if resp is not None:
-            return jsonify(dict(created=True, _id=resp)), 201
-          return jsonify(dict(created=False)), 500
+          if resp is None:
+              return jsonify(dict(created=False)), 500
+          return jsonify(dict(created=True, _id=resp)), 201
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
