@@ -26,6 +26,7 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 
 ###### Some of the features on our TODO list are
 
+* Public API
 * Localize app
 * Include a map to locate registered gyms
 * Enable setting routes as well as problems
