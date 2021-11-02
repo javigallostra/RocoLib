@@ -291,8 +291,8 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         valid_section = is_section_valid(gym_id, wall_section, get_db())
         if not valid_gym or not valid_section:
             errors = []
-            errors.append(f'Gym {gym_id} does not exist') if not valid_gym else None
-            errors.append(f'Wall section {wall_section} does not exist') if not valid_section else None
+            errors.append({'gym_id': f'Gym {gym_id} does not exist'}) if not valid_gym else None
+            errors.append({'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
             return jsonify(dict(created=False, erorrs=errors)), 400  
         # Get boulder data from request
         request.get_data()
