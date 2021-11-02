@@ -258,7 +258,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           text/plain:
             schema: CreateBoulderRequestBody
       responses:
-        200:
+        201:
           description:
             Creation successful
           content:
@@ -316,7 +316,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           _ = CreateBoulderRequestValidator().load(data)
           resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
           if resp is not None:
-            return jsonify(dict(created=True, _id=resp))
+            return jsonify(dict(created=True, _id=resp)), 201
           return jsonify(dict(created=False)), 500
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
