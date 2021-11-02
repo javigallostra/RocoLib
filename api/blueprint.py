@@ -233,7 +233,7 @@ def get_gym_boulders(gym_id: str) -> Response:
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
-def boulder_create(gym_id, wall_section):
+def boulder_create(gym_id: str, wall_section: str) -> Response:
     """Create a new boulder
     ---
     post:
@@ -308,6 +308,6 @@ def boulder_create(gym_id, wall_section):
           resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
           if resp is not None:
             return jsonify(dict(created=True, _id=resp))
-          return jsonify(dict(created=False))
+          return jsonify(dict(created=False)), 500
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
