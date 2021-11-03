@@ -1,6 +1,6 @@
 # RocoLib
 
-Simple Web App to create and share boulders & routes for any climbing wall
+Simple Web App to create and share boulders & routes for any climbing wall.
 
 Check it out at:
 

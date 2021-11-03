@@ -295,28 +295,32 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
             errors.append({'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
             return jsonify(dict(created=False, errors=errors)), 400  
         # Get boulder data from request
-        request.get_data()
-        data = {'rating': 0, 'raters': 0, 'section': wall_section}
-        if request.json is not None:
-          for key, val in request.json.items():
-              data[key.lower()] = val
-        if request.form is not None:
-          for key, val in request.form.items():
-              data[key.lower()] = val
-              if key.lower() == 'holds':
-                  data[key.lower()] = ast.literal_eval(val)
+        request.get_data() # required?
+        data = {
+          'rating': 0, 
+          'raters': 0, 
+          'section': wall_section,
+          'time': datetime.datetime.now().isoformat()}
+        request_data = {}
+        from_form = False
+        # Handle the different content types
         if request.data is not None:
           request_data = json.loads(request.data)
-          for key, val in request_data.items():
-              data[key.lower()] = val
-        data['time'] = datetime.datetime.now().isoformat()
+        elif request.form is not None or request.json is not None:
+          request_data, from_form = request.json, False if request.json is not None else request.form, True
+
+        for key, val in request_data.items():
+          data[key.lower()] = val
+          if from_form and key.lower() == 'holds':
+            data[key.lower()] = ast.literal_eval(val)
+            
         # Validate Boulder Schema
         try:
           from api.schemas import CreateBoulderRequestValidator
           _ = CreateBoulderRequestValidator().load(data) # Will raise ValidationError if not valid
           resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
           if resp is None:
-              return jsonify(dict(created=False)), 500
+              return jsonify(dict(created=False)), 500 # something went wrong
           return jsonify(dict(created=True, _id=resp)), 201
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
