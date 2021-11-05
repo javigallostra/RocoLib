@@ -9,7 +9,7 @@ from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from marshmallow import ValidationError
-from api.validation import is_gym_valid, is_section_valid
+from api.validation import validate_gym_and_section
 
 
 api_blueprint = Blueprint(
@@ -287,24 +287,19 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
     """
     if request.method == 'POST':
         # Validate gym and wall section
-        valid_gym = is_gym_valid(gym_id, get_db())
-        valid_section = is_section_valid(gym_id, wall_section, get_db())
-        if not valid_gym or not valid_section:
-            errors = []
-            errors.append({'gym_id': f'Gym {gym_id} does not exist'}
-                          ) if not valid_gym else None
-            errors.append(
-                {'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
-            return jsonify(dict(created=False, errors=errors)), 400
+        db = get_db()
+        valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+        if not valid:
+          return jsonify(dict(created=False, errors=errors)), 400
         # Get boulder data from request
-        request.get_data()  # required?
-        data = {
+        base_data = {
             'rating': 0,
             'raters': 0,
             'section': wall_section,
             'time': datetime.datetime.now().isoformat()}
         request_data = {}
         from_form = False
+        request.get_data()  # required?
         # Handle the different content types
         if request.data is not None:
           request_data = json.loads(request.data)
@@ -312,16 +307,16 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           request_data, from_form = request.json, False if request.json is not None else request.form, True
 
         for key, val in request_data.items():
-          data[key.lower()] = val
+          base_data[key.lower()] = val
           if from_form and key.lower() == 'holds':
-            data[key.lower()] = ast.literal_eval(val)
+            base_data[key.lower()] = ast.literal_eval(val)
 
         # Validate Boulder Schema
         try:
           from api.schemas import CreateBoulderRequestValidator
           # Will raise ValidationError if not valid
-          _ = CreateBoulderRequestValidator().load(data)
-          resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
+          _ = CreateBoulderRequestValidator().load(base_data)
+          resp = db_controller.put_boulder(base_data, gym=gym_id, database=db)
           if resp is None:
               return jsonify(dict(created=False)), 500  # something went wrong
           return jsonify(dict(created=True, _id=resp)), 201
