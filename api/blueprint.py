@@ -287,20 +287,22 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
     """
     if request.method == 'POST':
         # Validate gym and wall section
-        valid_gym = is_gym_valid(gym_id, get_db()) 
+        valid_gym = is_gym_valid(gym_id, get_db())
         valid_section = is_section_valid(gym_id, wall_section, get_db())
         if not valid_gym or not valid_section:
             errors = []
-            errors.append({'gym_id': f'Gym {gym_id} does not exist'}) if not valid_gym else None
-            errors.append({'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
-            return jsonify(dict(created=False, errors=errors)), 400  
+            errors.append({'gym_id': f'Gym {gym_id} does not exist'}
+                          ) if not valid_gym else None
+            errors.append(
+                {'wall_section': f'Wall section {wall_section} does not exist'}) if not valid_section else None
+            return jsonify(dict(created=False, errors=errors)), 400
         # Get boulder data from request
-        request.get_data() # required?
+        request.get_data()  # required?
         data = {
-          'rating': 0, 
-          'raters': 0, 
-          'section': wall_section,
-          'time': datetime.datetime.now().isoformat()}
+            'rating': 0,
+            'raters': 0,
+            'section': wall_section,
+            'time': datetime.datetime.now().isoformat()}
         request_data = {}
         from_form = False
         # Handle the different content types
@@ -313,14 +315,15 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           data[key.lower()] = val
           if from_form and key.lower() == 'holds':
             data[key.lower()] = ast.literal_eval(val)
-            
+
         # Validate Boulder Schema
         try:
           from api.schemas import CreateBoulderRequestValidator
-          _ = CreateBoulderRequestValidator().load(data) # Will raise ValidationError if not valid
+          # Will raise ValidationError if not valid
+          _ = CreateBoulderRequestValidator().load(data)
           resp = db_controller.put_boulder(data, gym=gym_id, database=get_db())
           if resp is None:
-              return jsonify(dict(created=False)), 500 # something went wrong
+              return jsonify(dict(created=False)), 500  # something went wrong
           return jsonify(dict(created=True, _id=resp)), 201
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
