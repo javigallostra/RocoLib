@@ -1,15 +1,17 @@
-from typing import Union
+from typing import Tuple, Union
 from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory, request
 import json
 import os
 import ast
 import datetime
+from flask.wrappers import Request
 import pymongo
 from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from marshmallow import ValidationError
 from api.validation import validate_gym_and_section
+from api.schemas import BoulderFields
 
 
 api_blueprint = Blueprint(
@@ -54,6 +56,22 @@ def get_creds() -> Union[str, None]:
         except Exception:
             pass
     return creds
+
+
+def load_data(request: Request) -> Tuple(dict, bool):
+  """
+  Load data from the request body into a dict and return it
+  """
+  # Handle the different content types
+  request.get_data()  # required?
+  if request.data is not None:
+    return json.loads(request.data), False
+  elif request.form is not None:
+    return request.form, True
+  elif request.json is not None:
+    return request.json, False
+  else:
+    return dict(), False
 
 
 @api_blueprint.route('/docs/swagger.json')
@@ -288,27 +306,21 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
     if request.method == 'POST':
         # Validate gym and wall section
         db = get_db()
+        boulder_fields = BoulderFields()
         valid, errors = validate_gym_and_section(gym_id, wall_section, db)
         if not valid:
           return jsonify(dict(created=False, errors=errors)), 400
         # Get boulder data from request
         base_data = {
-            'rating': 0,
-            'raters': 0,
-            'section': wall_section,
-            'time': datetime.datetime.now().isoformat()}
-        request_data = {}
-        from_form = False
-        request.get_data()  # required?
-        # Handle the different content types
-        if request.data is not None:
-          request_data = json.loads(request.data)
-        elif request.form is not None or request.json is not None:
-          request_data, from_form = request.json, False if request.json is not None else request.form, True
+            boulder_fields.rating: 0,
+            boulder_fields.raters: 0,
+            boulder_fields.section: wall_section,
+            boulder_fields.time: datetime.datetime.now().isoformat()}
 
+        request_data, from_form = load_data(request)
         for key, val in request_data.items():
           base_data[key.lower()] = val
-          if from_form and key.lower() == 'holds':
+          if from_form and key.lower() == boulder_fields.holds:
             base_data[key.lower()] = ast.literal_eval(val)
 
         # Validate Boulder Schema

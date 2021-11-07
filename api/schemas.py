@@ -93,6 +93,7 @@ class CreateBoulderResponseBody(Schema):
     created = fields.Bool()
     _id = fields.Str()
 
+
 class CreateBoulderErrorResponse(Schema):
     created = fields.Bool()
     errors = fields.Dict()
@@ -132,6 +133,17 @@ class GymBoulderListSchema(Schema):
     """
     boulders = fields.List(fields.Nested(BoulderSchema))
 
+class BoulderFields:
+    raters = 'raters'
+    rating = 'rating'
+    section = 'section'
+    creator = 'creator'
+    difficulty = 'difficulty'
+    feet = 'feet'
+    name = 'name'
+    time = 'time'
+    notes = 'notes'
+    holds = 'holds'
 
 spec = APISpec(
     title="RocoLib API",
