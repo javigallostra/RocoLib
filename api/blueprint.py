@@ -58,7 +58,7 @@ def get_creds() -> Union[str, None]:
     return creds
 
 
-def load_data(request: Request) -> Tuple(dict, bool):
+def load_data(request: Request) -> Tuple[dict, bool]:
   """
   Load data from the request body into a dict and return it
   """
