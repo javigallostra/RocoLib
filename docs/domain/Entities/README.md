@@ -1,6 +1,6 @@
 # RocoLib entities
 
-Below is the list of entities and its relations that are stored in the DDBB. 
+Below is the list of entities and relations between them (as stored in the DDBB). 
 
 Actual wall images are currently stored with the code, inside the `static/images/walls` path. For each gym there is a `static/images/walls/{gym_id}` folder used to store the gym images.
 
