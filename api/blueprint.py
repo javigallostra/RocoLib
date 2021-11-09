@@ -1,10 +1,18 @@
-from typing import Union
-from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory
+from typing import Tuple, Union
+from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory, request
+import json
 import os
+import ast
+import datetime
+from flask.wrappers import Request
 import pymongo
 from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
+from marshmallow import ValidationError
+from api.validation import validate_gym_and_section
+from api.schemas import BoulderFields
+
 
 api_blueprint = Blueprint(
     'api_blueprint',
@@ -50,12 +58,28 @@ def get_creds() -> Union[str, None]:
     return creds
 
 
+def load_data(request: Request) -> Tuple[dict, bool]:
+  """
+  Load data from the request body into a dict and return it
+  """
+  # Handle the different content types
+  request.get_data()  # required?
+  if request.data is not None:
+    return json.loads(request.data), False
+  elif request.form is not None:
+    return request.form, True
+  elif request.json is not None:
+    return request.json, False
+  else:
+    return dict(), False
+
+
 @api_blueprint.route('/docs/swagger.json')
 def api_docs() -> Response:
     """
     Raw swagger document endpoint
     """
-    return send_from_directory('static', 'openapi/swagger.json')
+    return send_from_directory('static', 'swagger/swagger.json')
 
 
 @api_blueprint.route('/gym/list', methods=['GET'])
@@ -86,7 +110,7 @@ def get_gyms() -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(gyms=db_controller.get_gyms(get_db())))
+    return jsonify(dict(gyms=db_controller.get_gyms(get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/walls', methods=['GET'])
@@ -120,7 +144,7 @@ def get_gym_walls(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db())))
+    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
@@ -154,7 +178,7 @@ def get_gym_pretty_name(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db())))
+    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db()))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
@@ -190,7 +214,7 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db())))
+    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db()))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
@@ -224,4 +248,89 @@ def get_gym_boulders(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', [])))
+    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', []))), 200
+
+
+@api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
+def boulder_create(gym_id: str, wall_section: str) -> Response:
+    """Create a new boulder
+    ---
+    post:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: WallSectionParameter
+      requestBody:
+        description: Create boulder request body
+        required: true
+        content:
+          application/json:
+            schema: CreateBoulderRequestBody
+          application/x-www-form-urlencoded:
+            schema: CreateBoulderRequestBody
+          text/json:
+            schema: CreateBoulderRequestBody
+          text/plain:
+            schema: CreateBoulderRequestBody
+      responses:
+        201:
+          description:
+            Creation successful
+          content:
+            text/plain:
+              schema: CreateBoulderResponseBody
+            text/json:
+              schema: CreateBoulderResponseBody
+            application/json:
+              schema: CreateBoulderResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: CreateBoulderErrorResponse
+            text/json:
+              schema: CreateBoulderErrorResponse
+            application/json:
+              schema: CreateBoulderErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    if request.method == 'POST':
+        # Validate gym and wall section
+        db = get_db()
+        boulder_fields = BoulderFields()
+        valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+        if not valid:
+          return jsonify(dict(created=False, errors=errors)), 400
+        # Get boulder data from request
+        base_data = {
+            boulder_fields.rating: 0,
+            boulder_fields.raters: 0,
+            boulder_fields.section: wall_section,
+            boulder_fields.time: datetime.datetime.now().isoformat()}
+
+        request_data, from_form = load_data(request)
+        for key, val in request_data.items():
+          base_data[key.lower()] = val
+          if from_form and key.lower() == boulder_fields.holds:
+            base_data[key.lower()] = ast.literal_eval(val)
+
+        # Validate Boulder Schema
+        try:
+          from api.schemas import CreateBoulderRequestValidator
+          # Will raise ValidationError if not valid
+          _ = CreateBoulderRequestValidator().load(base_data)
+          resp = db_controller.put_boulder(base_data, gym=gym_id, database=db)
+          if resp is None:
+              return jsonify(dict(created=False)), 500
+          return jsonify(dict(created=True, _id=resp)), 201
+        except ValidationError as err:
+          return jsonify(dict(created=False, errors=err.messages)), 400

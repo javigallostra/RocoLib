@@ -10,8 +10,8 @@ from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api_blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls
-from api_blueprint import api_blueprint
+from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
+from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -523,19 +523,31 @@ def bad_request(error) -> tuple[str, int]:
 if __name__ == '__main__':
     if GENERATE_API_DOCS:
         # Generate API documentation
-        from docs.rocolib_api_schema_spec import spec, GymListSchema, WallListSchema, GymNameSchema, WallNameSchema, GymBoulderListSchema
+        from api.schemas import spec
+        from api.schemas import GymListSchema
+        from api.schemas import WallListSchema
+        from api.schemas import GymNameSchema
+        from api.schemas import WallNameSchema
+        from api.schemas import GymBoulderListSchema
+        from api.schemas import CreateBoulderRequestBody
+        from api.schemas import CreateBoulderResponseBody
+        from api.schemas import CreateBoulderErrorResponse
         spec.components.schema("Gyms", schema=GymListSchema)
         spec.components.schema("Walls", schema=WallListSchema)
         spec.components.schema("Boulders", schema=GymBoulderListSchema)
         spec.components.schema("Gym Name", schema=GymNameSchema)
         spec.components.schema("Wall Name", schema=WallNameSchema)
+        spec.components.schema("Create Boulder", schema=CreateBoulderRequestBody)
+        spec.components.schema("Create Boulder Response", schema=CreateBoulderResponseBody)
+        spec.components.schema("Create Boulder Error Response", schema=CreateBoulderErrorResponse)
         with app.test_request_context():
             spec.path(view=get_gyms)
             spec.path(view=get_gym_walls)
             spec.path(view=get_gym_pretty_name)
             spec.path(view=get_gym_wall_name)
             spec.path(view=get_gym_boulders)
-        with open('./static/openapi/swagger.json', 'w') as f:
+            spec.path(view=boulder_create)
+        with open('./static/swagger/swagger.json', 'w') as f:
             json.dump(spec.to_dict(), f)
     if RUN_SERVER:
         if os.environ['DOCKER_ENV'] == "True":

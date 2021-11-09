@@ -51,25 +51,52 @@ class HoldSchema(Schema):
     """
     Data Schema of a Hold in a Wall
     """
-    color = fields.Str()
-    x = fields.Float()
-    y = fields.Float()
+    color = fields.Str(required=True)
+    x = fields.Float(required=True)
+    y = fields.Float(required=True)
 
 
-class BoulderSchema(Schema):
+class BaseBoulderSchema(Schema):
+    """
+    Base Boulder Schema
+    """
+    creator = fields.Str(required=True)
+    difficulty = fields.Str(required=True)
+    feet = fields.Str(required=True)
+    name = fields.Str(required=True)
+    time = fields.Str(required=True)
+    notes = fields.Str(required=True)
+    holds = fields.List(fields.Nested(HoldSchema), required=True)
+
+
+class BoulderSchema(BaseBoulderSchema):
     """
     Data Schema of a Boulder Problem
     """
     _id = fields.Str()
-    creator = fields.Str()
-    difficulty = fields.Str()
-    feet = fields.Str()
-    name = fields.Str()
-    section = fields.Str()
     raters = fields.Int()
     rating = fields.Float()
-    time = fields.Str()
-    holds = fields.List(fields.Nested(HoldSchema))
+    section = fields.Str()
+
+
+class CreateBoulderRequestBody(BaseBoulderSchema):
+    pass
+
+
+class CreateBoulderRequestValidator(BaseBoulderSchema):
+    raters = fields.Int(required=True)
+    rating = fields.Float(required=True)
+    section = fields.Str(required=True)
+
+
+class CreateBoulderResponseBody(Schema):
+    created = fields.Bool()
+    _id = fields.Str()
+
+
+class CreateBoulderErrorResponse(Schema):
+    created = fields.Bool()
+    errors = fields.Dict()
 
 
 class GymIDParameter(Schema):
@@ -106,6 +133,17 @@ class GymBoulderListSchema(Schema):
     """
     boulders = fields.List(fields.Nested(BoulderSchema))
 
+class BoulderFields:
+    raters = 'raters'
+    rating = 'rating'
+    section = 'section'
+    creator = 'creator'
+    difficulty = 'difficulty'
+    feet = 'feet'
+    name = 'name'
+    time = 'time'
+    notes = 'notes'
+    holds = 'holds'
 
 spec = APISpec(
     title="RocoLib API",

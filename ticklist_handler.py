@@ -1,12 +1,12 @@
-from pymongo.database import Database
-from werkzeug.local import LocalProxy
+from config import BOULDER_COLOR_MAP, FEET_MAPPINGS
+from db import mongodb_controller
+from utils.utils import load_boulder_from_request
+from models import TickListProblem
 from werkzeug.utils import secure_filename
 
-from db import mongodb_controller
-# pylint: disable=unused-wildcard-import
-from utils.utils import *
-from config import *
-from models import TickListProblem
+from pymongo.database import Database
+from werkzeug.wrappers.request import Request
+from werkzeug.local import LocalProxy
 
 
 def get_wall_radius(wall_path: str, database: Database) -> float:

@@ -33,6 +33,10 @@ def serializable(func):
             return value
         elif type(value) == list:
             return make_list_serializable(value)
+        else:
+            if type(value) == ObjectId:
+                return str(value)
+            return value
     return wrapper
 
 
@@ -157,7 +161,9 @@ def put_boulder(boulder_data: Data, gym: str, database: Database) -> InsertOneRe
     """
     Store a new boulder for the specified gym
     """
-    return database[f'{gym}_boulders'].insert_one(boulder_data)
+    result = database[f'{gym}_boulders'].insert_one(boulder_data)
+    if result is not None:
+        return result.inserted_id
 
 
 @serializable
@@ -165,7 +171,9 @@ def put_route(route_data: Data, gym: str, database: Database) -> InsertOneResult
     """
     Store a new route for the specified gym
     """
-    return database[f'{gym}_routes'].insert_one(route_data)
+    result = database[f'{gym}_routes'].insert_one(route_data)
+    if result is not None:
+        return result.inserted_id
 
 
 @serializable
