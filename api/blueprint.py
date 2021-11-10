@@ -1,17 +1,16 @@
 from typing import Tuple, Union
 from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory, request
 import json
-import os
 import ast
 import datetime
 from flask.wrappers import Request
-import pymongo
 from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from marshmallow import ValidationError
 from api.validation import validate_gym_and_section
 from api.schemas import BoulderFields
+from utils.utils import get_db
 
 
 api_blueprint = Blueprint(
@@ -21,41 +20,6 @@ api_blueprint = Blueprint(
     template_folder='templates',
     url_prefix='/api'
 )
-
-
-def get_db() -> Database:
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    top = _app_ctx_stack.top
-    if not hasattr(top, 'database'):
-        client = pymongo.MongoClient(
-            get_creds(),
-            connectTimeoutMS=30000,
-            socketTimeoutMS=None,
-            # socketKeepAlive=True,
-            connect=False,
-            maxPoolsize=1)
-        top.database = client["RocoLib"]
-    return top.database
-
-
-def get_creds() -> Union[str, None]:
-    """
-    Get the credentials for MongoDB either from a local file
-    or from an evironment variable
-    """
-    creds = None
-    if os.path.isfile('creds.txt'):
-        with open('creds.txt', 'r') as f:
-            creds = f.readline()
-    else:
-        try:
-            creds = os.environ['MONGO_DB']
-        except Exception:
-            pass
-    return creds
 
 
 def load_data(request: Request) -> Tuple[dict, bool]:

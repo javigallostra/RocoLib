@@ -18,10 +18,11 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from utils.typing import Data
 
-import pymongo
+
 import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
+from utils.utils import get_db
 
 import ticklist_handler
 
@@ -54,25 +55,6 @@ login_manager.login_view = 'login'
 def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
-
-def get_db() -> Database:
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    top = _app_ctx_stack.top
-    if not hasattr(top, 'database'):
-        client = pymongo.MongoClient(
-            get_creds(),
-            connectTimeoutMS=30000,
-            socketTimeoutMS=None,
-            # socketKeepAlive=True,
-            connect=False,
-            maxPoolsize=1)
-        top.database = client["RocoLib"]
-    return top.database
-
-
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
     """
@@ -84,16 +66,12 @@ def close_db_connection(exception) -> None:
 
 
 # user loading callback
-
-
 @login_manager.user_loader
 def load_user(user_id) -> Union[User, None]:
     return User.get_by_id(user_id, get_db())
 
 
 # Load favicon
-
-
 @app.route('/favicon.ico')
 def favicon() -> Response:
     return send_from_directory(
@@ -103,21 +81,7 @@ def favicon() -> Response:
     )
 
 
-def get_creds() -> Union[str, None]:
-    creds = None
-    if os.path.isfile('creds.txt'):
-        if session.get('creds', ''):
-            creds = session['creds']
-        else:
-            with open('creds.txt', 'r') as f:
-                creds = f.readline()
-            session['creds'] = creds
-    else:
-        try:
-            creds = os.environ['MONGO_DB']
-        except Exception:
-            pass
-    return creds
+
 
 
 def get_gym() -> str:

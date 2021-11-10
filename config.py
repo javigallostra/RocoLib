@@ -1,5 +1,8 @@
+TESTING = True
+
 PORT = 5050
 
+DB_NAME = 'RocoLib'
 WALLS_PATH = 'images/walls/'
 ITEMS = 'Items'
 

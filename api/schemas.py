@@ -90,9 +90,9 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
     rating = fields.Float(required=True)
     section = fields.Str(required=True)
 
-    @post_load
-    def make_boulder(self, data, **kwargs):
-        return CreateBoulderRequestValidator(**data)
+    # @post_load
+    # def make_boulder(self, data, **kwargs):
+    #     return CreateBoulderRequestValidator(**data)
 
 
 class CreateBoulderResponseBody(Schema):
