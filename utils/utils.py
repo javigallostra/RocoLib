@@ -16,26 +16,15 @@ from config import *
 from utils.typing import Data
 
 
-def get_db() -> Database:
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    creds_file = 'creds.txt'
-    if TESTING:
-        creds_file = 'creds_dev.txt'
-    top = _app_ctx_stack.top
-    if not hasattr(top, 'database'):
-        client = pymongo.MongoClient(
-            get_creds(creds_file),
-            connectTimeoutMS=30000,
-            socketTimeoutMS=None,
-            # socketKeepAlive=True,
-            connect=False,
-            maxPoolsize=1)
-        top.database = client[DB_NAME]
-    return top.database
+def get_creds_file():
+    creds = None
+    with open('.env', 'r') as f:
+        creds = f.readline()
+    return creds
 
+def set_creds_file(creds='creds.txt'):
+    with open('.env', 'w') as f:
+        f.write(creds)
 
 def get_creds(file: str) -> Union[str, None]:
     creds = None
@@ -52,6 +41,24 @@ def get_creds(file: str) -> Union[str, None]:
         except Exception:
             pass
     return creds
+
+
+def get_db() -> Database:
+    """
+    Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'database'):
+        client = pymongo.MongoClient(
+            get_creds(get_creds_file()),
+            connectTimeoutMS=30000,
+            socketTimeoutMS=None,
+            # socketKeepAlive=True,
+            connect=False,
+            maxPoolsize=1)
+        top.database = client[DB_NAME]
+    return top.database
 
 
 def load_boulder_from_request(request: Request) -> Data:

@@ -22,7 +22,7 @@ from utils.typing import Data
 import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
-from utils.utils import get_db
+from utils.utils import get_db, set_creds_file
 
 import ticklist_handler
 
@@ -55,6 +55,7 @@ login_manager.login_view = 'login'
 def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
+
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
     """
@@ -79,9 +80,6 @@ def favicon() -> Response:
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
-
-
-
 
 
 def get_gym() -> str:
@@ -501,9 +499,12 @@ if __name__ == '__main__':
         spec.components.schema("Boulders", schema=GymBoulderListSchema)
         spec.components.schema("GymName", schema=GymNameSchema)
         spec.components.schema("WallName", schema=WallNameSchema)
-        spec.components.schema("CreateBoulder", schema=CreateBoulderRequestBody)
-        spec.components.schema("CreateBoulderResponse", schema=CreateBoulderResponseBody)
-        spec.components.schema("CreateBoulderErrorResponse", schema=CreateBoulderErrorResponse)
+        spec.components.schema(
+            "CreateBoulder", schema=CreateBoulderRequestBody)
+        spec.components.schema("CreateBoulderResponse",
+                               schema=CreateBoulderResponseBody)
+        spec.components.schema("CreateBoulderErrorResponse",
+                               schema=CreateBoulderErrorResponse)
         with app.test_request_context():
             spec.path(view=get_gyms)
             spec.path(view=get_gym_walls)
@@ -514,6 +515,7 @@ if __name__ == '__main__':
         with open('./static/swagger/swagger.json', 'w') as f:
             json.dump(spec.to_dict(), f)
     if RUN_SERVER:
+        set_creds_file(CREDS)
         if os.environ['DOCKER_ENV'] == "True":
             app.run(debug=False, host='0.0.0.0', port=80)
         else:

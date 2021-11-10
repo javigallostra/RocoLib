@@ -5,9 +5,11 @@ from application import app
 from pymongo import database, MongoClient
 
 from api.schemas import BoulderFields
+from config import CREDS, CREDS_DEV
 from tests.tests_config import DB_NAME, WALLS_COLLECTION
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
+from utils.utils import set_creds_file
 
 
 def get_creds(file: str = 'creds_dev.txt') -> Union[str, None]:
@@ -132,4 +134,6 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
 
 if __name__ == '__main__':
+    set_creds_file(CREDS_DEV)
     unittest.main()
+    set_creds_file(CREDS)

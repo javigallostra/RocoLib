@@ -1,4 +1,5 @@
-TESTING = True
+CREDS = 'creds.txt'
+CREDS_DEV = 'creds_dev.txt'
 
 PORT = 5050
 
