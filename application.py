@@ -5,12 +5,10 @@ import datetime
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
-from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
 from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
@@ -22,7 +20,7 @@ from utils.typing import Data
 import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
-from utils.utils import get_db, set_creds_file
+from utils.utils import generate_api_docs, get_db, set_creds_file
 
 import ticklist_handler
 
@@ -484,36 +482,7 @@ def bad_request(error) -> tuple[str, int]:
 # start the server
 if __name__ == '__main__':
     if GENERATE_API_DOCS:
-        # Generate API documentation
-        from api.schemas import spec
-        from api.schemas import GymListSchema
-        from api.schemas import WallListSchema
-        from api.schemas import GymNameSchema
-        from api.schemas import WallNameSchema
-        from api.schemas import GymBoulderListSchema
-        from api.schemas import CreateBoulderRequestBody
-        from api.schemas import CreateBoulderResponseBody
-        from api.schemas import CreateBoulderErrorResponse
-        spec.components.schema("Gyms", schema=GymListSchema)
-        spec.components.schema("Walls", schema=WallListSchema)
-        spec.components.schema("Boulders", schema=GymBoulderListSchema)
-        spec.components.schema("GymName", schema=GymNameSchema)
-        spec.components.schema("WallName", schema=WallNameSchema)
-        spec.components.schema(
-            "CreateBoulder", schema=CreateBoulderRequestBody)
-        spec.components.schema("CreateBoulderResponse",
-                               schema=CreateBoulderResponseBody)
-        spec.components.schema("CreateBoulderErrorResponse",
-                               schema=CreateBoulderErrorResponse)
-        with app.test_request_context():
-            spec.path(view=get_gyms)
-            spec.path(view=get_gym_walls)
-            spec.path(view=get_gym_pretty_name)
-            spec.path(view=get_gym_wall_name)
-            spec.path(view=get_gym_boulders)
-            spec.path(view=boulder_create)
-        with open('./static/swagger/swagger.json', 'w') as f:
-            json.dump(spec.to_dict(), f)
+        generate_api_docs(app)
     if RUN_SERVER:
         set_creds_file(CREDS)
         if os.environ['DOCKER_ENV'] == "True":
