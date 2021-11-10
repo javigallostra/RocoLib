@@ -20,7 +20,8 @@ from utils.typing import Data
 import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
-from utils.utils import generate_api_docs, get_db, set_creds_file
+from utils.generate_open_api_spec import generate_api_docs
+from utils.utils import get_db, set_creds_file
 
 import ticklist_handler
 
