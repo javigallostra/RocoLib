@@ -66,7 +66,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         """
         Set up method that will run before every test
         """
-        # connect to testing ddbb and create emptities
+        # connect to testing ddbb and create entities
         self.db = get_db()
         self.client = app.test_client()
         create_walls_collection(

@@ -1,3 +1,4 @@
+from genericpath import isfile
 import unittest
 # from tests import BaseAPITestClass
 import unittest
@@ -21,6 +22,23 @@ from marshmallow import ValidationError
 #         """
 #         pass
 
+
+class UtilsTests(unittest.TestCase):
+    def test_get_credentials(self):
+        # Given
+        from utils.utils import get_creds_file
+        from os.path import isfile
+        with open('.env', 'r') as f:
+            creds_file_before = f.read()
+        # When
+        creds = get_creds_file()
+        with open('.env', 'r') as f:
+            creds_file_after = f.read()
+        # Then
+        self.assertIsNotNone(creds)
+        self.assertIs(type(creds), str)
+        self.assertTrue(isfile(creds))
+        self.assertEqual(creds_file_before, creds_file_after)
 
 class BoulderCreationTests(unittest.TestCase):
 
