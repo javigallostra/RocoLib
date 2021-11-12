@@ -2,6 +2,7 @@ from genericpath import isfile
 import unittest
 # from tests import BaseAPITestClass
 import unittest
+
 from  api.schemas import CreateBoulderRequestBody, CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 
@@ -39,6 +40,19 @@ class UtilsTests(unittest.TestCase):
         self.assertIs(type(creds), str)
         self.assertTrue(isfile(creds))
         self.assertEqual(creds_file_before, creds_file_after)
+
+    def test_make_boulder_data_valid_js(self):
+        # Given
+        data = ['{\'a\': \'True\'}', '{\'a\': \'False\'}']
+        expected_data = [{'a': 'true'}, {'a': 'false'}]
+        from utils.utils import make_boulder_data_valid_js
+        # When
+        processed_data = [make_boulder_data_valid_js(d) for d in data]
+        # Then
+        for d in processed_data:
+            self.assertIsNotNone(d)
+        self.assertListEqual(processed_data, expected_data)
+
 
 class BoulderCreationTests(unittest.TestCase):
 

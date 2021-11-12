@@ -1,6 +1,6 @@
 from config import BOULDER_COLOR_MAP, FEET_MAPPINGS
 from db import mongodb_controller
-from utils.utils import load_boulder_from_request
+from utils.utils import make_boulder_data_valid_js
 from models import TickListProblem
 from werkzeug.utils import secure_filename
 
@@ -21,7 +21,7 @@ def delete_problem_from_ticklist(request: Request, current_user: LocalProxy, dat
     Delete a problem from a user's ticklist
     """
     # needed values: gym, id, section, is_done
-    boulder_data = load_boulder_from_request(request.form.get('boulder_data'))
+    boulder_data = make_boulder_data_valid_js(request.form.get('boulder_data'))
     boulder = {
         'gym': boulder_data.get('gym'),
         'iden':

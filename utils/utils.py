@@ -9,7 +9,6 @@ from flask.sessions import SessionMixin
 import pymongo
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import ImmutableMultiDict
 
 from db import mongodb_controller as db_controller
 from config import *
@@ -72,7 +71,7 @@ def get_db() -> Database:
     return top.database
 
 
-def load_boulder_from_request(data: ImmutableMultiDict) -> Data:
+def make_boulder_data_valid_js(data: str) -> Data:
     """
     Replace boulder data from valid Python to valid JS
     """
