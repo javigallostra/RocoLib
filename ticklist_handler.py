@@ -21,7 +21,7 @@ def delete_problem_from_ticklist(request: Request, current_user: LocalProxy, dat
     Delete a problem from a user's ticklist
     """
     # needed values: gym, id, section, is_done
-    boulder_data = load_boulder_from_request(request)
+    boulder_data = load_boulder_from_request(request.form.get('boulder_data'))
     boulder = {
         'gym': boulder_data.get('gym'),
         'iden':

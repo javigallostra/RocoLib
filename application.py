@@ -226,7 +226,7 @@ def load_boulder() -> Union[str, NoReturn]:
     """
     try:
         if request.method == 'POST':
-            boulder = utils.load_boulder_from_request(request)
+            boulder = utils.load_boulder_from_request(request.form.get('boulder_data'))
             boulder_name = boulder['name']
             section = boulder['section']
             if not boulder.get('gym', ''):
