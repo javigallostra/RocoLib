@@ -5,12 +5,10 @@ import datetime
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
-from pymongo.database import Database
 from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
 from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
@@ -18,10 +16,12 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from utils.typing import Data
 
-import pymongo
+
 import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
+from utils.generate_open_api_spec import generate_api_docs
+from utils.utils import get_db, set_creds_file
 
 import ticklist_handler
 
@@ -55,24 +55,6 @@ def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
 
-def get_db() -> Database:
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    top = _app_ctx_stack.top
-    if not hasattr(top, 'database'):
-        client = pymongo.MongoClient(
-            get_creds(),
-            connectTimeoutMS=30000,
-            socketTimeoutMS=None,
-            # socketKeepAlive=True,
-            connect=False,
-            maxPoolsize=1)
-        top.database = client["RocoLib"]
-    return top.database
-
-
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
     """
@@ -84,16 +66,12 @@ def close_db_connection(exception) -> None:
 
 
 # user loading callback
-
-
 @login_manager.user_loader
 def load_user(user_id) -> Union[User, None]:
     return User.get_by_id(user_id, get_db())
 
 
 # Load favicon
-
-
 @app.route('/favicon.ico')
 def favicon() -> Response:
     return send_from_directory(
@@ -101,23 +79,6 @@ def favicon() -> Response:
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
-
-
-def get_creds() -> Union[str, None]:
-    creds = None
-    if os.path.isfile('creds.txt'):
-        if session.get('creds', ''):
-            creds = session['creds']
-        else:
-            with open('creds.txt', 'r') as f:
-                creds = f.readline()
-            session['creds'] = creds
-    else:
-        try:
-            creds = os.environ['MONGO_DB']
-        except Exception:
-            pass
-    return creds
 
 
 def get_gym() -> str:
@@ -265,7 +226,7 @@ def load_boulder() -> Union[str, NoReturn]:
     """
     try:
         if request.method == 'POST':
-            boulder = utils.load_boulder_from_request(request)
+            boulder = utils.make_boulder_data_valid_js(request.form.get('boulder_data'))
             boulder_name = boulder['name']
             section = boulder['section']
             if not boulder.get('gym', ''):
@@ -522,34 +483,9 @@ def bad_request(error) -> tuple[str, int]:
 # start the server
 if __name__ == '__main__':
     if GENERATE_API_DOCS:
-        # Generate API documentation
-        from api.schemas import spec
-        from api.schemas import GymListSchema
-        from api.schemas import WallListSchema
-        from api.schemas import GymNameSchema
-        from api.schemas import WallNameSchema
-        from api.schemas import GymBoulderListSchema
-        from api.schemas import CreateBoulderRequestBody
-        from api.schemas import CreateBoulderResponseBody
-        from api.schemas import CreateBoulderErrorResponse
-        spec.components.schema("Gyms", schema=GymListSchema)
-        spec.components.schema("Walls", schema=WallListSchema)
-        spec.components.schema("Boulders", schema=GymBoulderListSchema)
-        spec.components.schema("GymName", schema=GymNameSchema)
-        spec.components.schema("WallName", schema=WallNameSchema)
-        spec.components.schema("CreateBoulder", schema=CreateBoulderRequestBody)
-        spec.components.schema("CreateBoulderResponse", schema=CreateBoulderResponseBody)
-        spec.components.schema("CreateBoulderErrorResponse", schema=CreateBoulderErrorResponse)
-        with app.test_request_context():
-            spec.path(view=get_gyms)
-            spec.path(view=get_gym_walls)
-            spec.path(view=get_gym_pretty_name)
-            spec.path(view=get_gym_wall_name)
-            spec.path(view=get_gym_boulders)
-            spec.path(view=boulder_create)
-        with open('./static/swagger/swagger.json', 'w') as f:
-            json.dump(spec.to_dict(), f)
+        generate_api_docs(app)
     if RUN_SERVER:
+        set_creds_file(CREDS)
         if os.environ['DOCKER_ENV'] == "True":
             app.run(debug=False, host='0.0.0.0', port=80)
         else:

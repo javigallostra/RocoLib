@@ -1,4 +1,6 @@
 import os
+
+from marshmallow.decorators import post_load
 from config import PORT
 
 from apispec import APISpec
@@ -87,6 +89,10 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
     raters = fields.Int(required=True)
     rating = fields.Float(required=True)
     section = fields.Str(required=True)
+
+    # @post_load
+    # def make_boulder(self, data, **kwargs):
+    #     return CreateBoulderRequestValidator(**data)
 
 
 class CreateBoulderResponseBody(Schema):

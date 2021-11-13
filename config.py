@@ -1,5 +1,9 @@
+CREDS = 'creds.txt'
+CREDS_DEV = 'creds_dev.txt'
+
 PORT = 5050
 
+DB_NAME = 'RocoLib'
 WALLS_PATH = 'images/walls/'
 ITEMS = 'Items'
 

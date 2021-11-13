@@ -16,7 +16,7 @@ def is_section_valid(gym_id: str, section: str, db: Database)-> bool:
     If contained in the database, it is valid.
     """
     # if is_gym_valid(gym_id, db):
-    return section in [wall.get('image_path', '') for wall in get_gym_walls(gym_id, db)]
+    return section in [wall.get('image', '') for wall in get_gym_walls(gym_id, db)]
     # return False
 
 def validate_gym_and_section(gym_id: str, wall_section: str, db: Database) -> Tuple[bool, List[str]]:
@@ -33,6 +33,6 @@ def validate_gym_and_section(gym_id: str, wall_section: str, db: Database) -> Tu
             {'gym_id': f'Gym {gym_id} does not exist'}
         ) if not valid_gym else None
         errors.append(
-            {'wall_section': f'Wall section {wall_section} does not exist'}
+            {'wall_section': f'Wall section {wall_section} does not exist in gym {gym_id}'}
         ) if not valid_section else None
     return valid_gym and valid_section, errors
