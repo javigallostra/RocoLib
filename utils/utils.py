@@ -103,12 +103,12 @@ def get_stats(database: Database) -> dict[str, int]:
     for gym in gyms:
         try:
             total_boulders += len(
-                db_controller.get_boulders(gym['id'], database)[ITEMS])
+                db_controller.get_boulders(gym.get('id', ''), database)[ITEMS])
         except Exception:
             pass
         try:
             total_routes += len(db_controller.get_routes(
-                gym['id'], database)[ITEMS])
+                gym.get('id', ''), database)[ITEMS])
         except Exception:
             pass
 
@@ -168,6 +168,13 @@ def get_closest_gym(long: float, lat: float, database: Database) -> str:
     by sorting the coordinates beforehand
     """
     gyms = db_controller.get_gyms(database)
+    return find_closest(gyms, lat, long)
+
+def find_closest(gyms: list[Data], lat: float, long: float) -> str:
+    """
+    Given a list of gyms and a pair of coordinates, find the closest gym
+    to the pair of coordinates.
+    """
     closest_gym = None
     min_distance = -1
     for gym in gyms:
@@ -179,5 +186,5 @@ def get_closest_gym(long: float, lat: float, database: Database) -> str:
             min_distance = dst
             closest_gym = gym
     if closest_gym:
-        return closest_gym['id']
-    return gyms[0]['id']
+        return closest_gym.get('id', '')
+    return gyms[0].get('id', '')
