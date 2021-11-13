@@ -69,11 +69,18 @@ class UtilsTests(unittest.TestCase):
             self.assertIs(type(d), dict)
         self.assertListEqual(processed_data, expected_data)
 
-    def test_make_boulder_data_valid_js_wrong_data(self):
-        pass
-
     def test_make_boulder_data_valid_js_wrong_data_type(self):
-        pass
+        # Given
+        from utils.utils import make_boulder_data_valid_js
+        data = [{'a':'b'}, ['aaa'], (1,2), 4, 17.23]
+        expected_data = [dict() for _ in range(len(data))]
+        # When
+        processed_data = [make_boulder_data_valid_js(d) for d in data]
+        # Then
+        for d in processed_data:
+            self.assertIsNotNone(d)
+            self.assertIs(type(d), dict)
+        self.assertListEqual(processed_data, expected_data)
 
     def test_get_wall_image(self):
         # Given

@@ -77,6 +77,9 @@ def make_boulder_data_valid_js(data: str) -> Data:
     """
     Replace boulder data from valid Python to valid JS
     """
+    # TODO: what should happen with wrong data types? raise an Exception?
+    if type(data) is not str:
+        return dict()
     return json.loads(
         data
         .replace('\'', '"')
