@@ -134,6 +134,6 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
 
 if __name__ == '__main__':
-    set_creds_file(CREDS_DEV)
+    set_creds_file(CREDS_DEV) # set development credentials for the application
     unittest.main()
     set_creds_file(CREDS)
