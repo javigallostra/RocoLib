@@ -28,17 +28,16 @@ class UtilsTests(unittest.TestCase):
     def test_get_credentials(self):
         # Given
         from utils.utils import get_creds_file
-        from os.path import isfile
         with open('.env', 'r') as f:
             creds_file_before = f.read()
         # When
         creds = get_creds_file()
-        with open('.env', 'r') as f:
-            creds_file_after = f.read()
         # Then
         self.assertIsNotNone(creds)
         self.assertIs(type(creds), str)
         self.assertTrue(isfile(creds))
+        with open('.env', 'r') as f:
+            creds_file_after = f.read()
         self.assertEqual(creds_file_before, creds_file_after)
 
     def test_get_credentials_not_found(self):
@@ -72,10 +71,10 @@ class UtilsTests(unittest.TestCase):
     def test_make_boulder_data_valid_js_wrong_data_type(self):
         # Given
         from utils.utils import make_boulder_data_valid_js
-        data = [{'a':'b'}, ['aaa'], (1,2), 4, 17.23]
-        expected_data = [dict() for _ in range(len(data))]
+        invalid_data = [{'a':'b'}, ['aaa'], (1,2), 4, 17.23]
+        expected_data = [dict() for _ in range(len(invalid_data))]
         # When
-        processed_data = [make_boulder_data_valid_js(d) for d in data]
+        processed_data = [make_boulder_data_valid_js(d) for d in invalid_data]
         # Then
         for d in processed_data:
             self.assertIsNotNone(d)
@@ -95,23 +94,6 @@ class UtilsTests(unittest.TestCase):
         self.assertIsNotNone(image)
         self.assertIs(type(image), str)
         self.assertEqual(image, f'/static/{path}{gym}/{section}.JPG')
-
-    def test_get_wall_image_not_found(self):
-        pass
-    def test_get_wall_image_wrong_path(self):
-        pass
-    def test_get_wall_image_wrong_gym(self):
-        pass
-    def test_get_wall_image_wrong_section(self):
-        pass
-    def test_get_wall_image_wrong_path_and_section(self):
-        pass
-    def test_get_wall_image_wrong_path_and_gym(self):
-        pass
-    def test_get_wall_image_wrong_gym_and_section(self):
-        pass
-    def test_get_wall_image_wrong_path_and_gym_and_section(self):
-        pass
 
 class BoulderCreationTests(unittest.TestCase):
 
