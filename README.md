@@ -29,10 +29,11 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 * Public API
 * Localize app
 * Include a map to locate registered gyms
+* Show the number of repetitions of each problem
+* For registered users: Include a stats page
 * Enable setting routes as well as problems
 * Enable setting routes that span multiple images
-* Make a more flexible grading system
-* For registered users: Include a stats page
+* Enable to configure each gym independently (difficulties, colors, problem styles, etc.)
 * Enable logging a climb more than once
 * Add a comments section for each problem
 * Enable users to suggest a difficulty after climbing a problem
