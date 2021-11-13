@@ -143,15 +143,25 @@ def get_boulders_list(gym: str, filters: Data, database: Database, session) -> l
         ranged=RANGE,
         contains=CONTAINS
     )
+    sections = set([b['section'] for b in data[ITEMS]])
+    radius = {section: get_wall_radius(
+        session, database, gym + '/' + section) for section in sections}
+    return map_and_complete_boulder_data(data[ITEMS], radius)
+
+
+def map_and_complete_boulder_data(data: list[Data], radius: dict[str, float]) -> list[Data]:
+    """
+    Given a list of boulders from de DDBB and a dictionary of wall_sections and its radius,
+    return a list of boulders where the data has been mapped for user visualization.
+    """
     # Map and complete boulder data
-    for boulder in data[ITEMS]:
+    for boulder in data:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(
-            session, database, gym + '/' + boulder['section'])
+        boulder['radius'] = radius[boulder['section']]
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
     return sorted(
-        data[ITEMS],
+        data,
         key=lambda x: datetime.datetime.strptime(
             x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
         reverse=True
@@ -160,20 +170,20 @@ def get_boulders_list(gym: str, filters: Data, database: Database, session) -> l
 
 def get_closest_gym(long: float, lat: float, database: Database) -> str:
     """
-    Given a set of coordinates, return the closest gym
-    to that pair of coordinates.
-
-    This is a naive solution. If the number of gyms
-    gets too big, this algorithm can be sped up
-    by sorting the coordinates beforehand
+    Find closest gym to a given set of coordinates 
     """
-    gyms = db_controller.get_gyms(database)
-    return find_closest(gyms, lat, long)
+    return find_closest(db_controller.get_gyms(database), lat, long)
+
 
 def find_closest(gyms: list[Data], lat: float, long: float) -> str:
     """
     Given a list of gyms and a pair of coordinates, find the closest gym
     to the pair of coordinates.
+
+    This is a naive solution. If the number of gyms
+    gets too big, this algorithm can be sped up
+    by sorting the coordinates beforehand
+
     """
     closest_gym = None
     min_distance = -1
