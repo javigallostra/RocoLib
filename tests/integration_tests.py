@@ -66,6 +66,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         """
         Set up method that will run before every test
         """
+        set_creds_file(CREDS_DEV) # set development credentials for the application
         # connect to testing ddbb and create entities
         self.db = get_db()
         self.client = app.test_client()
@@ -88,6 +89,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         Tear down method that will run after every test
         """
         self.db.client.close()
+        set_creds_file(CREDS)
 
 
 class BoulderCreationTests(BaseIntegrationTestClass):
@@ -134,6 +136,4 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
 
 if __name__ == '__main__':
-    set_creds_file(CREDS_DEV) # set development credentials for the application
     unittest.main()
-    set_creds_file(CREDS)
