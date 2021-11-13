@@ -15,13 +15,15 @@ from config import *
 from utils.typing import Data
 
 
-def get_creds_file() -> str:
+def get_creds_file(env: str = '.env') -> str:
     """
-    Get the credentials file
+    Get the name of the file where the credentials 
+    to connect to the DDBB are stored.
     """
-    creds = None
-    with open('.env', 'r') as f:
-        creds = f.readline()
+    creds = ''
+    if os.path.isfile(env):
+        with open(env, 'r') as f:
+            creds = f.readline()
     return creds
 
 
