@@ -1,23 +1,87 @@
 import json
 import math
+import os
+from typing import Union
 from flask import url_for
 import datetime
+from flask.globals import _app_ctx_stack, session
 from flask.sessions import SessionMixin
+import pymongo
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
-from werkzeug.wrappers.request import Request
 
 from db import mongodb_controller as db_controller
 from config import *
 from utils.typing import Data
 
 
-def load_boulder_from_request(request: Request) -> Data:
+def get_creds_file(env: str = '.env') -> str:
+    """
+    Get the name of the file where the credentials 
+    to connect to the DDBB are stored.
+    """
+    creds = ''
+    if os.path.isfile(env):
+        with open(env, 'r') as f:
+            creds = f.readline()
+    return creds
+
+
+def set_creds_file(creds: str = 'creds.txt') -> None:
+    """
+    Set the file from which to get the credentials
+    """
+    with open('.env', 'w') as f:
+        f.write(creds)
+
+
+def get_creds(file: str) -> Union[str, None]:
+    """
+    Get the credentials to connect to the DDBB
+    """
+    creds = None
+    if os.path.isfile(file):
+        if session.get('creds', ''):
+            creds = session['creds']
+        else:
+            with open(file, 'r') as f:
+                creds = f.readline()
+            session['creds'] = creds
+    else:
+        try:
+            creds = os.environ['MONGO_DB']
+        except Exception:
+            pass
+    return creds
+
+
+def get_db() -> Database:
+    """
+    Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'database'):
+        client = pymongo.MongoClient(
+            get_creds(get_creds_file()),
+            connectTimeoutMS=30000,
+            socketTimeoutMS=None,
+            # socketKeepAlive=True,
+            connect=False,
+            maxPoolsize=1)
+        top.database = client[DB_NAME]
+    return top.database
+
+
+def make_boulder_data_valid_js(data: str) -> Data:
     """
     Replace boulder data from valid Python to valid JS
     """
+    # TODO: what should happen with wrong data types? raise an Exception?
+    if type(data) is not str:
+        return dict()
     return json.loads(
-        request.form.get('boulder_data')
+        data
         .replace('\'', '"')
         .replace('True', 'true')
         .replace('False', 'false'))
@@ -44,12 +108,12 @@ def get_stats(database: Database) -> dict[str, int]:
     for gym in gyms:
         try:
             total_boulders += len(
-                db_controller.get_boulders(gym['id'], database)[ITEMS])
+                db_controller.get_boulders(gym.get('id', ''), database)[ITEMS])
         except Exception:
             pass
         try:
             total_routes += len(db_controller.get_routes(
-                gym['id'], database)[ITEMS])
+                gym.get('id', ''), database)[ITEMS])
         except Exception:
             pass
 
@@ -84,15 +148,25 @@ def get_boulders_list(gym: str, filters: Data, database: Database, session) -> l
         ranged=RANGE,
         contains=CONTAINS
     )
+    sections = set([b['section'] for b in data[ITEMS]])
+    radius = {section: get_wall_radius(
+        session, database, gym + '/' + section) for section in sections}
+    return map_and_complete_boulder_data(data[ITEMS], radius)
+
+
+def map_and_complete_boulder_data(data: list[Data], radius: dict[str, float]) -> list[Data]:
+    """
+    Given a list of boulders from de DDBB and a dictionary of wall_sections and its radius,
+    return a list of boulders where the data has been mapped for user visualization.
+    """
     # Map and complete boulder data
-    for boulder in data[ITEMS]:
+    for boulder in data:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
         boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(
-            session, database, gym + '/' + boulder['section'])
+        boulder['radius'] = radius[boulder['section']]
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
     return sorted(
-        data[ITEMS],
+        data,
         key=lambda x: datetime.datetime.strptime(
             x['time'], '%Y-%m-%dT%H:%M:%S.%f'),
         reverse=True
@@ -101,14 +175,21 @@ def get_boulders_list(gym: str, filters: Data, database: Database, session) -> l
 
 def get_closest_gym(long: float, lat: float, database: Database) -> str:
     """
-    Given a set of coordinates, return the closest gym
-    to that pair of coordinates.
+    Find closest gym to a given set of coordinates 
+    """
+    return find_closest(db_controller.get_gyms(database), lat, long)
+
+
+def find_closest(gyms: list[Data], lat: float, long: float) -> str:
+    """
+    Given a list of gyms and a pair of coordinates, find the closest gym
+    to the pair of coordinates.
 
     This is a naive solution. If the number of gyms
     gets too big, this algorithm can be sped up
     by sorting the coordinates beforehand
+
     """
-    gyms = db_controller.get_gyms(database)
     closest_gym = None
     min_distance = -1
     for gym in gyms:
@@ -120,5 +201,5 @@ def get_closest_gym(long: float, lat: float, database: Database) -> str:
             min_distance = dst
             closest_gym = gym
     if closest_gym:
-        return closest_gym['id']
-    return gyms[0]['id']
+        return closest_gym.get('id', '')
+    return gyms[0].get('id', '')
