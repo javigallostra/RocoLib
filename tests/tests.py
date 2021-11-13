@@ -1,7 +1,7 @@
 from genericpath import isfile
 import unittest
-# from tests import BaseAPITestClass
-import unittest
+import random
+from application import app
 
 from  api.schemas import CreateBoulderRequestBody, CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
@@ -41,18 +41,70 @@ class UtilsTests(unittest.TestCase):
         self.assertTrue(isfile(creds))
         self.assertEqual(creds_file_before, creds_file_after)
 
+    def test_get_credentials_not_found(self):
+        # Given
+        from utils.utils import get_creds_file
+        # When
+        not_a_file = lambda : ''.join([chr(random.randint(97, 122)) for i in range(5)]) + '.txt'
+        non_existing_file = not_a_file()
+        while isfile(non_existing_file):
+            non_existing_file = not_a_file()
+        creds = get_creds_file(non_existing_file)
+        # Then
+        self.assertIsNotNone(creds)
+        self.assertIs(type(creds), str)
+        self.assertFalse(isfile(creds))
+        self.assertEqual(creds, '')
+
     def test_make_boulder_data_valid_js(self):
         # Given
+        from utils.utils import make_boulder_data_valid_js
         data = ['{\'a\': \'True\'}', '{\'a\': \'False\'}']
         expected_data = [{'a': 'true'}, {'a': 'false'}]
-        from utils.utils import make_boulder_data_valid_js
         # When
         processed_data = [make_boulder_data_valid_js(d) for d in data]
         # Then
         for d in processed_data:
             self.assertIsNotNone(d)
+            self.assertIs(type(d), dict)
         self.assertListEqual(processed_data, expected_data)
 
+    def test_make_boulder_data_valid_js_wrong_data(self):
+        pass
+
+    def test_make_boulder_data_valid_js_wrong_data_type(self):
+        pass
+
+    def test_get_wall_image(self):
+        # Given
+        from utils.utils import get_wall_image
+        gym='sancu'
+        section='s1'
+        path='images/walls/'
+        # When
+        with app.app_context(), app.test_request_context():
+            image = get_wall_image(gym=gym, section=section, walls_path=path)
+        # Then
+        self.assertIsNotNone(image)
+        self.assertIs(type(image), str)
+        self.assertEqual(image, f'/static/{path}{gym}/{section}.JPG')
+
+    def test_get_wall_image_not_found(self):
+        pass
+    def test_get_wall_image_wrong_path(self):
+        pass
+    def test_get_wall_image_wrong_gym(self):
+        pass
+    def test_get_wall_image_wrong_section(self):
+        pass
+    def test_get_wall_image_wrong_path_and_section(self):
+        pass
+    def test_get_wall_image_wrong_path_and_gym(self):
+        pass
+    def test_get_wall_image_wrong_gym_and_section(self):
+        pass
+    def test_get_wall_image_wrong_path_and_gym_and_section(self):
+        pass
 
 class BoulderCreationTests(unittest.TestCase):
 
