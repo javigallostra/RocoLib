@@ -39,6 +39,9 @@ def get_db() -> database.Database:
 
 
 def create_walls_collection(db, gym_name, gym_code, coordinates):
+    """
+    Add a test gym to the database if it doesn't exist
+    """
     walls_collection = db[WALLS_COLLECTION]
     if walls_collection.find_one({'id': gym_code}, limit=1) != 0:
         return
@@ -51,6 +54,9 @@ def create_walls_collection(db, gym_name, gym_code, coordinates):
 
 
 def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
+    """
+    Add a test wall linked to the test gym if it doesn't exist
+    """
     if f'{gym_code}_walls' in db.list_collection_names():
         return
     gym_collection = db[f'{gym_code}_walls']
@@ -58,6 +64,12 @@ def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
                  'name': wall_name, 'radius': wall_radius}
     gym_collection.insert_one(wall_data)
 
+def drop_boulders(db, gym_code):
+    """
+    Remove any boulder present in the test collection
+    """
+    boulders_collection = db[f'{gym_code}_boulders']
+    boulders_collection.drop()
 
 class BaseIntegrationTestClass(unittest.TestCase):
     """
@@ -86,6 +98,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
             wall_section=TEST_WALL_SECTION,
             wall_radius=TEST_WALL_RADIUS
         )
+        drop_boulders(self.db, TEST_GYM_CODE)
 
     def tearDown(self):
         """
@@ -197,16 +210,23 @@ class BoulderCreationTests(BaseIntegrationTestClass):
         """
         """
         # Given
+        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
         data = {
             fields.creator: 'test user',
             fields.difficulty: 'green',
             fields.feet: 'free',
-            fields.name: 'test',
+            fields.name: 1,
             fields.notes: "",
             fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json['created'], False)
+        self.assertListEqual(resp.json.get('errors').get('name'), ['Not a valid string.'])
+
 
 
 if __name__ == '__main__':
