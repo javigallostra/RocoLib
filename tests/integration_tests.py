@@ -40,7 +40,7 @@ def get_db() -> database.Database:
 
 def create_walls_collection(db, gym_name, gym_code, coordinates):
     walls_collection = db[WALLS_COLLECTION]
-    if walls_collection.find_one({'id': gym_code}, limit = 1) != 0:
+    if walls_collection.find_one({'id': gym_code}, limit=1) != 0:
         return
     wall_data = {
         'name': gym_name,
@@ -49,11 +49,13 @@ def create_walls_collection(db, gym_name, gym_code, coordinates):
     }
     walls_collection.insert_one(wall_data)
 
+
 def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
     if f'{gym_code}_walls' in db.list_collection_names():
         return
     gym_collection = db[f'{gym_code}_walls']
-    wall_data = {'image': wall_section, 'name': wall_name, 'radius': wall_radius}
+    wall_data = {'image': wall_section,
+                 'name': wall_name, 'radius': wall_radius}
     gym_collection.insert_one(wall_data)
 
 
@@ -66,21 +68,22 @@ class BaseIntegrationTestClass(unittest.TestCase):
         """
         Set up method that will run before every test
         """
-        set_creds_file(CREDS_DEV) # set development credentials for the application
+        set_creds_file(
+            CREDS_DEV)  # set development credentials for the application
         # connect to testing ddbb and create entities
         self.db = get_db()
         self.client = app.test_client()
         create_walls_collection(
-            self.db, 
+            self.db,
             TEST_GYM_NAME,
-            TEST_GYM_CODE, 
+            TEST_GYM_CODE,
             TEST_COORDINATES
         )
         add_wall(
-            db=self.db, 
-            gym_code=TEST_GYM_CODE, 
-            wall_name=TEST_WALL_NAME, 
-            wall_section=TEST_WALL_SECTION, 
+            db=self.db,
+            gym_code=TEST_GYM_CODE,
+            wall_name=TEST_WALL_NAME,
+            wall_section=TEST_WALL_SECTION,
             wall_radius=TEST_WALL_RADIUS
         )
 
@@ -116,7 +119,6 @@ class BoulderCreationTests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json['walls'][0]['image'], TEST_WALL_SECTION)
 
-
     def test_create_boulder_success(self):
         """
         """
@@ -128,29 +130,15 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             fields.feet: 'free',
             fields.name: 'test',
             fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x':0 ,'y':0 }]
+            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
-        resp = self.client.post(f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
+        resp = self.client.post(
+            f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
         # Then
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.json['created'], True)
-    
-    def test_create_boulder_failure(self):
-        """
-        """
-        # Given
-        fields = BoulderFields()
-        data = {
-            fields.creator: 'test user',
-            fields.difficulty: 'green',
-            fields.feet: 'free',
-            fields.name: 'test',
-            fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x':0 ,'y':0 }]
-        }
-        # When
-    
+
     def test_create_boulder_failure_no_gym(self):
         """
         """
@@ -164,7 +152,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             fields.feet: 'free',
             fields.name: 'test',
             fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x':0 ,'y':0 }]
+            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
         resp = self.client.post(route, json=data)
@@ -185,13 +173,40 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             fields.feet: 'free',
             fields.name: 'test',
             fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x':0 ,'y':0 }]
+            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(resp.json['created'], False)
+
+    def test_create_boulder_failure_no_data(self):
+        """
+        """
+        # Given
+        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        data = {}
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json['created'], False)
+
+    def test_create_boulder_failure(self):
+        """
+        """
+        # Given
+        fields = BoulderFields()
+        data = {
+            fields.creator: 'test user',
+            fields.difficulty: 'green',
+            fields.feet: 'free',
+            fields.name: 'test',
+            fields.notes: "",
+            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
+        }
+        # When
 
 
 if __name__ == '__main__':
