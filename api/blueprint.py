@@ -273,7 +273,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         boulder_fields = BoulderFields()
         valid, errors = validate_gym_and_section(gym_id, wall_section, db)
         if not valid:
-          return jsonify(dict(created=False, errors=errors)), 400
+          return jsonify(dict(created=False, errors=errors)), 404
         # Get boulder data from request
         base_data = {
             boulder_fields.rating: 0,
