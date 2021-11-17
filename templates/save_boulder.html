@@ -29,9 +29,9 @@
 
           <form action="/save" onsubmit="return validateForm()" method="POST">
             Boulder name:<br />
-            <input id="name-field" type="text" name="name" value="" maxlength="26" required /><br /><br />
+            <input id="name-field" type="text" name="name" value="" maxlength="60" required /><br /><br />
             Creator:<br />
-            <input id="creator-field" type="text" name="creator" value="{{ username }}" maxlength="26"
+            <input id="creator-field" type="text" name="creator" value="{{ username }}" maxlength="60"
               required /><br /><br />
             Suggested difficulty:<br />
             <input type="radio" name="difficulty" value="green" checked />
