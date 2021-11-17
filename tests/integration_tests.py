@@ -11,7 +11,8 @@ from tests.utils import get_db, create_walls_collection, add_wall, drop_boulders
 
 class BaseIntegrationTestClass(unittest.TestCase):
     """
-    BaseClass for testing
+    Base Class for integration tests. Connects to DDBB and creates
+    required entities
     """
 
     def setUp(self):
