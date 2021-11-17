@@ -110,16 +110,16 @@
             </div>
             <div class="col-4" style="display: flex; justify-content: right;">
               {%- if boulder['is_done'] -%}
-              <div class="col-4">
+              <div>
                 <span id="date-climbed">Dates Climbed:</span>
+                {%- for date in boulder['date_climbed'] -%}
+                <div style="display: flex; flex-direction: row;">
+                  <span class="date-climbed-span">
+                    {{ date }}
+                  </span>
+                </div>
+                {% endfor %}
               </div>
-              {%- for date in boulder['date_climbed'] -%}
-              <div class="col-8" style="display: flex; flex-direction: column;">
-                <span class="date-climbed-span">
-                  {{ date }}
-                </span>
-              </div>
-              {% endfor %}
               {%- endif -%}
             </div>
           </div>
