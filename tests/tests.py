@@ -3,7 +3,7 @@ import unittest
 import random
 from application import app
 
-from  api.schemas import CreateBoulderRequestBody, CreateBoulderRequestValidator, BoulderFields
+from api.schemas import CreateBoulderRequestBody, CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 
 # class BaseAPITestClass(unittest.TestCase):
@@ -44,7 +44,8 @@ class UtilsTests(unittest.TestCase):
         # Given
         from utils.utils import get_creds_file
         # When
-        not_a_file = lambda : ''.join([chr(random.randint(97, 122)) for i in range(5)]) + '.txt'
+        def not_a_file(): return ''.join(
+            [chr(random.randint(97, 122)) for i in range(5)]) + '.txt'
         non_existing_file = not_a_file()
         while isfile(non_existing_file):
             non_existing_file = not_a_file()
@@ -71,7 +72,7 @@ class UtilsTests(unittest.TestCase):
     def test_make_boulder_data_valid_js_wrong_data_type(self):
         # Given
         from utils.utils import make_boulder_data_valid_js
-        invalid_data = [{'a':'b'}, ['aaa'], (1,2), 4, 17.23]
+        invalid_data = [{'a': 'b'}, ['aaa'], (1, 2), 4, 17.23]
         expected_data = [dict() for _ in range(len(invalid_data))]
         # When
         processed_data = [make_boulder_data_valid_js(d) for d in invalid_data]
@@ -84,9 +85,9 @@ class UtilsTests(unittest.TestCase):
     def test_get_wall_image(self):
         # Given
         from utils.utils import get_wall_image
-        gym='sancu'
-        section='s1'
-        path='images/walls/'
+        gym = 'sancu'
+        section = 's1'
+        path = 'images/walls/'
         # When
         with app.app_context(), app.test_request_context():
             image = get_wall_image(gym=gym, section=section, walls_path=path)
@@ -95,12 +96,13 @@ class UtilsTests(unittest.TestCase):
         self.assertIs(type(image), str)
         self.assertEqual(image, f'/static/{path}{gym}/{section}.JPG')
 
+
 class BoulderCreationTests(unittest.TestCase):
 
     def test_create_boulder(self):
         """
         """
-        # Given 
+        # Given
         fields = BoulderFields()
         data = {
             fields.raters: 'a',
@@ -114,7 +116,7 @@ class BoulderCreationTests(unittest.TestCase):
             fields.notes: None,
             fields.holds: 'holds'
         }
-        # When 
+        # When
         with self.assertRaises(ValidationError) as context:
             _ = CreateBoulderRequestValidator().load(data)
         # Then
@@ -128,6 +130,7 @@ class BoulderCreationTests(unittest.TestCase):
         self.assertIn('time', context.exception.messages)
         self.assertIn('notes', context.exception.messages)
         self.assertIn('holds', context.exception.messages)
+
 
 if __name__ == '__main__':
     unittest.main()

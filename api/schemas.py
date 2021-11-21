@@ -139,6 +139,7 @@ class GymBoulderListSchema(Schema):
     """
     boulders = fields.List(fields.Nested(BoulderSchema))
 
+
 class BoulderFields:
     raters = 'raters'
     rating = 'rating'
@@ -150,6 +151,7 @@ class BoulderFields:
     time = 'time'
     notes = 'notes'
     holds = 'holds'
+
 
 spec = APISpec(
     title="RocoLib API",

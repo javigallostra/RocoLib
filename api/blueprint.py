@@ -217,7 +217,7 @@ def get_gym_boulders(gym_id: str) -> Response:
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
 def boulder_create(gym_id: str, wall_section: str) -> Response:
-    """Create a new boulder
+    """Create a new boulder linked to the given gym and wall section
     ---
     post:
       tags:

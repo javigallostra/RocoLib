@@ -1,6 +1,7 @@
 import json
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
 
+
 def generate_api_docs(app) -> None:
     """
     Generate the OpenAPI spec doc

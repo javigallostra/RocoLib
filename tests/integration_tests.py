@@ -151,6 +151,15 @@ class BoulderCreationTests(BaseIntegrationTestClass):
         # Given
         route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
+        # fields = BoulderFields()
+        errors = {
+            'creator': ['Missing data for required field.'],
+            'difficulty': ['Missing data for required field.'],
+            'feet': ['Missing data for required field.'],
+            'holds': ['Missing data for required field.'],
+            'name': ['Missing data for required field.'],
+            'notes': ['Missing data for required field.']
+        }
         data = {
             fields.creator: 'test user',
             fields.difficulty: 'green',

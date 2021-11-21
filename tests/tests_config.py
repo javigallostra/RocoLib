@@ -1,7 +1,7 @@
 DB_NAME = 'RocoLib'
 WALLS_COLLECTION = 'walls'
-TEST_GYM_NAME = 'Test Gym' 
-TEST_GYM_CODE = 'test' 
+TEST_GYM_NAME = 'Test Gym'
+TEST_GYM_CODE = 'test'
 TEST_COORDINATES = [2.0842785, 41.4705608]
 TEST_WALL_NAME = 'Test Wall'
 TEST_WALL_SECTION = 'wall'

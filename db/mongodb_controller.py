@@ -319,13 +319,13 @@ def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Databa
 
 @serializable
 def get_boulders_filtered(
-        gym: str,
-        database: Database,
-        conditions: Optional[dict] = None,
-        equals: Optional[list] = None,
-        ranged: Optional[list] = None,
-        contains: Optional[list] = None
-    ) -> dict[str, list[Data]]:
+    gym: str,
+    database: Database,
+    conditions: Optional[dict] = None,
+    equals: Optional[list] = None,
+    ranged: Optional[list] = None,
+    contains: Optional[list] = None
+) -> dict[str, list[Data]]:
     """
     Given a gym and a set of conditions return the list of boulders
     that fulfill them
