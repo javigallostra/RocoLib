@@ -51,6 +51,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_get_gyms(self):
         """
+        Get available gyms
         """
         # Given
         route = '/api/gym/list'
@@ -62,6 +63,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_get_walls(self):
         """
+        Get available walls from a gym
         """
         # Given
         route = f'/api/gym/{TEST_GYM_CODE}/walls'
@@ -73,6 +75,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_create_boulder_success(self):
         """
+        Create a boulder for a given wall in a given gym
         """
         # Given
         fields = BoulderFields()
@@ -93,6 +96,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_create_boulder_failure_no_gym(self):
         """
+        Create a boulder in a non existing gym
         """
         # Given
         non_existing_gym = 'blabla'
@@ -114,6 +118,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_create_boulder_failure_no_wall_section(self):
         """
+        Create a boulder in a non existing wall section
         """
         # Given
         non_existing_wall_section = 'blabla'
@@ -124,7 +129,7 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             fields.difficulty: 'green',
             fields.feet: 'free',
             fields.name: 'test',
-            fields.notes: "",
+            fields.notes: '',
             fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
@@ -135,23 +140,11 @@ class BoulderCreationTests(BaseIntegrationTestClass):
 
     def test_create_boulder_failure_no_data(self):
         """
+        Create a boulder without data
         """
         # Given
         route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         data = {}
-        # When
-        resp = self.client.post(route, json=data)
-        # Then
-        self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json['created'], False)
-
-    def test_create_boulder_failure(self):
-        """
-        """
-        # Given
-        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
-        fields = BoulderFields()
-        # fields = BoulderFields()
         errors = {
             'creator': ['Missing data for required field.'],
             'difficulty': ['Missing data for required field.'],
@@ -160,12 +153,26 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             'name': ['Missing data for required field.'],
             'notes': ['Missing data for required field.']
         }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json['created'], False)
+        self.assertDictEqual(errors, resp.json['errors'])
+
+    def test_create_boulder_failure(self):
+        """
+        Create a boulder with invalid data
+        """
+        # Given
+        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        fields = BoulderFields()
         data = {
             fields.creator: 'test user',
             fields.difficulty: 'green',
             fields.feet: 'free',
-            fields.name: 1,
-            fields.notes: "",
+            fields.name: 123,
+            fields.notes: '',
             fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
         }
         # When
