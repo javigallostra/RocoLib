@@ -1,9 +1,8 @@
 from typing import Tuple
-from flask import Blueprint, jsonify, send_from_directory, request, g
+from flask import Blueprint, jsonify, send_from_directory, request, g, current_app
 import json
 import ast
 import datetime
-from flask.helpers import url_for
 from flask.wrappers import Request
 # from flask_login.utils import login_user, current_user
 from werkzeug.wrappers.response import Response
@@ -377,8 +376,6 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           return jsonify(dict(created=False, errors=err.messages)), 400
 
 # User related endpoints
-
-
 @api_blueprint.route('/user/signup', methods=['POST'])
 def new_user() -> Response:
     """
@@ -405,6 +402,12 @@ def new_user() -> Response:
       return jsonify({'username': user.name}), 201
 
 
+@api_blueprint.route('/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token(current_app)
+    return jsonify({ 'token': token.decode('ascii') })
+
 @api_blueprint.route('/resource')
 @auth.login_required
 def get_resource() -> Response:
@@ -412,9 +415,12 @@ def get_resource() -> Response:
 
 
 @auth.verify_password
-def verify_password(username: str, password: str) -> bool:
-    user = User.get_user_by_username(username, get_db())
-    if not user or not user.check_password(password):
-        return False
+def verify_password(username_or_token: str, password: str) -> bool:
+    # first try to authenticate by token
+    user = User.verify_auth_token(username_or_token, current_app, get_db())
+    if not user:
+      user = User.get_user_by_username(username_or_token, get_db())
+      if not user or not user.check_password(password):
+          return False
     g.user = user
     return True
