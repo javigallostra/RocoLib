@@ -404,3 +404,13 @@ def get_user_data_by_email(email: str, database: Database) -> Data:
     """
     user = database['users'].find_one({'email': email})
     return user if user else {}
+
+@serializable
+def get_user_data_by_username(name: str, database: Database) -> Data:
+    """
+    Given a user email get its data
+
+    Return an empty dictionary if the user is not found
+    """
+    user = database['users'].find_one({'name': name})
+    return user if user else {}

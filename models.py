@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Union
+from typing import Any, Dict, Union
 import uuid
 from utils.typing import Data
 from flask_login import UserMixin
@@ -91,8 +91,21 @@ class User(UserMixin):
             return None
         return User(user_data)
 
+    @staticmethod
+    def get_user_by_username(name: str, database: Database) -> Union[User, None]:
+        """
+        Return a User object if the user email is found in the database.
+
+        Otherwise, return None.
+        """
+        user_data = mongodb_controller.get_user_data_by_username(name, database)
+        if not user_data:
+            return None
+        return User(user_data)
+
+
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return '<User {} ({})>'.format(self.email, self.name)
 
 
 class TickListProblem():
@@ -123,7 +136,7 @@ class TickListProblem():
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
 
-    def serialize(self) -> dict[str, Any]:
+    def serialize(self) -> Dict[str, Any]:
         """
         Return a serialized version of itself (a dictionary)
         """

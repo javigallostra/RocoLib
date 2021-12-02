@@ -1,17 +1,22 @@
-from typing import Tuple, Union
-from flask import Blueprint, jsonify, _app_ctx_stack, send_from_directory, request
+from typing import Tuple
+from flask import Blueprint, jsonify, send_from_directory, request, g
 import json
 import ast
 import datetime
+from flask.helpers import url_for
 from flask.wrappers import Request
-from pymongo.database import Database
+# from flask_login.utils import login_user, current_user
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from marshmallow import ValidationError
 from api.validation import validate_gym_and_section
 from api.schemas import BoulderFields
 from utils.utils import get_db
+from models import User
+from flask_httpauth import HTTPBasicAuth
 
+
+auth = HTTPBasicAuth()
 
 api_blueprint = Blueprint(
     'api_blueprint',
@@ -214,6 +219,7 @@ def get_gym_boulders(gym_id: str) -> Response:
     """
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', []))), 200
 
+
 @api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>', methods=['GET'])
 def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
     """Get boulder by id.
@@ -249,6 +255,7 @@ def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
     """
     return jsonify(dict(boulder=db_controller.get_boulder_by_id(gym_id, boulder_id, get_db()))), 200
 
+
 @api_blueprint.route('/boulders/<string:gym_id>/name/<string:boulder_name>', methods=['GET'])
 def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
     """Get boulder by name.
@@ -283,6 +290,7 @@ def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
             Server Error
     """
     return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, get_db()))), 200
+
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
 def boulder_create(gym_id: str, wall_section: str) -> Response:
@@ -367,3 +375,46 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           return jsonify(dict(created=True, _id=resp)), 201
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
+
+# User related endpoints
+
+
+@api_blueprint.route('/user/signup', methods=['POST'])
+def new_user() -> Response:
+    """
+    Create a new user.
+    """
+    username = request.json.get('username')
+    password = request.json.get('password')
+    email = request.json.get('email')
+    if username is None or password is None or email is None:
+        pass  # return 400
+    if User.query.filter_by(username=username).first() is not None:
+        pass  # return 400 "existing user"
+    user = User.get_user_by_email(email, get_db())
+    if user is not None:
+        # return 400 "existing email"
+        error = f'The email {email} is already registered'
+    else:
+      # Create and save user
+      user = User(name=username, email=email)
+      user.set_password(password)
+      user.save(get_db())
+      # Keep user logged in
+      # login_user(user, remember=True)
+      return jsonify({'username': user.name}), 201
+
+
+@api_blueprint.route('/resource')
+@auth.login_required
+def get_resource() -> Response:
+    return jsonify({'data': f'Hello {g.user.name}'})
+
+
+@auth.verify_password
+def verify_password(username: str, password: str) -> bool:
+    user = User.get_user_by_username(username, get_db())
+    if not user or not user.check_password(password):
+        return False
+    g.user = user
+    return True
