@@ -404,14 +404,14 @@ def new_user() -> Response:
 
 @api_blueprint.route('/token')
 @auth.login_required
-def get_auth_token():
+def get_auth_token() -> Response:
     token = g.user.generate_auth_token(current_app)
-    return jsonify({ 'token': token.decode('ascii') })
+    return jsonify({ 'token': token.decode('ascii') }), 200
 
 @api_blueprint.route('/resource')
 @auth.login_required
 def get_resource() -> Response:
-    return jsonify({'data': f'Hello {g.user.name}'})
+    return jsonify({'data': f'Hello {g.user.name}'}), 200
 
 
 @auth.verify_password
