@@ -1,6 +1,5 @@
 import os
 
-from marshmallow.decorators import post_load
 from config import PORT
 
 from apispec import APISpec
@@ -8,7 +7,6 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from marshmallow import Schema, fields
 
-from models import User
 
 host = 'http://localhost:'
 localhost_port = PORT
@@ -229,7 +227,6 @@ spec = APISpec(
             name="User",
             description="Endpoints related to Users"
         )
-
     ],
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )
