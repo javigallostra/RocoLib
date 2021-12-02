@@ -108,12 +108,12 @@ class User(UserMixin):
         return User(user_data)
 
     def generate_auth_token(self, app, expiration = 600):
-        s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
+        s = Serializer(app.secret_key, expires_in = expiration)
         return s.dumps({ 'id': self.id })
 
     @staticmethod
     def verify_auth_token(token, app, database: Database):
-        s = Serializer(app.config['SECRET_KEY'])
+        s = Serializer(app.secret_key)
         try:
             data = s.loads(token)
         except SignatureExpired:
