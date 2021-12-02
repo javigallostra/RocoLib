@@ -12,10 +12,10 @@ from api.validation import validate_gym_and_section
 from api.schemas import BoulderFields
 from utils.utils import get_db
 from models import User
-from flask_httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPTokenAuth
 
 
-auth = HTTPBasicAuth()
+auth = HTTPTokenAuth(scheme='Bearer')
 
 api_blueprint = Blueprint(
     'api_blueprint',
@@ -375,7 +375,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
 
-# User related endpoints
+
 @api_blueprint.route('/user/signup', methods=['POST'])
 def new_user() -> Response:
     """
@@ -386,10 +386,9 @@ def new_user() -> Response:
     email = request.json.get('email')
     if username is None or password is None or email is None:
         pass  # return 400
-    if User.query.filter_by(username=username).first() is not None:
+    if User.get_user_by_username(username, get_db()) is not None:
         pass  # return 400 "existing user"
-    user = User.get_user_by_email(email, get_db())
-    if user is not None:
+    if User.get_user_by_email(email, get_db()) is not None:
         # return 400 "existing email"
         error = f'The email {email} is already registered'
     else:
@@ -402,11 +401,20 @@ def new_user() -> Response:
       return jsonify({'username': user.name}), 201
 
 
-@api_blueprint.route('/token')
-@auth.login_required
+@api_blueprint.route('/token', methods=['POST'])
 def get_auth_token() -> Response:
-    token = g.user.generate_auth_token(current_app)
-    return jsonify({ 'token': token.decode('ascii') }), 200
+    username = request.json.get('username')
+    password = request.json.get('password')
+    user = User.get_user_by_username(username, get_db())
+    if user is None:
+      pass
+    else:
+      if user.check_password(password):
+        token = user.generate_auth_token(current_app)
+        # token = g.user.generate_auth_token(current_app)
+        return jsonify({'token': token.decode('ascii')}), 200
+    return jsonify({'error': 'Invalid credentials'}), 401
+
 
 @api_blueprint.route('/resource')
 @auth.login_required
@@ -414,13 +422,10 @@ def get_resource() -> Response:
     return jsonify({'data': f'Hello {g.user.name}'}), 200
 
 
-@auth.verify_password
-def verify_password(username_or_token: str, password: str) -> bool:
-    # first try to authenticate by token
-    user = User.verify_auth_token(username_or_token, current_app, get_db())
-    if not user:
-      user = User.get_user_by_username(username_or_token, get_db())
-      if not user or not user.check_password(password):
-          return False
-    g.user = user
-    return True
+@auth.verify_token
+def verify_token(token: str) -> bool:
+  user = User.verify_auth_token(token, current_app, get_db())
+  if user is None:
+    return False
+  g.user = user
+  return True

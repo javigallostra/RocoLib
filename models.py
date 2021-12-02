@@ -2,8 +2,6 @@ from __future__ import annotations
 from typing import Any, Dict, Union
 import uuid
 
-from flask.globals import _FlaskLocalProxy
-
 from utils.typing import Data
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -108,12 +106,12 @@ class User(UserMixin):
             return None
         return User(user_data)
 
-    def generate_auth_token(self, app: _FlaskLocalProxy, expiration: int = 600):
+    def generate_auth_token(self, app: Any, expiration: int = 600):
         s = Serializer(app.secret_key, expires_in = expiration)
         return s.dumps({ 'id': self.id })
 
     @staticmethod
-    def verify_auth_token(token: str, app: _FlaskLocalProxy, database: Database) -> User:
+    def verify_auth_token(token: str, app: Any, database: Database) -> User:
         s = Serializer(app.secret_key)
         try:
             data = s.loads(token)
