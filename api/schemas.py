@@ -8,6 +8,8 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from marshmallow import Schema, fields
 
+from models import User
+
 host = 'http://localhost:'
 localhost_port = PORT
 if os.environ['DOCKER_ENV'] == "True":
@@ -105,11 +107,34 @@ class CreateBoulderErrorResponse(Schema):
     errors = fields.Dict()
 
 
+class AuthenticationRequestBody(Schema):
+    username = fields.Str()
+    email = fields.Str()
+    password = fields.Str()
+
+
+class AuthenticationResponseBody(Schema):
+    token = fields.Str()
+
+
+class AuthenticationErrorResponse(Schema):
+    errors = fields.Str()
+
+
+class TestTokenResponseBody(Schema):
+    data = fields.Str()
+
+
+class TestTokenErrorResponse(Schema):
+    errors = fields.Str()
+
+
 class GymIDParameter(Schema):
     """
     Data Schema of a Gym ID parameter
     """
     gym_id = fields.Str()
+
 
 class BoulderIDParameter(Schema):
     """
@@ -117,11 +142,13 @@ class BoulderIDParameter(Schema):
     """
     boulder_id = fields.Str()
 
+
 class BoulderNameParameter(Schema):
     """
     Data Schema of a Boulder ID parameter
     """
     boulder_name = fields.Str()
+
 
 class WallSectionParameter(Schema):
     """
@@ -197,7 +224,12 @@ spec = APISpec(
         dict(
             name="Boulders",
             description="Endpoints related to Boulder Problems"
+        ),
+        dict(
+            name="User",
+            description="Endpoints related to Users"
         )
+
     ],
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )

@@ -29,6 +29,11 @@ api_blueprint = Blueprint(
 def load_data(request: Request) -> Tuple[dict, bool]:
   """
   Load data from the request body into a dict and return it
+
+  :param request: HTTP/S Request
+  :type request: Request
+  :return: Dictionary with the data from the request and a boolean indicating if the data came from a form
+  :rtype: Tuple[dict, bool]
   """
   # Handle the different content types
   request.get_data()  # required?
@@ -40,6 +45,23 @@ def load_data(request: Request) -> Tuple[dict, bool]:
     return request.json, False
   else:
     return dict(), False
+
+
+@auth.verify_token
+def verify_token(token: str) -> bool:
+  """
+  Validate the token and return a boolean balue indicating whether the token is valid
+
+  :param token: token to validate
+  :type token: str
+  :return: Token validity. True if valid, False otherwise
+  :rtype: bool
+  """
+  user = User.verify_auth_token(token, current_app, get_db())
+  if user is None:
+    return False
+  g.user = user
+  return True
 
 
 @api_blueprint.route('/docs/swagger.json')
@@ -403,29 +425,123 @@ def new_user() -> Response:
 
 @api_blueprint.route('/token', methods=['POST'])
 def get_auth_token() -> Response:
-    username = request.json.get('username')
-    password = request.json.get('password')
-    user = User.get_user_by_username(username, get_db())
-    if user is None:
-      pass
-    else:
-      if user.check_password(password):
+    """
+    Given a username/email and a password, get an auth token if the user exists
+    and the credentials are valid.
+    ---
+    post:
+      tags:
+        - User
+      requestBody:
+        description: Authentication request body
+        required: true
+        content:
+          application/json:
+            schema: AuthenticationRequestBody
+          application/x-www-form-urlencoded:
+            schema: AuthenticationRequestBody
+          text/json:
+            schema: AuthenticationRequestBody
+          text/plain:
+            schema: AuthenticationRequestBody
+      responses:
+        200:
+          description:
+            Authentication successful
+          content:
+            text/plain:
+              schema: AuthenticationResponseBody
+            text/json:
+              schema: AuthenticationResponseBody
+            application/json:
+              schema: AuthenticationResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: AuthenticationErrorResponse
+            text/json:
+              schema: AuthenticationErrorResponse
+            application/json:
+              schema: AuthenticationErrorResponse
+        400:
+          description:
+            Invalid credentials
+          content:
+            text/plain:
+              schema: AuthenticationErrorResponse
+            text/json:
+              schema: AuthenticationErrorResponse
+            application/json:
+              schema: AuthenticationErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    user_data, _ = load_data(request)
+    username = user_data.get('username', '')
+    email = user_data.get('email', '')
+    password = user_data.get('password')
+    user = None
+    if username:
+      user = User.get_user_by_username(username, get_db())
+    elif email:
+      user = User.get_user_by_email(email, get_db())
+    if user is not None and user.check_password(password):
         token = user.generate_auth_token(current_app)
-        # token = g.user.generate_auth_token(current_app)
-        return jsonify({'token': token.decode('ascii')}), 200
-    return jsonify({'error': 'Invalid credentials'}), 401
+        return jsonify(dict(token=token.decode('ascii'))), 200
+    return jsonify(dict(error='Invalid credentials')), 401
 
 
 @api_blueprint.route('/resource')
 @auth.login_required
 def get_resource() -> Response:
+    """
+    Test the validity of a token
+    ---
+    get:
+      tags:
+        - User
+      responses:
+        200:
+          description:
+            Authentication successful
+          content:
+            text/plain:
+              schema: TestTokenResponseBody
+            text/json:
+              schema: TestTokenResponseBody
+            application/json:
+              schema: TestTokenResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: TestTokenErrorResponse
+            text/json:
+              schema: TestTokenErrorResponse
+            application/json:
+              schema: TestTokenErrorResponse
+        400:
+          description:
+            Invalid credentials
+          content:
+            text/plain:
+              schema: TestTokenErrorResponse
+            text/json:
+              schema: TestTokenErrorResponse
+            application/json:
+              schema: TestTokenErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
     return jsonify({'data': f'Hello {g.user.name}'}), 200
-
-
-@auth.verify_token
-def verify_token(token: str) -> bool:
-  user = User.verify_auth_token(token, current_app, get_db())
-  if user is None:
-    return False
-  g.user = user
-  return True
