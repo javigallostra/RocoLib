@@ -1,5 +1,5 @@
 import json
-from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
+from api.blueprint import get_boulder_by_id, get_boulder_by_name, get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create
 
 
 def generate_api_docs(app) -> None:
@@ -13,11 +13,16 @@ def generate_api_docs(app) -> None:
     from api.schemas import GymNameSchema
     from api.schemas import WallNameSchema
     from api.schemas import GymBoulderListSchema
+    from api.schemas import BoulderSchema
+    from api.schemas import BoulderIDParameter
+    from api.schemas import BoulderNameParameter
+    from api.schemas import GymIDParameter
     from api.schemas import CreateBoulderRequestBody
     from api.schemas import CreateBoulderResponseBody
     from api.schemas import CreateBoulderErrorResponse
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
+    spec.components.schema("Boulder", schema=BoulderSchema)
     spec.components.schema("Boulders", schema=GymBoulderListSchema)
     spec.components.schema("GymName", schema=GymNameSchema)
     spec.components.schema("WallName", schema=WallNameSchema)
@@ -27,12 +32,17 @@ def generate_api_docs(app) -> None:
                            schema=CreateBoulderResponseBody)
     spec.components.schema("CreateBoulderErrorResponse",
                            schema=CreateBoulderErrorResponse)
+    spec.components.schema("GymIDParameter", schema=GymIDParameter)
+    spec.components.schema("BoulderIDParameter", schema=BoulderIDParameter)
+    spec.components.schema("BoulderNameParameter", schema=BoulderNameParameter)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)
         spec.path(view=get_gym_pretty_name)
         spec.path(view=get_gym_wall_name)
         spec.path(view=get_gym_boulders)
+        spec.path(view=get_boulder_by_id)
+        spec.path(view=get_boulder_by_name)
         spec.path(view=boulder_create)
     with open('./static/swagger/swagger.json', 'w') as f:
         json.dump(spec.to_dict(), f)

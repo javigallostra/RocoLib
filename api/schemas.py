@@ -111,6 +111,17 @@ class GymIDParameter(Schema):
     """
     gym_id = fields.Str()
 
+class BoulderIDParameter(Schema):
+    """
+    Data Schema of a Boulder ID parameter
+    """
+    boulder_id = fields.Str()
+
+class BoulderNameParameter(Schema):
+    """
+    Data Schema of a Boulder ID parameter
+    """
+    boulder_name = fields.Str()
 
 class WallSectionParameter(Schema):
     """

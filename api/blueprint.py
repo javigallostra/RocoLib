@@ -214,6 +214,75 @@ def get_gym_boulders(gym_id: str) -> Response:
     """
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', []))), 200
 
+@api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>', methods=['GET'])
+def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
+    """Get boulder by id.
+    ---
+    get:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: BoulderIDParameter
+      responses:
+        200:
+          description:
+            Boulder data for the specified problem
+          content:
+            application/json:
+              schema: BoulderSchema
+            text/plain:
+              schema: BoulderSchema
+            text/json:
+              schema: BoulderSchema
+        400:
+          description:
+            Bad request
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    return jsonify(dict(boulder=db_controller.get_boulder_by_id(gym_id, boulder_id, get_db()))), 200
+
+@api_blueprint.route('/boulders/<string:gym_id>/name/<string:boulder_name>', methods=['GET'])
+def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
+    """Get boulder by name.
+    ---
+    get:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: BoulderNameParameter
+      responses:
+        200:
+          description:
+            Boulder data for the specified problem
+          content:
+            application/json:
+              schema: BoulderSchema
+            text/plain:
+              schema: BoulderSchema
+            text/json:
+              schema: BoulderSchema
+        400:
+          description:
+            Bad request
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, get_db()))), 200
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
 def boulder_create(gym_id: str, wall_section: str) -> Response:
