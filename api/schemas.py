@@ -139,6 +139,28 @@ class AuthenticationErrorResponse(Schema):
     """
     errors = fields.Str()
 
+class SignUpRequestBody(Schema):
+    """
+    Data Schema of the request to sign up a new user
+    """
+    username = fields.Str()
+    email = fields.Str()
+    password = fields.Str()
+
+
+class SignUpResponseBody(Schema):
+    """
+    Data Schema of the response to a successful sign up request
+    """
+    username = fields.Str()
+
+
+class SignUpErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful authentication request
+    """
+    errors = fields.List(fields.Str())
+
 
 class TestTokenResponseBody(Schema):
     """

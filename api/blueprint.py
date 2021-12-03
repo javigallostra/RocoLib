@@ -1,18 +1,17 @@
 from typing import Tuple
 from flask import Blueprint, jsonify, send_from_directory, request, g, current_app
+from flask.wrappers import Request
+from flask_httpauth import HTTPTokenAuth
+from marshmallow import ValidationError
 import json
 import ast
 import datetime
-from flask.wrappers import Request
-# from flask_login.utils import login_user, current_user
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
-from marshmallow import ValidationError
 from api.validation import validate_gym_and_section
 from api.schemas import BoulderFields
 from utils.utils import get_db
 from models import User
-from flask_httpauth import HTTPTokenAuth
 
 
 auth = HTTPTokenAuth(scheme='Bearer')
@@ -400,30 +399,85 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
 
 @api_blueprint.route('/user/signup', methods=['POST'])
 def new_user() -> Response:
+    """Create a new user.
+    ---
+    post:
+      tags:
+        - User
+      requestBody:
+        description: User Sign Up request body
+        required: true
+        content:
+          application/json:
+            schema: SignUpRequestBody
+          application/x-www-form-urlencoded:
+            schema: SignUpRequestBody
+          text/json:
+            schema: SignUpRequestBody
+          text/plain:
+            schema: SignUpRequestBody
+      responses:
+        200:
+          description:
+            User creation successful
+          content:
+            text/plain:
+              schema: SignUpResponseBody
+            text/json:
+              schema: SignUpResponseBody
+            application/json:
+              schema: SignUpResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: SignUpErrorResponse
+            text/json:
+              schema: SignUpErrorResponse
+            application/json:
+              schema: SignUpErrorResponse
+        400:
+          description:
+            Invalid credentials
+          content:
+            text/plain:
+              schema: SignUpErrorResponse
+            text/json:
+              schema: SignUpErrorResponse
+            application/json:
+              schema: SignUpErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
     """
-    Create a new user.
-    """
-    username = request.json.get('username')
-    password = request.json.get('password')
-    email = request.json.get('email')
+    # Some of this code can be extracted into a utility function
+    data, _ = load_data(request)
+    username = data.get('username', None)
+    password = data.get('password', None)
+    email = data.get('email', None)
+    errors = {
+        'username': 'Username is required',
+        'password': 'Password is required',
+        'email': 'Email is required'
+    }
     if username is None or password is None or email is None:
-        pass  # return 400
+        return jsonify(dict(errors=[errors[key] for key in errors.keys() if data.get(key, None) is None])), 400
     if User.get_user_by_username(username, get_db()) is not None:
-        pass  # return 400 "existing user"
+        return jsonify(dict(errors=['Username already exists'])), 400
     if User.get_user_by_email(email, get_db()) is not None:
-        # return 400 "existing email"
-        error = f'The email {email} is already registered'
-    else:
-      # Create and save user
-      user = User(name=username, email=email)
-      user.set_password(password)
-      user.save(get_db())
-      # Keep user logged in
-      # login_user(user, remember=True)
-      return jsonify({'username': user.name}), 201
+        return jsonify(dict(errors=['Email already exists'])), 400
+    # Create and save user
+    user = User(name=username, email=email)
+    user.set_password(password)
+    user.save(get_db())
+    return jsonify({'username': user.name}), 201
 
 
-@api_blueprint.route('/user/token', methods=['POST'])
+@api_blueprint.route('/user/auth', methods=['POST'])
 def get_auth_token() -> Response:
     """
     Given a username/email and a password, get an auth token if the user exists

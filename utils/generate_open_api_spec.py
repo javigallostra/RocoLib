@@ -1,5 +1,7 @@
 import json
-from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name, get_gym_boulders, get_gym_pretty_name, get_gym_wall_name, get_gyms, get_gym_walls, boulder_create, get_resource
+from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
+from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
+from api.blueprint import get_gyms, get_gym_walls, boulder_create, get_resource, new_user
 
 
 def generate_api_docs(app) -> None:
@@ -23,7 +25,10 @@ def generate_api_docs(app) -> None:
     from api.schemas import AuthenticationErrorResponse
     from api.schemas import AuthenticationRequestBody
     from api.schemas import AuthenticationResponseBody
-    from api.schemas import TestTokenErrorResponse 
+    from api.schemas import SignUpErrorResponse
+    from api.schemas import SignUpRequestBody
+    from api.schemas import SignUpResponseBody
+    from api.schemas import TestTokenErrorResponse
     from api.schemas import TestTokenResponseBody
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
@@ -40,11 +45,19 @@ def generate_api_docs(app) -> None:
     spec.components.schema("GymIDParameter", schema=GymIDParameter)
     spec.components.schema("BoulderIDParameter", schema=BoulderIDParameter)
     spec.components.schema("BoulderNameParameter", schema=BoulderNameParameter)
-    spec.components.schema("AuthenticationRequestBody", schema=AuthenticationRequestBody)
-    spec.components.schema("AuthenticationResponseBody", schema=AuthenticationResponseBody)
-    spec.components.schema("AuthenticationErrorResponse", schema=AuthenticationErrorResponse)
-    spec.components.schema("TestTokenResponseBody", schema=TestTokenResponseBody)
-    spec.components.schema("TestTokenErrorResponse", schema=TestTokenErrorResponse)
+    spec.components.schema("AuthenticationRequestBody",
+                           schema=AuthenticationRequestBody)
+    spec.components.schema("AuthenticationResponseBody",
+                           schema=AuthenticationResponseBody)
+    spec.components.schema("AuthenticationErrorResponse",
+                           schema=AuthenticationErrorResponse)
+    spec.components.schema("SignUpRequestBody", schema=SignUpRequestBody)
+    spec.components.schema("SignUpResponseBody", schema=SignUpResponseBody)
+    spec.components.schema("SignUpErrorResponse", schema=SignUpErrorResponse)
+    spec.components.schema("TestTokenResponseBody",
+                           schema=TestTokenResponseBody)
+    spec.components.schema("TestTokenErrorResponse",
+                           schema=TestTokenErrorResponse)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)
@@ -54,6 +67,7 @@ def generate_api_docs(app) -> None:
         spec.path(view=get_boulder_by_id)
         spec.path(view=get_boulder_by_name)
         spec.path(view=boulder_create)
+        spec.path(view=new_user)
         spec.path(view=get_auth_token)
         spec.path(view=get_resource)
     with open('./static/swagger/swagger.json', 'w') as f:
