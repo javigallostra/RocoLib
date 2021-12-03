@@ -82,10 +82,16 @@ class BoulderSchema(BaseBoulderSchema):
 
 
 class CreateBoulderRequestBody(BaseBoulderSchema):
+    """
+    Data Schema to create a boulder
+    """
     pass
 
 
 class CreateBoulderRequestValidator(BaseBoulderSchema):
+    """
+    Data Schema to validate a create boulder request
+    """
     raters = fields.Int(required=True)
     rating = fields.Float(required=True)
     section = fields.Str(required=True)
@@ -96,34 +102,55 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
 
 
 class CreateBoulderResponseBody(Schema):
+    """
+    Data schema of the response to a successful create boulder request
+    """
     created = fields.Bool()
     _id = fields.Str()
 
 
 class CreateBoulderErrorResponse(Schema):
+    """
+    Data schema of the response to a unsuccessful create boulder request
+    """
     created = fields.Bool()
     errors = fields.Dict()
 
 
 class AuthenticationRequestBody(Schema):
+    """
+    Data Schema of the request to authenticate a user
+    """
     username = fields.Str()
     email = fields.Str()
     password = fields.Str()
 
 
 class AuthenticationResponseBody(Schema):
+    """
+    Data Schema of the response to a successful authentication request
+    """
     token = fields.Str()
 
 
 class AuthenticationErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful authentication request
+    """
     errors = fields.Str()
 
 
 class TestTokenResponseBody(Schema):
+    """
+    Data schema of the response to a successful test token request
+    """
     data = fields.Str()
 
 
 class TestTokenErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful test token request
+    """
     errors = fields.Str()
 
 
