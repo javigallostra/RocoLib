@@ -183,6 +183,22 @@ class BoulderCreationTests(BaseIntegrationTestClass):
         self.assertListEqual(resp.json.get('errors').get(
             'name'), ['Not a valid string.'])
 
+    def test_create_user_no_username(self):
+        pass
+    def test_create_user_no_password(self):
+        pass
+    def test_create_user_no_email(self):
+        pass
+    def test_create_user_no_data(self):
+        pass
+    def test_create_user_invalid_email(self):
+        pass
+    def test_create_user_repeated_username(self):
+        pass
+    def test_create_user_repeated_email(self):
+        pass
+    def test_create_user_valid(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
