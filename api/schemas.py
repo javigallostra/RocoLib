@@ -1,12 +1,12 @@
 import os
 
-from marshmallow.decorators import post_load
 from config import PORT
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from marshmallow import Schema, fields
+
 
 host = 'http://localhost:'
 localhost_port = PORT
@@ -82,10 +82,16 @@ class BoulderSchema(BaseBoulderSchema):
 
 
 class CreateBoulderRequestBody(BaseBoulderSchema):
+    """
+    Data Schema to create a boulder
+    """
     pass
 
 
 class CreateBoulderRequestValidator(BaseBoulderSchema):
+    """
+    Data Schema to validate a create boulder request
+    """
     raters = fields.Int(required=True)
     rating = fields.Float(required=True)
     section = fields.Str(required=True)
@@ -96,13 +102,78 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
 
 
 class CreateBoulderResponseBody(Schema):
+    """
+    Data schema of the response to a successful create boulder request
+    """
     created = fields.Bool()
     _id = fields.Str()
 
 
 class CreateBoulderErrorResponse(Schema):
+    """
+    Data schema of the response to a unsuccessful create boulder request
+    """
     created = fields.Bool()
     errors = fields.Dict()
+
+
+class AuthenticationRequestBody(Schema):
+    """
+    Data Schema of the request to authenticate a user
+    """
+    username = fields.Str()
+    email = fields.Str()
+    password = fields.Str()
+
+
+class AuthenticationResponseBody(Schema):
+    """
+    Data Schema of the response to a successful authentication request
+    """
+    token = fields.Str()
+
+
+class AuthenticationErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful authentication request
+    """
+    errors = fields.Str()
+
+class SignUpRequestBody(Schema):
+    """
+    Data Schema of the request to sign up a new user
+    """
+    username = fields.Str()
+    email = fields.Str()
+    password = fields.Str()
+
+
+class SignUpResponseBody(Schema):
+    """
+    Data Schema of the response to a successful sign up request
+    """
+    username = fields.Str()
+
+
+class SignUpErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful authentication request
+    """
+    errors = fields.List(fields.Str())
+
+
+class TestTokenResponseBody(Schema):
+    """
+    Data schema of the response to a successful test token request
+    """
+    data = fields.Str()
+
+
+class TestTokenErrorResponse(Schema):
+    """
+    Data Schema of the response to an unsuccessful test token request
+    """
+    errors = fields.Str()
 
 
 class GymIDParameter(Schema):
@@ -110,6 +181,20 @@ class GymIDParameter(Schema):
     Data Schema of a Gym ID parameter
     """
     gym_id = fields.Str()
+
+
+class BoulderIDParameter(Schema):
+    """
+    Data Schema of a Boulder ID parameter
+    """
+    boulder_id = fields.Str()
+
+
+class BoulderNameParameter(Schema):
+    """
+    Data Schema of a Boulder ID parameter
+    """
+    boulder_name = fields.Str()
 
 
 class WallSectionParameter(Schema):
@@ -186,6 +271,10 @@ spec = APISpec(
         dict(
             name="Boulders",
             description="Endpoints related to Boulder Problems"
+        ),
+        dict(
+            name="User",
+            description="Endpoints related to Users"
         )
     ],
     plugins=[FlaskPlugin(), MarshmallowPlugin()],

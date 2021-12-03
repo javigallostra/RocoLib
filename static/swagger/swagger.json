@@ -1,1 +1,964 @@
-{"info": {"description": "RocoLib API", "version": "1.0.0-oas3", "contact": {"email": "juangallostra@gmail.com"}, "license": {"name": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0.html"}, "title": "RocoLib API"}, "servers": [{"description": "Production server", "url": "https://rocolib.herokuapp.com"}, {"description": "Local Test server", "url": "http://localhost:5050"}], "tags": [{"name": "Gyms", "description": "Endpoints related to Gyms"}, {"name": "Boulders", "description": "Endpoints related to Boulder Problems"}], "paths": {"/api/gym/list": {"get": {"tags": ["Gyms"], "responses": {"200": {"description": "List of gyms", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Gyms"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/Gyms"}}, "text/json": {"schema": {"$ref": "#/components/schemas/Gyms"}}}}, "400": {"description": "Bad request"}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}, "/api/gym/{gym_id}/walls": {"get": {"tags": ["Gyms"], "parameters": [{"in": "path", "name": "gym_id", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "List of walls associated to the specified gym", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Walls"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/Walls"}}, "text/json": {"schema": {"$ref": "#/components/schemas/Walls"}}}}, "400": {"description": "Bad request"}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}, "/api/gym/{gym_id}/name": {"get": {"tags": ["Gyms"], "parameters": [{"in": "path", "name": "gym_id", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Gym name", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/GymName"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/GymName"}}, "text/json": {"schema": {"$ref": "#/components/schemas/GymName"}}}}, "400": {"description": "Bad request"}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}, "/api/gym/{gym_id}/{wall_section}/name": {"get": {"tags": ["Gyms"], "parameters": [{"in": "path", "name": "gym_id", "required": true, "schema": {"type": "string"}}, {"in": "path", "name": "wall_section", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Wall name", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WallName"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/WallName"}}, "text/json": {"schema": {"$ref": "#/components/schemas/WallName"}}}}, "400": {"description": "Bad request"}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}, "/api/boulders/{gym_id}/list": {"get": {"tags": ["Boulders"], "parameters": [{"in": "path", "name": "gym_id", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "List of gym boulders", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Boulders"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/Boulders"}}, "text/json": {"schema": {"$ref": "#/components/schemas/Boulders"}}}}, "400": {"description": "Bad request"}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}, "/api/boulders/{gym_id}/{wall_section}/create": {"post": {"tags": ["Boulders"], "parameters": [{"in": "path", "name": "gym_id", "required": true, "schema": {"type": "string"}}, {"in": "path", "name": "wall_section", "required": true, "schema": {"type": "string"}}], "requestBody": {"description": "Create boulder request body", "required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateBoulder"}}, "application/x-www-form-urlencoded": {"schema": {"$ref": "#/components/schemas/CreateBoulder"}}, "text/json": {"schema": {"$ref": "#/components/schemas/CreateBoulder"}}, "text/plain": {"schema": {"$ref": "#/components/schemas/CreateBoulder"}}}}, "responses": {"201": {"description": "Creation successful", "content": {"text/plain": {"schema": {"$ref": "#/components/schemas/CreateBoulderResponse"}}, "text/json": {"schema": {"$ref": "#/components/schemas/CreateBoulderResponse"}}, "application/json": {"schema": {"$ref": "#/components/schemas/CreateBoulderResponse"}}}}, "400": {"description": "Bad request", "content": {"text/plain": {"schema": {"$ref": "#/components/schemas/CreateBoulderErrorResponse"}}, "text/json": {"schema": {"$ref": "#/components/schemas/CreateBoulderErrorResponse"}}, "application/json": {"schema": {"$ref": "#/components/schemas/CreateBoulderErrorResponse"}}}}, "404": {"description": "Not found"}, "500": {"description": "Server Error"}}}}}, "openapi": "3.0.2", "components": {"schemas": {"Gym": {"type": "object", "properties": {"name": {"type": "string"}, "_id": {"type": "string"}, "coordinates": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}, "id": {"type": "string"}}}, "Gyms": {"type": "object", "properties": {"gyms": {"type": "array", "items": {"$ref": "#/components/schemas/Gym"}}}}, "Wall": {"type": "object", "properties": {"name": {"type": "string"}, "_id": {"type": "string"}, "image": {"type": "string"}, "radius": {"type": "number"}}}, "Walls": {"type": "object", "properties": {"walls": {"type": "array", "items": {"$ref": "#/components/schemas/Wall"}}}}, "Hold": {"type": "object", "properties": {"color": {"type": "string"}, "y": {"type": "number"}, "x": {"type": "number"}}, "required": ["color", "x", "y"]}, "Boulder": {"type": "object", "properties": {"raters": {"type": "integer"}, "feet": {"type": "string"}, "time": {"type": "string"}, "creator": {"type": "string"}, "_id": {"type": "string"}, "holds": {"type": "array", "items": {"$ref": "#/components/schemas/Hold"}}, "section": {"type": "string"}, "name": {"type": "string"}, "rating": {"type": "number"}, "difficulty": {"type": "string"}, "notes": {"type": "string"}}, "required": ["creator", "difficulty", "feet", "holds", "name", "notes", "time"]}, "Boulders": {"type": "object", "properties": {"boulders": {"type": "array", "items": {"$ref": "#/components/schemas/Boulder"}}}}, "GymName": {"type": "object", "properties": {"name": {"type": "string"}}}, "WallName": {"type": "object", "properties": {"name": {"type": "string"}}}, "CreateBoulder": {"type": "object", "properties": {"feet": {"type": "string"}, "time": {"type": "string"}, "creator": {"type": "string"}, "holds": {"type": "array", "items": {"$ref": "#/components/schemas/Hold"}}, "name": {"type": "string"}, "difficulty": {"type": "string"}, "notes": {"type": "string"}}, "required": ["creator", "difficulty", "feet", "holds", "name", "notes", "time"]}, "CreateBoulderResponse": {"type": "object", "properties": {"_id": {"type": "string"}, "created": {"type": "boolean"}}}, "CreateBoulderErrorResponse": {"type": "object", "properties": {"errors": {"type": "object"}, "created": {"type": "boolean"}}}}}}
+{
+    "info": {
+        "description": "RocoLib API",
+        "version": "1.0.0-oas3",
+        "contact": {
+            "email": "juangallostra@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "title": "RocoLib API"
+    },
+    "servers": [{
+        "description": "Production server",
+        "url": "https://rocolib.herokuapp.com"
+    }, {
+        "description": "Local Test server",
+        "url": "http://localhost:5050"
+    }],
+    "tags": [{
+        "name": "Gyms",
+        "description": "Endpoints related to Gyms"
+    }, {
+        "name": "Boulders",
+        "description": "Endpoints related to Boulder Problems"
+    }, {
+        "name": "User",
+        "description": "Endpoints related to Users"
+    }],
+    "paths": {
+        "/api/gym/list": {
+            "get": {
+                "tags": ["Gyms"],
+                "responses": {
+                    "200": {
+                        "description": "List of gyms",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gyms"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gyms"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gyms"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/gym/{gym_id}/walls": {
+            "get": {
+                "tags": ["Gyms"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "List of walls associated to the specified gym",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Walls"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Walls"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Walls"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/gym/{gym_id}/name": {
+            "get": {
+                "tags": ["Gyms"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Gym name",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GymName"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GymName"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GymName"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/gym/{gym_id}/{wall_section}/name": {
+            "get": {
+                "tags": ["Gyms"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in": "path",
+                    "name": "wall_section",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Wall name",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WallName"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WallName"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WallName"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/boulders/{gym_id}/list": {
+            "get": {
+                "tags": ["Boulders"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "List of gym boulders",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulders"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulders"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulders"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/boulders/{gym_id}/{boulder_id}": {
+            "get": {
+                "tags": ["Boulders"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in": "path",
+                    "name": "boulder_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Boulder data for the specified problem",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/boulders/{gym_id}/name/{boulder_name}": {
+            "get": {
+                "tags": ["Boulders"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in": "path",
+                    "name": "boulder_name",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Boulder data for the specified problem",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Boulder"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/boulders/{gym_id}/{wall_section}/create": {
+            "post": {
+                "tags": ["Boulders"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "gym_id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in": "path",
+                    "name": "wall_section",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "requestBody": {
+                    "description": "Create boulder request body",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBoulder"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBoulder"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBoulder"
+                            }
+                        },
+                        "text/plain": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBoulder"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Creation successful",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderResponse"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderResponse"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderErrorResponse"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderErrorResponse"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateBoulderErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/signup": {
+            "post": {
+                "tags": ["User"],
+                "requestBody": {
+                    "description": "User Sign Up request body",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignUpRequestBody"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignUpRequestBody"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignUpRequestBody"
+                            }
+                        },
+                        "text/plain": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignUpRequestBody"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Authentication successful",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpResponseBody"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpResponseBody"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpResponseBody"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpErrorResponse"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpErrorResponse"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignUpErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/auth": {
+            "post": {
+                "tags": ["User"],
+                "requestBody": {
+                    "description": "Authentication request body",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthenticationRequestBody"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthenticationRequestBody"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthenticationRequestBody"
+                            }
+                        },
+                        "text/plain": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthenticationRequestBody"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Authentication successful",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationResponseBody"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationResponseBody"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationResponseBody"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationErrorResponse"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationErrorResponse"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/resource": {
+            "get": {
+                "tags": ["User"],
+                "responses": {
+                    "200": {
+                        "description": "Authentication successful",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenResponseBody"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenResponseBody"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenResponseBody"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenErrorResponse"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenErrorResponse"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TestTokenErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "openapi": "3.0.2",
+    "components": {
+        "schemas": {
+            "Gym": {
+                "type": "object",
+                "properties": {
+                    "coordinates": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Gyms": {
+                "type": "object",
+                "properties": {
+                    "gyms": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Gym"
+                        }
+                    }
+                }
+            },
+            "Wall": {
+                "type": "object",
+                "properties": {
+                    "radius": {
+                        "type": "number"
+                    },
+                    "_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Walls": {
+                "type": "object",
+                "properties": {
+                    "walls": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Wall"
+                        }
+                    }
+                }
+            },
+            "Hold": {
+                "type": "object",
+                "properties": {
+                    "y": {
+                        "type": "number"
+                    },
+                    "x": {
+                        "type": "number"
+                    },
+                    "color": {
+                        "type": "string"
+                    }
+                },
+                "required": ["color", "x", "y"]
+            },
+            "Boulder": {
+                "type": "object",
+                "properties": {
+                    "feet": {
+                        "type": "string"
+                    },
+                    "creator": {
+                        "type": "string"
+                    },
+                    "difficulty": {
+                        "type": "string"
+                    },
+                    "holds": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Hold"
+                        }
+                    },
+                    "rating": {
+                        "type": "number"
+                    },
+                    "raters": {
+                        "type": "integer"
+                    },
+                    "time": {
+                        "type": "string"
+                    },
+                    "section": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    },
+                    "_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": ["creator", "difficulty", "feet", "holds", "name", "notes", "time"]
+            },
+            "Boulders": {
+                "type": "object",
+                "properties": {
+                    "boulders": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Boulder"
+                        }
+                    }
+                }
+            },
+            "GymName": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "WallName": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateBoulder": {
+                "type": "object",
+                "properties": {
+                    "feet": {
+                        "type": "string"
+                    },
+                    "creator": {
+                        "type": "string"
+                    },
+                    "difficulty": {
+                        "type": "string"
+                    },
+                    "holds": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Hold"
+                        }
+                    },
+                    "time": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": ["creator", "difficulty", "feet", "holds", "name", "notes", "time"]
+            },
+            "CreateBoulderResponse": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string"
+                    },
+                    "created": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "CreateBoulderErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "object"
+                    },
+                    "created": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "GymIDParameter": {
+                "type": "object",
+                "properties": {
+                    "gym_id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BoulderIDParameter": {
+                "type": "object",
+                "properties": {
+                    "boulder_id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BoulderNameParameter": {
+                "type": "object",
+                "properties": {
+                    "boulder_name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthenticationRequestBody": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthenticationResponseBody": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthenticationErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SignUpRequestBody": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SignUpResponseBody": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SignUpErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "TestTokenResponseBody": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string"
+                    }
+                }
+            },
+            "TestTokenErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

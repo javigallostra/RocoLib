@@ -45,7 +45,7 @@ app.register_blueprint(swaggerui_blueprint)
 app.register_blueprint(api_blueprint)
 
 # app.config.from_pyfile('config.py')
-app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
+app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^' #Might have to change how this is computed
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'

@@ -1,12 +1,15 @@
 from __future__ import annotations
-from typing import Any, Union
+from typing import Any, Dict, Union
 import uuid
+
 from utils.typing import Data
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller
 from datetime import datetime
 from pymongo.database import Database
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 
 TICKLIST = "ticklist"
 
@@ -91,8 +94,39 @@ class User(UserMixin):
             return None
         return User(user_data)
 
+    @staticmethod
+    def get_user_by_username(name: str, database: Database) -> Union[User, None]:
+        """
+        Return a User object if the user email is found in the database.
+
+        Otherwise, return None.
+        """
+        user_data = mongodb_controller.get_user_data_by_username(name, database)
+        if not user_data:
+            return None
+        return User(user_data)
+
+    def generate_auth_token(self, app: Any, expiration: int = 600):
+        s = Serializer(app.secret_key, expires_in = expiration)
+        return s.dumps({ 'id': self.id })
+
+    @staticmethod
+    def verify_auth_token(token: str, app: Any, database: Database) -> User:
+        s = Serializer(app.secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        # user = User.query.get(data['id'])
+        user_data = mongodb_controller.get_user_data_by_id(data['id'], database)
+        if not user_data:
+            return None
+        return User(user_data)
+
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return '<User {} ({})>'.format(self.email, self.name)
 
 
 class TickListProblem():
@@ -123,7 +157,7 @@ class TickListProblem():
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
 
-    def serialize(self) -> dict[str, Any]:
+    def serialize(self) -> Dict[str, Any]:
         """
         Return a serialized version of itself (a dictionary)
         """

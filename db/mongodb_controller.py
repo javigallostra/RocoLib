@@ -306,6 +306,16 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     boulder = database[f'{gym}_boulders'].find_one({'name': name})
     return boulder if boulder else {}
 
+@serializable
+def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
+    """
+    Given a boulder name and a Gym, return the boulder data
+
+    Return an empty dictionary if the boulder is not found
+    """
+    boulder = database[f'{gym}_boulders'].find_one({"_id" : ObjectId(id)})
+    return boulder if boulder else {}
+
 
 @serializable
 def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Database) -> UpdateResult:
@@ -393,4 +403,14 @@ def get_user_data_by_email(email: str, database: Database) -> Data:
     Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'email': email})
+    return user if user else {}
+
+@serializable
+def get_user_data_by_username(name: str, database: Database) -> Data:
+    """
+    Given a user email get its data
+
+    Return an empty dictionary if the user is not found
+    """
+    user = database['users'].find_one({'name': name})
     return user if user else {}
