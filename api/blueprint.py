@@ -423,7 +423,7 @@ def new_user() -> Response:
       return jsonify({'username': user.name}), 201
 
 
-@api_blueprint.route('/token', methods=['POST'])
+@api_blueprint.route('/user/token', methods=['POST'])
 def get_auth_token() -> Response:
     """
     Given a username/email and a password, get an auth token if the user exists
@@ -497,7 +497,7 @@ def get_auth_token() -> Response:
     return jsonify(dict(error='Invalid credentials')), 401
 
 
-@api_blueprint.route('/resource')
+@api_blueprint.route('/user/resource')
 @auth.login_required
 def get_resource() -> Response:
     """
