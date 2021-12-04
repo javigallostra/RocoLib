@@ -1,6 +1,7 @@
 import os
 from typing import Union
 from pymongo import database, MongoClient
+from models import User
 from tests.tests_config import DB_NAME, WALLS_COLLECTION
 
 
@@ -63,3 +64,20 @@ def drop_boulders(db, gym_code):
     """
     boulders_collection = db[f'{gym_code}_boulders']
     boulders_collection.drop()
+
+
+def drop_users(db):
+    """
+    Remove users from the database
+    """
+    users_collection = db[f'users']
+    users_collection.drop()
+
+
+def add_user(db, username, password, email):
+    """
+    Add a user to the database
+    """
+    user = User(name=username, email=email)
+    user.set_password(password)
+    user.save(db)

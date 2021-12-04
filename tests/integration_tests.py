@@ -6,7 +6,7 @@ from config import CREDS, CREDS_DEV
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
 from utils.utils import set_creds_file
-from tests.utils import get_db, create_walls_collection, add_wall, drop_boulders
+from tests.utils import add_user, drop_users, get_db, create_walls_collection, add_wall, drop_boulders
 
 
 class BaseIntegrationTestClass(unittest.TestCase):
@@ -38,6 +38,8 @@ class BaseIntegrationTestClass(unittest.TestCase):
             wall_radius=TEST_WALL_RADIUS
         )
         drop_boulders(self.db, TEST_GYM_CODE)
+        drop_users(self.db)
+        add_user(self.db, 'test_username', 'test_password', 'test_email@email.com')
 
     def tearDown(self):
         """
@@ -47,7 +49,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         self.db.client.close()
 
 
-class BoulderCreationTests(BaseIntegrationTestClass):
+class APITests(BaseIntegrationTestClass):
 
     def test_get_gyms(self):
         """
@@ -184,21 +186,120 @@ class BoulderCreationTests(BaseIntegrationTestClass):
             'name'), ['Not a valid string.'])
 
     def test_create_user_no_username(self):
-        pass
+        """
+        Create a user without a username.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'email': 'test_email@mail.com',
+            'password': 'test_password'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Username is required'])
+
     def test_create_user_no_password(self):
-        pass
+        """
+        Create a user without a password.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'email': 'test_email@mail.com',
+            'username': 'test_username'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Password is required'])
+
     def test_create_user_no_email(self):
-        pass
+        """
+        Create a user without an email.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'password': 'test_password',
+            'username': 'test_username'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Email is required'])
+
     def test_create_user_no_data(self):
-        pass
+        """
+        Create a user without an email.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {}
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Username is required', 'Password is required', 'Email is required'])
+
     def test_create_user_invalid_email(self):
         pass
+
     def test_create_user_repeated_username(self):
-        pass
+        """
+        Create a user with an already taken username.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'password': 'test_password',
+            'username': 'test_username',
+            'email': 'fake_email@mail.com'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Username already exists'])
+
     def test_create_user_repeated_email(self):
-        pass
+        """
+        Create a user with an already taken email.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'password': 'test_password',
+            'username': 'fake_username',
+            'email': 'test_email@email.com'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 400)
+        self.assertListEqual(resp.json.get('errors'), ['Email already exists'])
+
     def test_create_user_valid(self):
-        pass
+        """
+        Create a user with valid data.
+        """
+        # Given
+        route = f'/api/user/signup'
+        data = {
+            'password': 'fake_password',
+            'username': 'fake_username',
+            'email': 'fake_email@mail.com'
+        }
+        # When
+        resp = self.client.post(route, json=data)
+        # Then
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.json.get('username'), 'fake_username')
+
 
 if __name__ == '__main__':
     unittest.main()
