@@ -285,6 +285,8 @@ def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
     Return a boulder data with 'gym', 'is_done', and 'date_climbed' fields
     """
     boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(boulder.iden)
+    if boulder_data is None:
+        boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(ObjectId(boulder.iden))
     boulder_data['gym'] = boulder.gym
     boulder_data['is_done'] = boulder.is_done
     # backwards compatibility

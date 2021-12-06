@@ -538,6 +538,8 @@ def get_user_ticklist() -> Response:
     Get a user's ticklist
     ---
     get:
+      security:
+        - bearerAuth: []
       tags:
         - User
       responses:
@@ -593,6 +595,8 @@ def get_resource() -> Response:
     Test the validity of a token
     ---
     get:
+      security:
+        - bearerAuth: []
       tags:
         - User
       responses:

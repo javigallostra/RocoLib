@@ -286,6 +286,15 @@ spec = APISpec(
             url=f"{host}{localhost_port}"
         )
     ],
+    components=dict(
+        securitySchemes=dict(
+            bearerAuth=dict(
+                type="http",
+                scheme="bearer",
+                bearerFormat="JWT"
+            )
+        )
+    ),
     tags=[
         dict(
             name="Gyms",
