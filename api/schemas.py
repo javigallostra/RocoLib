@@ -235,10 +235,16 @@ class TicklistBoulder(BoulderSchema):
 
 
 class TicklistResponseBody(Schema):
+    """
+    Ticklist response data schema
+    """
     boulders = fields.List(fields.Nested(TicklistBoulder))
 
 
 class TicklistErrorResponse(Schema):
+    """
+    Ticklist error response data schema
+    """
     errors = fields.List(fields.Str())
 
 

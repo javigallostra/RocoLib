@@ -535,7 +535,7 @@ def get_auth_token() -> Response:
 @auth.login_required
 def get_user_ticklist() -> Response:
     """
-    Gat a user's ticklist
+    Get a user's ticklist
     ---
     get:
       tags:
