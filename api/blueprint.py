@@ -25,6 +25,7 @@ api_blueprint = Blueprint(
     url_prefix='/api'
 )
 
+
 @auth.verify_token
 def verify_token(token: str) -> bool:
   """
@@ -529,6 +530,7 @@ def get_auth_token() -> Response:
         return jsonify(dict(token=token.decode('ascii'))), 200
     return jsonify(dict(error='Invalid credentials')), 401
 
+
 @api_blueprint.route('/user/ticklist', methods=['GET'])
 @auth.login_required
 def get_user_ticklist() -> Response:
@@ -582,7 +584,6 @@ def get_user_ticklist() -> Response:
     ticklist_boulders, _ = ticklist_handler.load_user_ticklist(
         g.user, get_db())
     return jsonify(dict(boulders=ticklist_boulders)), 200
-
 
 
 @api_blueprint.route('/user/resource', methods=['GET'])
