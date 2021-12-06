@@ -1,8 +1,32 @@
 import os
+import bson
 from typing import Union
 from pymongo import database, MongoClient
 from models import User
 from tests.tests_config import DB_NAME, WALLS_COLLECTION
+import ticklist_handler
+from tests.tests_config import TEST_GYM_CODE, TEST_NAME, TEST_WALL_SECTION, TEST_USERNAME
+import db.mongodb_controller as mongodb_controller
+
+class FakeRequest:
+    def __init__(self, db):
+        self.data = None
+        self.form = None
+        self.json = {
+        'gym': TEST_GYM_CODE,
+        'name': TEST_NAME,
+        'iden':
+            mongodb_controller.get_boulder_by_name(
+                TEST_GYM_CODE,
+                TEST_NAME,
+                db
+        ).get('_id', ''),
+        'is_done': True,
+        'section': TEST_WALL_SECTION
+        }
+
+    def get_data(self):
+        return None
 
 
 def get_creds(file: str = 'creds_dev.txt') -> Union[str, None]:
@@ -73,11 +97,20 @@ def drop_users(db):
     users_collection = db[f'users']
     users_collection.drop()
 
+def add_boulder(db, gym, boulder_data):
+    boulder_data['_id'] = str(bson.objectid.ObjectId())
+    result = db[f'{gym}_boulders'].insert_one(boulder_data)
+    if result is not None:
+        return result.inserted_id
 
-def add_user(db, username, password, email):
+
+def add_user_with_ticklist(db, username, password, email):
     """
     Add a user to the database
     """
     user = User(name=username, email=email)
     user.set_password(password)
     user.save(db)
+    # Boulder comes in the Fake Request
+    ticklist_handler.add_boulder_to_ticklist(FakeRequest(db), User().get_user_by_username(TEST_USERNAME, db), db, mark_as_done_clicked=True)
+

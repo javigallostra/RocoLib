@@ -1,11 +1,12 @@
 import json
 import math
 import os
-from typing import Union
+from typing import Tuple, Union
 from flask import url_for
 import datetime
 from flask.globals import _app_ctx_stack, session
 from flask.sessions import SessionMixin
+from flask.wrappers import Request
 import pymongo
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
@@ -203,3 +204,23 @@ def find_closest(gyms: list[Data], lat: float, long: float) -> str:
     if closest_gym:
         return closest_gym.get('id', '')
     return gyms[0].get('id', '')
+
+def load_data(request: Request) -> Tuple[dict, bool]:
+  """
+  Load data from the request body into a dict and return it
+
+  :param request: HTTP/S Request
+  :type request: Request
+  :return: Dictionary with the data from the request and a boolean indicating if the data came from a form
+  :rtype: Tuple[dict, bool]
+  """
+  # Handle the different content types
+  request.get_data()  # required?
+  if request.data is not None:
+    return json.loads(request.data), False
+  elif request.form is not None:
+    return request.form, True
+  elif request.json is not None:
+    return request.json, False
+  else:
+    return dict(), False

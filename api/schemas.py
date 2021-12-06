@@ -139,6 +139,7 @@ class AuthenticationErrorResponse(Schema):
     """
     errors = fields.Str()
 
+
 class SignUpRequestBody(Schema):
     """
     Data Schema of the request to sign up a new user
@@ -223,6 +224,22 @@ class GymBoulderListSchema(Schema):
     Boulder List Data Schema
     """
     boulders = fields.List(fields.Nested(BoulderSchema))
+
+
+class TicklistBoulder(BoulderSchema):
+    """
+    Ticklist Boulder Data Schema
+    """
+    is_done = fields.Bool()
+    date_climbed = fields.List(fields.Str())
+
+
+class TicklistResponseBody(Schema):
+    boulders = fields.List(fields.Nested(TicklistBoulder))
+
+
+class TicklistErrorResponse(Schema):
+    errors = fields.List(fields.Str())
 
 
 class BoulderFields:

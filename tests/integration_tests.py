@@ -1,3 +1,4 @@
+from datetime import datetime
 import unittest
 from application import app
 
@@ -5,9 +6,12 @@ from api.schemas import BoulderFields
 from config import CREDS, CREDS_DEV
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
-from utils.utils import set_creds_file
-from tests.utils import add_user, drop_users, get_db, create_walls_collection, add_wall, drop_boulders
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
+from tests.tests_config import TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
+from utils.utils import set_creds_file
+from tests.utils import add_user_with_ticklist, drop_users, get_db
+from tests.utils import create_walls_collection, add_wall, drop_boulders, add_boulder
 
 class BaseIntegrationTestClass(unittest.TestCase):
     """
@@ -38,8 +42,22 @@ class BaseIntegrationTestClass(unittest.TestCase):
             wall_radius=TEST_WALL_RADIUS
         )
         drop_boulders(self.db, TEST_GYM_CODE)
+        fields = BoulderFields()
+        boulder_data = {
+            fields.raters: 0,
+            fields.rating: 0,
+            fields.section: TEST_WALL_SECTION,
+            fields.time: datetime.now().isoformat(),
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        add_boulder(self.db, TEST_GYM_CODE, boulder_data)
         drop_users(self.db)
-        add_user(self.db, 'test_username', 'test_password', 'test_email@email.com')
+        add_user_with_ticklist(self.db, TEST_USERNAME, TEST_PASSWORD, TEST_EMAIL)
 
     def tearDown(self):
         """
@@ -82,12 +100,12 @@ class APITests(BaseIntegrationTestClass):
         # Given
         fields = BoulderFields()
         data = {
-            fields.creator: 'test user',
-            fields.difficulty: 'green',
-            fields.feet: 'free',
-            fields.name: 'test',
-            fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
         }
         # When
         resp = self.client.post(
@@ -105,12 +123,12 @@ class APITests(BaseIntegrationTestClass):
         route = f'/api/boulders/{non_existing_gym}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
         data = {
-            fields.creator: 'test user',
-            fields.difficulty: 'green',
-            fields.feet: 'free',
-            fields.name: 'test',
-            fields.notes: "",
-            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
         }
         # When
         resp = self.client.post(route, json=data)
@@ -127,12 +145,12 @@ class APITests(BaseIntegrationTestClass):
         route = f'/api/boulders/{TEST_GYM_CODE}/{non_existing_wall_section}/create'
         fields = BoulderFields()
         data = {
-            fields.creator: 'test user',
-            fields.difficulty: 'green',
-            fields.feet: 'free',
-            fields.name: 'test',
-            fields.notes: '',
-            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
         }
         # When
         resp = self.client.post(route, json=data)
@@ -170,12 +188,12 @@ class APITests(BaseIntegrationTestClass):
         route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
         data = {
-            fields.creator: 'test user',
-            fields.difficulty: 'green',
-            fields.feet: 'free',
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY,
+            fields.feet: TEST_FEET,
             fields.name: 123,
-            fields.notes: '',
-            fields.holds: [{'color': '#00ff00', 'x': 0, 'y': 0}]
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
         }
         # When
         resp = self.client.post(route, json=data)
@@ -192,8 +210,8 @@ class APITests(BaseIntegrationTestClass):
         # Given
         route = f'/api/user/signup'
         data = {
-            'email': 'test_email@mail.com',
-            'password': 'test_password'
+            'email': TEST_EMAIL,
+            'password': TEST_PASSWORD
         }
         # When
         resp = self.client.post(route, json=data)
@@ -208,8 +226,8 @@ class APITests(BaseIntegrationTestClass):
         # Given
         route = f'/api/user/signup'
         data = {
-            'email': 'test_email@mail.com',
-            'username': 'test_username'
+            'email': TEST_EMAIL,
+            'username': TEST_USERNAME
         }
         # When
         resp = self.client.post(route, json=data)
@@ -224,8 +242,8 @@ class APITests(BaseIntegrationTestClass):
         # Given
         route = f'/api/user/signup'
         data = {
-            'password': 'test_password',
-            'username': 'test_username'
+            'password': TEST_PASSWORD,
+            'username': TEST_USERNAME
         }
         # When
         resp = self.client.post(route, json=data)
@@ -256,8 +274,8 @@ class APITests(BaseIntegrationTestClass):
         # Given
         route = f'/api/user/signup'
         data = {
-            'password': 'test_password',
-            'username': 'test_username',
+            'password': TEST_PASSWORD,
+            'username': TEST_USERNAME,
             'email': 'fake_email@mail.com'
         }
         # When
@@ -273,9 +291,9 @@ class APITests(BaseIntegrationTestClass):
         # Given
         route = f'/api/user/signup'
         data = {
-            'password': 'test_password',
+            'password': TEST_PASSWORD,
             'username': 'fake_username',
-            'email': 'test_email@email.com'
+            'email': TEST_EMAIL
         }
         # When
         resp = self.client.post(route, json=data)
@@ -299,6 +317,25 @@ class APITests(BaseIntegrationTestClass):
         # Then
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.json.get('username'), 'fake_username')
+
+    def test_get_user_ticklist(self):
+        """
+        Get the test user's ticklist
+        """
+        # Given
+        route = f'/api/user/ticklist'
+        user_data = {
+            'username': TEST_USERNAME,
+            'password': TEST_PASSWORD
+        }
+        resp = self.client.post('/api/user/auth', json=user_data)
+        token = resp.json.get('token')
+        # When
+        with app.test_client() as client:
+            resp = client.get(route, headers={'Authorization': f'Bearer {token}'})
+            # Then
+            self.assertEqual(resp.status_code, 200)
+            # self.assertEqual(len(api_response.json.get('ticklist')), 1)
 
 
 if __name__ == '__main__':

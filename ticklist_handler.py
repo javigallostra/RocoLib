@@ -1,3 +1,4 @@
+from utils.utils import load_data
 from config import BOULDER_COLOR_MAP, FEET_MAPPINGS
 from db import mongodb_controller
 from utils.utils import make_boulder_data_valid_js
@@ -70,16 +71,17 @@ def add_boulder_to_ticklist(request, current_user, database: Database, mark_as_d
     Add a boulder to a user's ticklist
     """
     # needed values: gym, id, section, is_done
+    data, _ = load_data(request)
     boulder = {
-        'gym': request.form.get('gym'),
+        'gym': data.get('gym'),
         'iden':
             mongodb_controller.get_boulder_by_name(
-                request.form.get('gym'),
-                request.form.get('name'),
+                data.get('gym'),
+                data.get('name'),
                 database
         ).get('_id', ''),
-        'is_done': True if request.form.get('is_done', '') else False,
-        'section': request.form.get('section')
+        'is_done': True if data.get('is_done', '') else False,
+        'section': data.get('section')
     }
     # update user's ticklist
     return [

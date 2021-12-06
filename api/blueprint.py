@@ -1,6 +1,5 @@
 from typing import Tuple
 from flask import Blueprint, jsonify, send_from_directory, request, g, current_app
-from flask.wrappers import Request
 from flask_httpauth import HTTPTokenAuth
 from marshmallow import ValidationError
 import json
@@ -12,6 +11,8 @@ from api.validation import validate_gym_and_section
 from api.schemas import BoulderFields
 from utils.utils import get_db
 from models import User
+import ticklist_handler
+from utils.utils import load_data
 
 
 auth = HTTPTokenAuth(scheme='Bearer')
@@ -23,28 +24,6 @@ api_blueprint = Blueprint(
     template_folder='templates',
     url_prefix='/api'
 )
-
-
-def load_data(request: Request) -> Tuple[dict, bool]:
-  """
-  Load data from the request body into a dict and return it
-
-  :param request: HTTP/S Request
-  :type request: Request
-  :return: Dictionary with the data from the request and a boolean indicating if the data came from a form
-  :rtype: Tuple[dict, bool]
-  """
-  # Handle the different content types
-  request.get_data()  # required?
-  if request.data is not None:
-    return json.loads(request.data), False
-  elif request.form is not None:
-    return request.form, True
-  elif request.json is not None:
-    return request.json, False
-  else:
-    return dict(), False
-
 
 @auth.verify_token
 def verify_token(token: str) -> bool:
@@ -550,8 +529,63 @@ def get_auth_token() -> Response:
         return jsonify(dict(token=token.decode('ascii'))), 200
     return jsonify(dict(error='Invalid credentials')), 401
 
+@api_blueprint.route('/user/ticklist', methods=['GET'])
+@auth.login_required
+def get_user_ticklist() -> Response:
+    """
+    Gat a user's ticklist
+    ---
+    get:
+      tags:
+        - User
+      responses:
+        200:
+          description:
+            Ticklist retrieval successful
+          content:
+            text/plain:
+              schema: TicklistResponseBody
+            text/json:
+              schema: TicklistResponseBody
+            application/json:
+              schema: TicklistResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: TicklistErrorResponse
+            text/json:
+              schema: TicklistErrorResponse
+            application/json:
+              schema: TicklistErrorResponse
+        400:
+          description:
+            Invalid credentials
+          content:
+            text/plain:
+              schema: TicklistErrorResponse
+            text/json:
+              schema: TicklistErrorResponse
+            application/json:
+              schema: TicklistErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    # user has been retrieved by the authentication callback
+    # and stored in the g object, which is accessible and global
+    # while processing the request
+    ticklist_boulders, _ = ticklist_handler.load_user_ticklist(
+        g.user, get_db())
+    return jsonify(dict(boulders=ticklist_boulders)), 200
 
-@api_blueprint.route('/user/resource')
+
+
+@api_blueprint.route('/user/resource', methods=['GET'])
 @auth.login_required
 def get_resource() -> Response:
     """
