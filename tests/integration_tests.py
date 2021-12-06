@@ -333,10 +333,10 @@ class APITests(BaseIntegrationTestClass):
         # When
         with app.test_client() as client:
             resp = client.get(route, headers={'Authorization': f'Bearer {token}'})
-            # Then
-            self.assertEqual(resp.status_code, 200)
-            self.assertEqual(len(resp.json.get('boulders')), 1)
-            self.assertEqual(resp.json.get('boulders')[0].get('name'), TEST_NAME)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json.get('boulders')), 1)
+        self.assertEqual(resp.json.get('boulders')[0].get('name'), TEST_NAME)
 
 
 if __name__ == '__main__':
