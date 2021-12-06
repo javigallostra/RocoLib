@@ -25,15 +25,17 @@ class BaseIntegrationTestClass(unittest.TestCase):
         """
         set_creds_file(
             CREDS_DEV)  # set development credentials for the application
-        # connect to testing ddbb and create entities
+        # connect to testing ddbb and get test client
         self.db = get_db()
         self.client = app.test_client()
+        # create test gym collection
         create_walls_collection(
             self.db,
             TEST_GYM_NAME,
             TEST_GYM_CODE,
             TEST_COORDINATES
         )
+        # Add section to the test gym
         add_wall(
             db=self.db,
             gym_code=TEST_GYM_CODE,
@@ -41,6 +43,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
             wall_section=TEST_WALL_SECTION,
             wall_radius=TEST_WALL_RADIUS
         )
+        # drop any boulder documents in the test gym
         drop_boulders(self.db, TEST_GYM_CODE)
         fields = BoulderFields()
         boulder_data = {
@@ -55,8 +58,11 @@ class BaseIntegrationTestClass(unittest.TestCase):
             fields.notes: TEST_NOTES,
             fields.holds: TEST_HOLDS
         }
+        # Add a boulder to the test gym
         add_boulder(self.db, TEST_GYM_CODE, boulder_data)
+        # drop all users
         drop_users(self.db)
+        # add a test user
         add_user_with_ticklist(self.db, TEST_USERNAME, TEST_PASSWORD, TEST_EMAIL)
 
     def tearDown(self):
