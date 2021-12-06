@@ -633,4 +633,4 @@ def get_resource() -> Response:
           description:
             Server Error
     """
-    return jsonify({'data': f'Hello {g.user.name}'}), 200
+    return jsonify(dict(data=f'Hello {g.user.name}')), 200
