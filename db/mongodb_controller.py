@@ -247,13 +247,19 @@ def set_climbed_date(ticklist: list[Data], index: int, climbed_date: Optional[da
     DATE_CLIMBED = 'date_climbed'
     if not climbed_date:
         climbed_date = datetime.today()
-    if type(ticklist[index][DATE_CLIMBED]) == str:
+    # backwards compatibility, where we were storing date_climbed as a string
+    if type(ticklist[index].get(DATE_CLIMBED, None)) == str:
+        # Convert to list and add new date
         ticklist[index][DATE_CLIMBED] = [
-            ticklist[index][DATE_CLIMBED],
+            ticklist[index].get(DATE_CLIMBED),
             climbed_date.strftime('%Y-%m-%d')
         ]
-    else:
+    # If it is already a list, add new date
+    elif type(ticklist[index].get(DATE_CLIMBED, None)) == list:
         ticklist[index][DATE_CLIMBED] += [climbed_date.strftime('%Y-%m-%d')]
+    # date climbed does not exist yet
+    else:
+        ticklist[index][DATE_CLIMBED] = [climbed_date.strftime('%Y-%m-%d')]
     return ticklist
 
 

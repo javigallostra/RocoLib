@@ -28,6 +28,7 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
+DEBUG = False
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
 GENERATE_API_DOCS = True
@@ -487,6 +488,6 @@ if __name__ == '__main__':
     if RUN_SERVER:
         set_creds_file(CREDS)
         if os.environ['DOCKER_ENV'] == "True":
-            app.run(debug=False, host='0.0.0.0', port=80)
+            app.run(debug=DEBUG, host='0.0.0.0', port=80)
         else:
-            app.run(debug=False, port=PORT)
+            app.run(debug=DEBUG, port=PORT)

@@ -216,11 +216,11 @@ def load_data(request: Request) -> Tuple[dict, bool]:
   """
   # Handle the different content types
   request.get_data()  # required?
-  if request.data is not None:
+  if request.data:
     return json.loads(request.data), False
-  elif request.form is not None:
+  elif request.form:
     return request.form, True
-  elif request.json is not None:
+  elif request.json:
     return request.json, False
   else:
     return dict(), False
