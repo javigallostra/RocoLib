@@ -110,6 +110,15 @@
     var ctx = cnvs.getContext("2d");
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
+
+    var wall_hold_data = '{{ hold_data | tojson | safe}}';
+    var parsed_data = JSON.parse(wall_hold_data);
+    var polys = parsed_data.holds;
+
+    var ratio = img.offsetWidth / img.naturalWidth;
+    for (let index = 0; index < polys.length; index++) {
+        drawPolygon(ctx, polys[index], ratio);
+    }
   };
 
   function draw(event) {
@@ -190,7 +199,6 @@
     startY = my;
   }
 
-
   // handle mouseup events
   function myUp(e) {
 
@@ -219,7 +227,6 @@
     dragok = false;
     return;
   }
-
 
   // handle mouse moves
   function myMove(e) {
@@ -297,6 +304,23 @@
       return false;
     }
     return true;
+  }
+
+  function drawPolygon(ctx, poly, ratio) {
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
+    if (poly.length <= 2) {
+      return;
+    }
+    ctx.beginPath();
+    ctx.moveTo(poly[0][0] * ratio, poly[0][1] * ratio);
+    for(item=2 ; item < poly.length-1 ; item+=1)
+    {
+        ctx.lineTo(poly[item][0] * ratio, poly[item][1] * ratio);
+    }
+    ctx.lineTo(poly[item][0] * ratio, poly[item][1] * ratio);
+    ctx.closePath();
+    ctx.fill()
   }
 </script>
 {% endblock %}

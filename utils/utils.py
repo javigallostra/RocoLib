@@ -97,6 +97,16 @@ def get_wall_image(gym: str, section: str, walls_path: str, static_assets_path: 
         filename='{}{}/{}.JPG'.format(walls_path, gym, section)
     )
 
+def get_wall_json(gym: str, section: str, walls_path: str, static_assets_path: str = 'static') -> str:
+    """
+    Given a gym section, return its image url
+    """
+    return os.path.join(static_assets_path, '{}{}/{}.json'.format(walls_path, gym, section))
+    # return url_for(
+    #     static_assets_path,
+    #     filename='{}{}/{}.json'.format(walls_path, gym, section)
+    # )
+
 
 def get_stats(database: Database) -> dict[str, int]:
     """

@@ -28,7 +28,7 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
-DEBUG = False
+DEBUG = True
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
 GENERATE_API_DOCS = True
@@ -291,6 +291,11 @@ def wall_section(wall_section) -> str:
     if not session.get('walls_radius', ''):
         session['walls_radius'] = db_controller.get_walls_radius_all(get_db())
 
+    # load hold data
+    filename = utils.get_wall_json(get_gym(), wall_section, WALLS_PATH, app.static_folder)
+    with open(filename) as f:
+        hold_data = json.load(f)
+
     return render_template(
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
@@ -298,7 +303,8 @@ def wall_section(wall_section) -> str:
             get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=utils.get_wall_radius(
-            session, get_db(), get_gym() + '/' + wall_section)
+            session, get_db(), get_gym() + '/' + wall_section),
+        hold_data=hold_data
     )
 
 
