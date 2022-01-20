@@ -6,6 +6,11 @@ __pycache__/
 # mongoDB
 mongo-volume
 
+# turf and node_modules
+node_modules
+main.js
+package-lock.json
+
 # credentials
 creds.txt
 
