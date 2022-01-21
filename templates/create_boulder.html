@@ -125,6 +125,11 @@
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
 
+    // fill canva with gray
+    ctx.fillStyle = hexToRGBA("#6e6e6e", 0.7);
+    ctx.fillRect(0, 0, cnvs.width, cnvs.height);
+    ctx.fillStyle = "#000000";
+
     var wall_hold_data = '{{ hold_data | tojson | safe}}';
     var parsed_data = JSON.parse(wall_hold_data);
     polys = parsed_data.holds;
@@ -160,7 +165,6 @@
     for (let index = 0; index < polys.length; index++) {
         var poly = { type: 'Polygon', coordinates: [polys[index]] }
         var inside = turf.booleanPointInPolygon.default([x, y], poly)
-        console.log(inside)
         if (inside == true) {
           drawPolygon(ctx, polys[index], color, 1);
           hold_found = true;
@@ -168,11 +172,15 @@
     }
     if (hold_found == false) {
       // Draw circle
+      ctx.globalCompositeOperation = "source-over";
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
       ctx.strokeStyle = color;
       ctx.stroke();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fill()
+      ctx.globalCompositeOperation = "source-over";
     }
     // push to hold array
     holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
@@ -195,7 +203,7 @@
       var hold = holds[i];
       ctx.beginPath();
       ctx.arc(hold.x * ctx.width, hold.y * ctx.height, hold.radius, 0, 2 * Math.PI, false);
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
       ctx.strokeStyle = hold.color;
       ctx.stroke();
     }
@@ -338,9 +346,10 @@
   }
 
   function drawPolygon(ctx, poly, color, ratio) {
-    console.log(color)
-    ctx.lineWidth = 1;
-    ctx.fillStyle = hexToRGBA(color, 0.6);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.lineWidth = 4;
+    ctx.fillStyle = hexToRGBA(color, 1);
+    //ctx.strokeStyle = hexToRGBA(color, 1);
     if (poly.length <= 2) {
       return;
     }
@@ -352,7 +361,11 @@
     }
     ctx.lineTo(poly[item][0] * ratio, poly[item][1] * ratio);
     ctx.closePath();
-    ctx.fill()
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
   }
 </script>
 {% endblock %}
