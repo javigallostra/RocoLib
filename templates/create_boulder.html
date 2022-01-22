@@ -106,6 +106,13 @@
     }
   }
 
+  function fillCanvasWithGray(context, canvas) {
+    // fill canvas with gray
+    context.fillStyle = hexToRGBA("#6e6e6e", 0.7);
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#000000";
+  }
+
   window.onload = () => {
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -125,10 +132,7 @@
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
 
-    // fill canva with gray
-    ctx.fillStyle = hexToRGBA("#6e6e6e", 0.7);
-    ctx.fillRect(0, 0, cnvs.width, cnvs.height);
-    ctx.fillStyle = "#000000";
+    fillCanvasWithGray(ctx, cnvs);
 
     var wall_hold_data = '{{ hold_data | tojson | safe}}';
     var parsed_data = JSON.parse(wall_hold_data);
@@ -314,6 +318,9 @@
     var cnvs = document.getElementById("wall-canvas");
     const ctx = cnvs.getContext("2d");
     ctx.clearRect(0, 0, cnvs.width, cnvs.height);
+    // fill again canvas with gray
+    fillCanvasWithGray(ctx, cnvs);
+    // redraw holds
     var newHolds = [];
     holds.forEach((hold) =>
       drawHold(
@@ -348,8 +355,8 @@
   function drawPolygon(ctx, poly, color, ratio) {
     ctx.globalCompositeOperation = "source-over";
     ctx.lineWidth = 4;
-    ctx.fillStyle = hexToRGBA(color, 1);
-    //ctx.strokeStyle = hexToRGBA(color, 1);
+    // ctx.fillStyle = hexToRGBA(color, 1);
+    // ctx.strokeStyle = hexToRGBA(color, 1);
     if (poly.length <= 2) {
       return;
     }
