@@ -163,7 +163,7 @@
     );
   }
 
-  function drawHold(ctx, x, y, radius, color, holdArray) {
+  function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
     // Test if click inside hold
     var hold_found = false;
     for (let index = 0; index < polys.length; index++) {
@@ -187,7 +187,9 @@
       ctx.globalCompositeOperation = "source-over";
     }
     // push to hold array
-    holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
+    if (shouldPush == true) {
+      holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
+    }
   }
 
   // clear the canvas
@@ -202,14 +204,11 @@
     clear();
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
+    fillCanvasWithGray(ctx, cnvs);
     // redraw each rect in the holds array
     for (var i = 0; i < holds.length; i++) {
       var hold = holds[i];
-      ctx.beginPath();
-      ctx.arc(hold.x * ctx.width, hold.y * ctx.height, hold.radius, 0, 2 * Math.PI, false);
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = hold.color;
-      ctx.stroke();
+      drawHold(ctx, hold.x * ctx.width, hold.y * ctx.height, hold.radius, hold.color, holds, shouldPush=false);
     }
   }
 
