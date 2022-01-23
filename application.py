@@ -252,12 +252,18 @@ def load_boulder() -> Union[str, NoReturn]:
             section = boulder['section']
             wall_image = utils.get_wall_image(
                 request.args.get('gym'), section, WALLS_PATH)
+        # get hold data
+        filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
+        with open(filename) as f:
+            hold_data = json.load(f)
+
         return render_template(
             'load_boulder.html',
             boulder_name=boulder_name,
             wall_image=wall_image,
             boulder_data=boulder,
-            origin=request.form.get('origin', 'explore_boulders')
+            origin=request.form.get('origin', 'explore_boulders'),
+            hold_data=hold_data
         )
     except Exception:
         return abort(404)
