@@ -21,11 +21,10 @@
           <p>{{ current_gym }}</p>
         </div>
       </div>
-      <hr style="margin-top: 0; margin-bottom: 1rem;">
-      </hr>
+      <hr style="margin-top: 0; margin-bottom: 1rem;" />
       <label>Select Gym: </label>
-      <div class="row">
-        <div class="form-group col" style="margin-bottom: 0.5rem;">
+      <div class="row gym-selector">
+        <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/" method="POST">
             <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
               {% for gym in gyms %}
@@ -35,11 +34,12 @@
             </select>
           </form>
         </div>
-        <div class="w-100"></div>
-        <div class="col">
+        <!-- <div class="w-100"></div> -->
+        <div class="col-md-4 col-xs-12">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
             <div class="btn-group d-flex">
               <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
+                <i id="location-icon" class="bi bi-geo-alt"></i>
                 <span class="button-text">
                   Locate Nearest Gym
                 </span>
@@ -49,13 +49,39 @@
         </div>
       </div>
       <br />
-      <div>
-        <p>&bull; <a href="/create?options=boulder">Create Boulder</a></p>
-        <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
-        <p>&bull; <a href="">Create Route (Coming soon)</a></p>
-        <p>&bull; <a href="/explore">Explore</a></p>
+      <!-- <div style="display: flex; flex-direction: column; align-items: baseline;"> -->
+      <div class="row group-button-row" style="display: flex;">
+        <!-- <p>&bull; <a href="/create?options=boulder"> <i class="bi bi-plus"></i> Create Boulder</a></p> -->
+        <div style="margin-bottom:0.5rem;">
+          <a href="/create?options=boulder" style="padding-right: 1rem; margin-left:0.9rem;">
+            <button class="btn btn-primary">
+              <i class="bi bi-plus"></i> Create Boulder
+            </button>
+          </a>
+        </div>
+        <!-- <p>&bull; <a href="">Create Route (Coming soon)</a></p> -->
+        <!-- <p>&bull; <a href="/explore"> <i class="bi bi-eye"></i> Explore</a></p> -->
+        <div class="button-row">
+          <a href="/explore" style="padding-right: 1rem;">
+            <button class="btn btn-primary">
+              <i class="bi bi-eye"></i> Explore
+            </button>
+          </a>
+        </div>
+        <div class="button-row">
+          <a href="/">
+            <button class="btn btn-primary">
+              <i class="bi bi-dice-2"></i> Random problem
+            </button>
+          </a>
+        </div>
       </div>
+      <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
       <hr />
+      <!-- <div style="position: fixed;">
+        <button class="btn"><i class="bi bi-plus"></i> Create</button>
+        <button class="btn"><i class="bi bi-eye"></i> Explore</button>
+      </div> -->
       <section class="module stats" id="counter">
         <div class="container">
           <div class="row">
@@ -84,6 +110,8 @@
 <script>
   function getLocation() {
     if (navigator.geolocation) {
+      var icon = document.getElementById('location-icon');
+      icon.style.display = 'none';
       var button = document.getElementById('locate-button');
       button.classList.add('button-loading');
       navigator.geolocation.getCurrentPosition(sendPosition);
@@ -115,6 +143,22 @@
 
 {% block styles %}
 <style>
+
+  @media screen and (max-width: 767px) {
+    .gym-selector {
+      display: flex;
+      flex-direction: column;
+    }
+    .button-row {
+      margin-left: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .group-button-row {
+      flex-direction: column;
+    }
+  }
+    
+
   .stats {
     padding: 10px 0 10px 0;
   }
