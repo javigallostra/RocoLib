@@ -10,7 +10,7 @@ from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api.blueprint import api_blueprint
+from api.blueprint import api_blueprint, boulder_create
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -284,6 +284,8 @@ def random_problem() -> str:
     """
     # get random boulder from gym
     boulder = db_controller.get_random_boulder(get_gym(), get_db())
+    if not boulder:
+        return abort(404)
     boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
     boulder['safe_name'] = secure_filename(boulder['name'])
     boulder['radius'] = utils.get_wall_radius(

@@ -327,7 +327,20 @@ def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
 
 @serializable
 def get_random_boulder(gym: str, database: Database) -> Data:
-    boulder = database[f'{gym}_boulders'].aggregate([{ "$sample": { "size": 1 } }]).next()
+    """Given a gym code, return a random boulder from it
+
+    :param gym: gym from which to get the random boulder
+    :type gym: str
+    :param database: database to use
+    :type database: Database
+    :return: boulder data
+    :rtype: Data
+    """
+    boulder = None
+    try:
+        boulder = database[f'{gym}_boulders'].aggregate([{ "$sample": { "size": 1 } }]).next()
+    except StopIteration:
+        boulder = None
     return boulder if boulder else {}
 
 

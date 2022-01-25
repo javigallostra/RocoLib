@@ -2,20 +2,69 @@
 <html>
 
 <head>
-  <!-- Navigation bar title-->
-  <title>404</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8" />
-  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css" />
-  <!-- Development -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='images/favicon//favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='images/favicon//favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/favicon//site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon//safari-pinned-tab.svg') }}"
+        color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Navigation bar title-->
+    <title>404</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, text/html, charset=UTF-8" />
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/turf.js') }} "></script>
 </head>
 
 <body>
-  <div>
-    Hello Stranger! - From 404 - which means the page you are looking from wasn't found
+  <div class="container">
+    <ul class="user-info">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li> | </li>
+      <li><a href="{{ url_for('add_gym') }}">Add your Gym</a></li>
+      <li> | </li>
+      {% if current_user.is_anonymous %}
+      <li><a href="{{ url_for('login') }}">Login</a></li>
+      <li> | </li>
+      <li><a href="{{ url_for('show_signup_form') }}">Sign up</a></li>
+      {% else %}
+      <li>{{ current_user.name }}</li>
+      <li> | </li>
+      <li><a href="{{ url_for('tick_list') }}">Tick List</a></li>
+      <li> | </li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      {% endif %}
+    </ul>
+    <div style="margin-top: 2rem;">
+      Hello Stranger! - From 404 - which means the page you are looking from wasn't found
+    </div>
   </div>
 </body>
 
 </html>
+
+<style>
+  .user-info {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .user-info li {
+    display: inline-block;
+    margin: 0;
+    padding: 0 10px 0 0;
+  }
+</style>
