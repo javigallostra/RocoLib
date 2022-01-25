@@ -326,6 +326,12 @@ def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
 
 
 @serializable
+def get_random_boulder(gym: str, database: Database) -> Data:
+    boulder = database[f'{gym}_boulders'].aggregate([{ "$sample": { "size": 1 } }]).next()
+    return boulder if boulder else {}
+
+
+@serializable
 def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Database) -> UpdateResult:
     """
     Given a boulder id, a Gym, and new boulder data update the

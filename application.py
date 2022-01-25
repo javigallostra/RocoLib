@@ -2,6 +2,7 @@ import os
 import json
 import ast
 import datetime
+import random
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
@@ -275,6 +276,40 @@ def explore_routes() -> str:
     Handler for explore_routes page.
     """
     return render_template('explore_routes.html')
+
+@app.route('/random_problem')
+def random_problem() -> str:
+    """
+    Show a random problem
+    """
+    # get random boulder from gym
+    boulder = db_controller.get_random_boulder(get_gym(), get_db())
+    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+    boulder['safe_name'] = secure_filename(boulder['name'])
+    boulder['radius'] = utils.get_wall_radius(
+        session,
+        get_db(),
+        get_gym() + '/' + boulder['section'])
+    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+    boulder['gym'] = get_gym()
+    boulder_name = boulder['name']
+    section = boulder['section']
+    wall_image = utils.get_wall_image(
+        get_gym(), section, WALLS_PATH)
+
+    # get hold data
+    filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
+    with open(filename) as f:
+        hold_data = json.load(f)
+    
+    return render_template(
+        'load_boulder.html',
+        boulder_name=boulder_name,
+        wall_image=wall_image,
+        boulder_data=boulder,
+        origin=request.form.get('origin', 'home'),
+        hold_data=hold_data
+    )
 
 
 @app.route('/about_us')
