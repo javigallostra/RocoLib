@@ -34,50 +34,49 @@
           <canvas id="wall-canvas"></canvas>
         </div>
         <br />
-        <div class="col-sm">
-          <div style="text-align: center;">
-            <h5>Hold type</h5>
-            <div class="row">
-              <div class="col-4">
-                <input type="radio" name="hold_type" value="#00ff00" checked />
-                Start<br />
-              </div>
-              <div class="col-4">
-                <input type="radio" name="hold_type" value="#0000ff" />
-                Normal<br />
-              </div>
-              <div class="col-4">
-                <input type="radio" name="hold_type" value="#ff0000" />
-                Top<br />
+          <div class="col-sm">
+            <div style="text-align: center;">
+              <h5>Hold type</h5>
+              <div class="row">
+                <div class="col-4">
+                  <input type="radio" name="hold_type" value="#00ff00" checked />
+                  Start<br />
+                </div>
+                <div class="col-4">
+                  <input type="radio" name="hold_type" value="#0000ff" />
+                  Normal<br />
+                </div>
+                <div class="col-4">
+                  <input type="radio" name="hold_type" value="#ff0000" />
+                  Top<br />
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
       <br />
       <br />
       <div class="container">
         <div class="row">
-          <div class="col-2">
-            <button class="btn btn-outline-dark" onclick="undoMove()">
-              Undo
-            </button>
+          <div class="col-xs-12 col-md-6">
+            <div class="row" style="display: flex;">
+              <div class="col-4" style="display: grid;">
+                <button class="btn btn-outline-dark" onclick="undoMove()">
+                  Undo
+                </button>
+              </div>
+              <div class="col-4">
+                <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
+                  <input class="btn btn-outline-dark" type="submit" value="Done" name="Submit"
+                    onclick="return setHolds();" />
+                  <input type="hidden" name="holds" id="holds-array" value="" />
+                </form>
+              </div>
+              <div class="col-4" style="display: grid;">
+                <a href="/" class="btn btn-outline-dark">Cancel</a>
+              </div>
+            </div>
           </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col-2">
-            <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST">
-              <input class="btn btn-outline-dark" type="submit" value="Done" name="Submit"
-                onclick="return setHolds();" />
-              <input type="hidden" name="holds" id="holds-array" value="" />
-            </form>
-          </div>
-          <div class="col-2"></div>
-          <div class="col-2">
-            <a href="/" class="btn btn-outline-dark">Cancel</a>
-          </div>
-          <div class="col-8"></div>
         </div>
       </div>
     </div>
