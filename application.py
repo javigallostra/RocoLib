@@ -338,7 +338,6 @@ def wall_section(wall_section) -> str:
     filename = utils.get_wall_json(get_gym(), wall_section, WALLS_PATH, app.static_folder)
     with open(filename) as f:
         hold_data = json.load(f)
-
     return render_template(
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
