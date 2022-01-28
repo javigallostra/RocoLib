@@ -2,6 +2,10 @@
 
 {% block title %}Tick List{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tick_list.css') }}" />
+{% endblock %}
+
 {% block content %}
 <br />
 <div id="holder">
@@ -241,69 +245,4 @@
     });
   });
 </script>
-{% endblock %}
-
-{% block styles %}
-<style>
-  /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
-  .btn-link {
-    border: none;
-    outline: none;
-    background: none;
-    cursor: pointer;
-    color: #007bff;
-    padding: 0;
-    font-family: inherit;
-    font-size: inherit;
-  }
-
-  .dot {
-    height: 25px;
-    width: 25px;
-    border-radius: 50%;
-    position: relative;
-    display: inline-block;
-  }
-
-  .card {
-    border: 0.1em solid dimgray;
-    padding: 0.5em;
-    padding-left: 1.2em;
-    margin: 0.5em;
-  }
-
-  .star-rating-fixed .fas {
-    color: yellow;
-  }
-
-  #date-climbed {
-    padding-right: 3rem;
-    /* font-size: 1em; */
-  }
-  
-  .date-climbed-span {
-    padding-right: 3rem;
-    font-size: 0.8em;
-    max-width: 100%;
-  }
-
-  @media (max-width: 600px) {
-    .star-rating-fixed {
-      line-height: 15px;
-      font-size: 0.8em;
-      margin-top: 4px;
-    }
-
-    #date-climbed {
-      padding-right: 0rem;
-    }
-
-    .date-climbed-span {
-      padding-right: 0rem;
-      font-size: 0.7em;
-    }
-
-
-  }
-</style>
 {% endblock %}
