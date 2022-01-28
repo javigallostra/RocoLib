@@ -2,6 +2,11 @@
 
 {% block title %}Create{% endblock %}
 
+{% block head %}
+<script src="{{ url_for('static', filename='js/turf.js') }} "></script>
+<script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
+{% endblock %}
+
 {% block content %}
 <div id="holder">
   <div id="body">
