@@ -3,6 +3,7 @@
 {% block title %}Create{% endblock %}
 
 {% block head %}
+<link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
 <script src="{{ url_for('static', filename='js/turf.js') }} "></script>
 <script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
 {% endblock %}
@@ -26,13 +27,18 @@
         </div>
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
-      <br />
+      <!-- <br /> -->
       <div class="row">
         <div class="col-sm">
           <div style="text-align: center;">
             <h3>
               Section: {{ wall_name }}
             </h3>
+          </div>
+          <!-- Default switch -->
+          <div class="custom-control custom-switch">
+            <input type="checkbox" checked class="custom-control-input" id="customSwitches">
+            <label class="custom-control-label" for="customSwitches">Hold detection</label>
           </div>
           <br />
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
@@ -140,5 +146,6 @@
       margin-right: auto;
     }
   }
+
 </style>
 {% endblock %}
