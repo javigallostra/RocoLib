@@ -37,8 +37,8 @@
           </div>
           <!-- Default switch -->
           <div class="custom-control custom-switch">
-            <input type="checkbox" checked class="custom-control-input" id="customSwitches">
-            <label class="custom-control-label" for="customSwitches">Hold detection</label>
+            <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
+            <label class="custom-control-label" for="holdDetectionSwitch">Hold detection</label>
           </div>
           <br />
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
@@ -96,6 +96,14 @@
 
 <script>
   window.onload = () => {
+    // Add hold detection change callback
+    const checkbox = document.getElementById('holdDetectionSwitch');
+
+    checkbox.addEventListener('change', (event) => {
+      holdDetectionActive = event.currentTarget.checked;
+      drawAll();
+    });
+
     radius = '{{ radius }}';
     var img = document.getElementById("wall-image");
     var cnvs = document.getElementById("wall-canvas");
@@ -120,8 +128,9 @@
     var ctx = cnvs.getContext("2d");
     ctx.width = cnvs.width;
     ctx.height = cnvs.height;
-
-    fillCanvasWithGray(ctx, cnvs);
+    if (holdDetectionActive) {
+      fillCanvasWithGray(ctx, cnvs);
+    }
     // listen for mouse events
     cnvs.onmousedown = myDown;
     cnvs.onmouseup = myUp;

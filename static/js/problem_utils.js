@@ -5,6 +5,7 @@ var dragok = false;
 var wasDragged = false;
 
 var radius;
+var holdDetectionActive = true;
 
 function hexToRGBA(hex, alpha) {
     var r = parseInt(hex.slice(1, 3), 16),
@@ -44,15 +45,17 @@ function draw(event) {
 function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
     // Test if click inside hold
     var hold_found = false;
-    for (let index = 0; index < polys.length; index++) {
-        var poly = { type: 'Polygon', coordinates: [polys[index]] }
-        var inside = turf.booleanPointInPolygon.default([x, y], poly)
-        if (inside == true) {
-          drawPolygon(ctx, polys[index], color, 1);
-          hold_found = true;
-        }
+    if (holdDetectionActive) {
+      for (let index = 0; index < polys.length; index++) {
+          var poly = { type: 'Polygon', coordinates: [polys[index]] }
+          var inside = turf.booleanPointInPolygon.default([x, y], poly)
+          if (inside == true) {
+            drawPolygon(ctx, polys[index], color, 1);
+            hold_found = true;
+          }
+      }
     }
-    if (hold_found == false) {
+    if (hold_found == false || holdDetectionActive == false) {
       // Draw circle
       ctx.globalCompositeOperation = "source-over";
       ctx.beginPath();
@@ -103,7 +106,9 @@ function drawAll() {
     var cnvs = document.getElementById("wall-canvas");
     var ctx = cnvs.getContext("2d");
     clear(cnvs, ctx);
-    fillCanvasWithGray(ctx, cnvs);
+    if (holdDetectionActive) {
+      fillCanvasWithGray(ctx, cnvs);
+    }
     // redraw each rect in the holds array
     for (var i = 0; i < holds.length; i++) {
       var hold = holds[i];
@@ -219,7 +224,9 @@ function undoMove() {
     const ctx = cnvs.getContext("2d");
     clear(cnvs, ctx);
     // fill again canvas with gray
-    fillCanvasWithGray(ctx, cnvs);
+    if (holdDetectionActive) {
+      fillCanvasWithGray(ctx, cnvs);
+    }
     // redraw holds
     var newHolds = [];
     holds.forEach((hold) =>
@@ -253,13 +260,13 @@ function validateForm() {
 }
 
 
-
 window.holds = holds;
 window.polys = polys;
 window.ratio = ratio;
 window.dragok = dragok;
 window.wasDragged = wasDragged;
 window.radius = radius;
+window.holdDetectionActive = holdDetectionActive;
 window.hexToRGBA = hexToRGBA;
 window.draw = draw;
 window.fillCanvasWithGray = fillCanvasWithGray;
