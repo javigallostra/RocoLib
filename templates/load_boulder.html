@@ -2,6 +2,12 @@
 
 {% block title %}{{ boulder_name }}{% endblock %}
 
+{% block head %}
+<link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
+<script src="{{ url_for('static', filename='js/turf.js') }} "></script>
+<!-- <script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script> -->
+{% endblock %}
+
 {% block content %}
 <br />
 <div id="holder">
@@ -26,6 +32,10 @@
       </div>
       <div style="text-align: center;">
         {{ boulder_data['feet'] }}
+      </div>
+      <div class="custom-control custom-switch">
+        <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
+        <label class="custom-control-label" for="holdDetectionSwitch">Hold detection</label>
       </div>
       <br />
       <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
@@ -330,6 +340,15 @@
 
   {% block styles %}
   <style>
+    .custom-switch {
+      display: flex;
+      /* text-align: center; */
+      justify-content: center;
+      margin-left: auto;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    
     img {
       margin-left: auto;
       margin-right: auto;
