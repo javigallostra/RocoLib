@@ -36,7 +36,7 @@ function draw(event) {
       ctx,
       event.offsetX,
       event.offsetY,
-      radius * ctx.width,
+      radius * cnvs.width,
       holdColor,
       holds
     );
@@ -69,7 +69,7 @@ function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
     }
     // push to hold array
     if (shouldPush == true) {
-      holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
+      holdArray.push({ x: x / cnvs.width, y: y / cnvs.height, color: color, radius: radius });
     }
 }
 
@@ -112,7 +112,7 @@ function drawAll() {
     // redraw each rect in the holds array
     for (var i = 0; i < holds.length; i++) {
       var hold = holds[i];
-      drawHold(ctx, hold.x * ctx.width, hold.y * ctx.height, hold.radius, hold.color, holds, shouldPush=false);
+      drawHold(ctx, hold.x * cnvs.width, hold.y * cnvs.height, hold.radius, hold.color, holds, shouldPush=false);
     }
 }
 
@@ -136,7 +136,7 @@ function myDown(e) {
         var h = holds[i];
         for (let index = 0; index < polys.length; index++) {
             var poly = { type: 'Polygon', coordinates: [polys[index]] }
-            var hold_inside = turf.booleanPointInPolygon.default([h.x  * ctx.width, h.y * ctx.height], poly)
+            var hold_inside = turf.booleanPointInPolygon.default([h.x  * cnvs.width, h.y * cnvs.height], poly)
             var mouse_inside = turf.booleanPointInPolygon.default([mx, my], poly)
             if (hold_inside == true && mouse_inside == true) {
                 dragok = true;
@@ -144,7 +144,7 @@ function myDown(e) {
             }
         }  
         if(dragok == false) {
-            if (((mx - h.x * ctx.width) ** 2 + (my - h.y * ctx.height) ** 2) < h.radius ** 2) 
+            if (((mx - h.x * cnvs.width) ** 2 + (my - h.y * cnvs.height) ** 2) < h.radius ** 2) 
             {
                 // if yes, set that hold marker isDragging=true
                 dragok = true;
@@ -206,8 +206,8 @@ function myMove(e) {
       for (var i = 0; i < holds.length; i++) {
         var hold = holds[i];
         if (hold.isDragging) {
-            hold.x = mx / ctx.width;
-            hold.y = my / ctx.height;
+            hold.x = mx / cnvs.width;
+            hold.y = my / cnvs.height;
         }
       }
 
@@ -232,9 +232,9 @@ function undoMove() {
     holds.forEach((hold) =>
       drawHold(
         ctx,
-        hold.x * ctx.width,
-        hold.y * ctx.height,
-        radius * ctx.width,
+        hold.x * cnvs.width,
+        hold.y * cnvs.height,
+        radius * cnvs.width,
         hold.color,
         newHolds
       )
