@@ -361,7 +361,7 @@ function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius,
   setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId);
 
   var cnvs = document.getElementById(canvasId);
-  
+
   // listen for mouse events
   cnvs.onmousedown = myDown;
   cnvs.onmouseup = myUp;
@@ -371,6 +371,8 @@ function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius,
 function boulderLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
   addHoldDetectionCallback(holdDetectionSwitchId);
   setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId);
+
+  var cnvs = document.getElementById(canvasId);
 
   for (var i = 0; i < holds.length; i++) {
     holds[i].radius = radius * cnvs.width;
