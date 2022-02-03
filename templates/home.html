@@ -2,6 +2,10 @@
 
 {% block title %}Home{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
 {% block content %}
 <div id="holder">
   <div id="body">
@@ -21,11 +25,10 @@
           <p>{{ current_gym }}</p>
         </div>
       </div>
-      <hr style="margin-top: 0; margin-bottom: 1rem;">
-      </hr>
+      <hr style="margin-top: 0; margin-bottom: 1rem;" />
       <label>Select Gym: </label>
-      <div class="row">
-        <div class="form-group col" style="margin-bottom: 0.5rem;">
+      <div class="row gym-selector">
+        <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/" method="POST">
             <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
               {% for gym in gyms %}
@@ -35,11 +38,12 @@
             </select>
           </form>
         </div>
-        <div class="w-100"></div>
-        <div class="col">
+        <!-- <div class="w-100"></div> -->
+        <div class="col-md-4 col-xs-12">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
             <div class="btn-group d-flex">
               <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
+                <i id="location-icon" class="bi bi-geo-alt"></i>
                 <span class="button-text">
                   Locate Nearest Gym
                 </span>
@@ -49,11 +53,29 @@
         </div>
       </div>
       <br />
-      <div>
-        <p>&bull; <a href="/create?options=boulder">Create Boulder</a></p>
+      <div class="row group-button-row" style="display: flex;">
+        <div style="margin-bottom:0.5rem;">
+          <a href="/create?options=boulder" style="padding-right: 1rem; margin-left:0.9rem;">
+            <button class="btn btn-primary">
+              <i class="bi bi-plus"></i> Create Boulder
+            </button>
+          </a>
+        </div>
         <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
-        <p>&bull; <a href="">Create Route (Coming soon)</a></p>
-        <p>&bull; <a href="/explore">Explore</a></p>
+        <div class="button-row">
+          <a href="/explore" style="padding-right: 1rem;">
+            <button class="btn btn-primary">
+              <i class="bi bi-eye"></i> Explore
+            </button>
+          </a>
+        </div>
+        <div class="button-row">
+          <a href="/random_problem">
+            <button class="btn btn-primary">
+              <i class="bi bi-dice-2"></i> Random problem
+            </button>
+          </a>
+        </div>
       </div>
       <hr />
       <section class="module stats" id="counter">
@@ -84,9 +106,11 @@
 <script>
   function getLocation() {
     if (navigator.geolocation) {
+      var icon = document.getElementById('location-icon');
+      icon.style.display = 'none';
       var button = document.getElementById('locate-button');
       button.classList.add('button-loading');
-      navigator.geolocation.getCurrentPosition(sendPosition);
+      navigator.geolocation.getCurrentPosition(sendPosition, showError);
     } else {
       console.log("Geolocation is not supported by this browser.");
     }
@@ -110,75 +134,22 @@
       nearest_gym_form.submit();
     }
   }
+
+  function showError(error) {
+    switch(error.code) {
+      case error.PERMISSION_DENIED:
+        x.innerHTML = "User denied the request for Geolocation."
+        break;
+      case error.POSITION_UNAVAILABLE:
+        x.innerHTML = "Location information is unavailable."
+        break;
+      case error.TIMEOUT:
+        x.innerHTML = "The request to get user location timed out."
+        break;
+      case error.UNKNOWN_ERROR:
+        x.innerHTML = "An unknown error occurred."
+        break;
+    }
+  }  
 </script>
-{% endblock %}
-
-{% block styles %}
-<style>
-  .stats {
-    padding: 10px 0 10px 0;
-  }
-
-  .stats .counter .number {
-    color: #1789DA;
-    font-size: 3rem;
-    font-weight: 300;
-  }
-
-  .stats .counter .title {
-    max-width: 200px;
-    font-size: 1.25rem;
-    line-height: 1.2;
-    font-weight: bold;
-  }
-
-  /* 100% Image Width on Smaller Screens */
-  @media only screen and (max-width: 700px) {
-    #logo-img {
-      max-width: 50%;
-    }
-  }
-
-  @media only screen and (min-width: 701px) {
-    #logo-img {
-      max-width: 40%;
-    }
-  }
-
-  .button-loading .button-text {
-    visibility: hidden;
-    opacity: 0;
-  }
-
-  .button-loading::after {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    border: 4px solid transparent;
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    animation: button-loading-spinner 1s ease infinite;
-  }
-
-  .cstm-button {
-    position: relative;
-    cursor: pointer;
-  }
-
-  @keyframes button-loading-spinner {
-    from {
-      transform: rotate(0turn);
-    }
-
-    to {
-      transform: rotate(1turn);
-    }
-  }
-</style>
 {% endblock %}

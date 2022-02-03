@@ -116,16 +116,17 @@
     return string.split(search).join(replace);
   }
 
-  const checkbox = document.getElementById('hideDoneCheck')
-
-  checkbox.addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-      UpdateList(true);
-    } else {
-      UpdateList(false);
-    }
-  })
-
+  const checkbox = document.getElementById('hideDoneCheck');
+  if (checkbox != null) {
+    checkbox.addEventListener('change', (event) => {
+      if (event.currentTarget.checked) {
+        UpdateList(true);
+      } else {
+        UpdateList(false);
+      }
+    });
+  }
+  
   function UpdateList(checked) {
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");

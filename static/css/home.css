@@ -1,0 +1,87 @@
+@media screen and (max-width: 767px) {
+    .gym-selector {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-row {
+        margin-left: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .group-button-row {
+        flex-direction: column;
+    }
+
+    .user-info li {
+        padding: 0 0 0 0;
+        ;
+    }
+}
+
+
+.stats {
+    padding: 10px 0 10px 0;
+}
+
+.stats .counter .number {
+    color: #1789DA;
+    font-size: 3rem;
+    font-weight: 300;
+}
+
+.stats .counter .title {
+    max-width: 200px;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    font-weight: bold;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+    #logo-img {
+        max-width: 50%;
+    }
+}
+
+@media only screen and (min-width: 701px) {
+    #logo-img {
+        max-width: 40%;
+    }
+}
+
+.button-loading .button-text {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.button-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+.cstm-button {
+    position: relative;
+    cursor: pointer;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}

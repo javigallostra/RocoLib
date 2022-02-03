@@ -1,0 +1,74 @@
+.custom-control {
+    position: relative;
+    display: block;
+    min-height: 1.5rem;
+    margin-left: 1.5rem;
+    /* padding-left: 1.5rem; */
+}
+
+.custom-switch {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+}
+
+.custom-control-input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    color: #fff;
+    background-color: #007bff;
+    box-shadow: none;
+}
+
+.custom-control-input:focus~.custom-control-label::before {
+    box-shadow: 0 0 0 1px #fafafa, 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.custom-control-input:active~.custom-control-label::before {
+    color: #fff;
+    background-color: #4ac6ff;
+    box-shadow: none;
+}
+
+.custom-control-input:disabled~.custom-control-label {
+    color: #6c757d;
+}
+
+.custom-control-input:disabled~.custom-control-label::before {
+    background-color: #e9ecef;
+}
+
+.custom-control-label {
+    margin-bottom: 0;
+}
+
+.custom-control-label::before {
+    position: absolute;
+    top: 0.25rem;
+    left: 0;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+    content: "";
+    user-select: none;
+    background-color: #dee2e6;
+    box-shadow: inset 0 0.25rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.custom-control-label::after {
+    position: absolute;
+    top: 0.25rem;
+    left: 0;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    content: "";
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}

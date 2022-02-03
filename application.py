@@ -2,6 +2,7 @@ import os
 import json
 import ast
 import datetime
+import random
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
@@ -9,7 +10,7 @@ from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api.blueprint import api_blueprint
+from api.blueprint import api_blueprint, boulder_create
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -28,7 +29,7 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
-DEBUG = False
+DEBUG = True
 SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
 GENERATE_API_DOCS = True
@@ -252,12 +253,18 @@ def load_boulder() -> Union[str, NoReturn]:
             section = boulder['section']
             wall_image = utils.get_wall_image(
                 request.args.get('gym'), section, WALLS_PATH)
+        # get hold data
+        filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
+        with open(filename) as f:
+            hold_data = json.load(f)
+
         return render_template(
             'load_boulder.html',
             boulder_name=boulder_name,
             wall_image=wall_image,
             boulder_data=boulder,
-            origin=request.form.get('origin', 'explore_boulders')
+            origin=request.form.get('origin', 'explore_boulders'),
+            hold_data=hold_data
         )
     except Exception:
         return abort(404)
@@ -269,6 +276,42 @@ def explore_routes() -> str:
     Handler for explore_routes page.
     """
     return render_template('explore_routes.html')
+
+@app.route('/random_problem')
+def random_problem() -> str:
+    """
+    Show a random problem
+    """
+    # get random boulder from gym
+    boulder = db_controller.get_random_boulder(get_gym(), get_db())
+    if not boulder:
+        return abort(404)
+    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+    boulder['safe_name'] = secure_filename(boulder['name'])
+    boulder['radius'] = utils.get_wall_radius(
+        session,
+        get_db(),
+        get_gym() + '/' + boulder['section'])
+    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+    boulder['gym'] = get_gym()
+    boulder_name = boulder['name']
+    section = boulder['section']
+    wall_image = utils.get_wall_image(
+        get_gym(), section, WALLS_PATH)
+
+    # get hold data
+    filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
+    with open(filename) as f:
+        hold_data = json.load(f)
+    
+    return render_template(
+        'load_boulder.html',
+        boulder_name=boulder_name,
+        wall_image=wall_image,
+        boulder_data=boulder,
+        origin=request.form.get('origin', 'home'),
+        hold_data=hold_data
+    )
 
 
 @app.route('/about_us')
@@ -291,6 +334,10 @@ def wall_section(wall_section) -> str:
     if not session.get('walls_radius', ''):
         session['walls_radius'] = db_controller.get_walls_radius_all(get_db())
 
+    # load hold data
+    filename = utils.get_wall_json(get_gym(), wall_section, WALLS_PATH, app.static_folder)
+    with open(filename) as f:
+        hold_data = json.load(f)
     return render_template(
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
@@ -298,7 +345,8 @@ def wall_section(wall_section) -> str:
             get_gym(), wall_section, get_db()),
         section=wall_section,
         radius=utils.get_wall_radius(
-            session, get_db(), get_gym() + '/' + wall_section)
+            session, get_db(), get_gym() + '/' + wall_section),
+        hold_data=hold_data
     )
 
 
