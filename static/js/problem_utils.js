@@ -259,6 +259,52 @@ function validateForm() {
     return true;
 }
 
+function downloadProblem(boulder_name, image_wall) {
+  // create canvas, load image, add holds, and set to download
+  var downloadCanvas = document.createElement('canvas');
+  var img_ref = document.getElementById('wall-image')
+
+  document.getElementById('wrapper').insertBefore(downloadCanvas, img_ref);
+
+  downloadCanvas.id = "download-canvas";
+  downloadCanvas.style.position = "absolute";
+  downloadCanvas.style.left = img_ref.offsetLeft + "px";
+  downloadCanvas.style.top = img_ref.offsetTop + "px";
+  downloadCanvas.width = img_ref.offsetWidth;
+  downloadCanvas.height = img_ref.offsetHeight;
+
+  dcctx = downloadCanvas.getContext('2d');
+  
+  // load image on canvas
+  var img_to_download = new Image();
+  img_to_download.onload = function () {
+    //draw background image
+    clear(downloadCanvas, dcctx);
+    dcctx.drawImage(img_to_download, 0, 0, downloadCanvas.width, downloadCanvas.height);
+    // redraw each rect in the holds array
+    for (var i = 0; i < holds.length; i++) {
+      var hold = holds[i];
+      // Draw circle
+      dcctx.beginPath();
+      dcctx.arc(hold.x * downloadCanvas.width, hold.y * downloadCanvas.height, hold.radius, 0, 2 * Math.PI, false);
+      dcctx.lineWidth = 3;
+      dcctx.strokeStyle = hold.color;
+      dcctx.stroke();
+
+    }
+
+    var link = document.createElement('a');
+    link.id = "download-a";
+    link.download = boulder_name + ".png";
+    link.href = document.getElementById('download-canvas').toDataURL()
+    link.click();
+    $("#download-canvas").remove();
+    $("#download-a").remove();
+  };
+
+  img_to_download.src = image_wall;
+}
+
 
 window.holds = holds;
 window.polys = polys;
@@ -280,3 +326,4 @@ window.myMove = myMove;
 window.undoMove = undoMove;
 window.setHolds = setHolds;
 window.validateForm = validateForm;
+window.downloadProblem = downloadProblem;
