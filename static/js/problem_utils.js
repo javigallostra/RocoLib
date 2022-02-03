@@ -305,7 +305,6 @@ function downloadProblem(boulder_name, image_wall) {
   img_to_download.src = image_wall;
 }
 
-
 function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
       // Add hold detection change callback
       var checkbox = document.getElementById(holdDetectionSwitchId);
@@ -349,7 +348,6 @@ function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius,
       cnvs.onmouseup = myUp;
       cnvs.onmousemove = myMove;
 };
-
 
 function boulderLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
       // Add hold detection change callback
