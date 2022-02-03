@@ -134,57 +134,24 @@
 
   <script>
     // It is important that this is wrapped in single quotes ('')
-    // The code is not working otherwise
-    var data = '{{ boulder_data | tojson | safe}}';
-    var boulder_data = JSON.parse(data);
-    holds = boulder_data.holds;
-    radius = boulder_data.radius;
+    var rawData = '{{ boulder_data | tojson | safe}}';
+    var boulderData = JSON.parse(rawData);
+    holds = boulderData.holds;
+    radius = boulderData.radius;
 
     function loadBoulder() {
-      // Add hold detection change callback
-      const checkbox = document.getElementById('holdDetectionSwitch');
-
-      checkbox.addEventListener('change', (event) => {
-        holdDetectionActive = event.currentTarget.checked;
-        drawAll();
-      });
-
-      var img = document.getElementById("wall-image");
-      var cnvs = document.getElementById("wall-canvas");
-
-      cnvs.style.position = "absolute";
-      cnvs.style.left = img.offsetLeft + "px";
-      cnvs.style.top = img.offsetTop + "px";
-      cnvs.width = img.offsetWidth;
-      cnvs.height = img.offsetHeight;
-
-      var ctx = cnvs.getContext("2d");
-      if (holdDetectionActive) {
-        fillCanvasWithGray(ctx, cnvs);
-      }
-      // Get hold polygon data
-      var wall_hold_data = '{{ hold_data | tojson | safe}}';
-      var parsed_data = JSON.parse(wall_hold_data);
-      polys = parsed_data.holds;
-      ratio = img.offsetWidth / img.naturalWidth;
-      for (let index = 0; index < polys.length; index++) {
-          // Adjust ratio
-          for (let i = 0; i < polys[index].length; i++) {
-              polys[index][i][0] *= ratio;
-              polys[index][i][1] *= ratio;
-          }
-      }
-
-      for (var i = 0; i < holds.length; i++) {
-        holds[i].radius = radius * cnvs.width;
-      }
-
-      drawAll();
+      boulderLoadInit(
+        'holdDetectionSwitch',
+        "wall-image",
+        "wall-canvas",
+        boulderData.radius,
+        '{{ hold_data | tojson | safe}}'
+      );
     };
 
     function downloadProblemAsImage() {
       downloadProblem("{{ boulder_data['name'] }}", '{{ wall_image }}');
-    }
+    };
 
     var $star_rating = $(".star-rating .fa");
 

@@ -306,6 +306,94 @@ function downloadProblem(boulder_name, image_wall) {
 }
 
 
+function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
+      // Add hold detection change callback
+      var checkbox = document.getElementById(holdDetectionSwitchId);
+
+      checkbox.addEventListener('change', (event) => {
+        holdDetectionActive = event.currentTarget.checked;
+        drawAll();
+      });
+  
+      //radius = '{{ radius }}';
+      radius = holdRadius;
+      var img = document.getElementById(imageId);
+      var cnvs = document.getElementById(canvasId);
+  
+      // var wall_hold_data = '{{ hold_data | tojson | safe}}';
+      var wall_hold_data = holdData;
+      var parsed_data = JSON.parse(wall_hold_data);
+      polys = parsed_data.holds;
+      ratio = img.offsetWidth / img.naturalWidth;
+      for (let index = 0; index < polys.length; index++) {
+          // Adjust ratio
+          for (let i = 0; i < polys[index].length; i++) {
+              polys[index][i][0] *= ratio;
+              polys[index][i][1] *= ratio;
+          }
+      }
+      cnvs.style.position = "absolute";
+      cnvs.style.left = img.offsetLeft + "px";
+      cnvs.style.top = img.offsetTop + "px";
+      cnvs.width = img.offsetWidth;
+      cnvs.height = img.offsetHeight;
+  
+      var ctx = cnvs.getContext("2d");
+      ctx.width = cnvs.width;
+      ctx.height = cnvs.height;
+      if (holdDetectionActive) {
+        fillCanvasWithGray(ctx, cnvs);
+      }
+      // listen for mouse events
+      cnvs.onmousedown = myDown;
+      cnvs.onmouseup = myUp;
+      cnvs.onmousemove = myMove;
+};
+
+
+function boulderLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
+      // Add hold detection change callback
+      var checkbox = document.getElementById(holdDetectionSwitchId);
+
+      checkbox.addEventListener('change', (event) => {
+        holdDetectionActive = event.currentTarget.checked;
+        drawAll();
+      });
+
+      radius = holdRadius;
+      var img = document.getElementById(imageId);
+      var cnvs = document.getElementById(canvasId);
+
+      cnvs.style.position = "absolute";
+      cnvs.style.left = img.offsetLeft + "px";
+      cnvs.style.top = img.offsetTop + "px";
+      cnvs.width = img.offsetWidth;
+      cnvs.height = img.offsetHeight;
+
+      var ctx = cnvs.getContext("2d");
+      if (holdDetectionActive) {
+        fillCanvasWithGray(ctx, cnvs);
+      }
+      // Get hold polygon data
+      var wall_hold_data = holdData;
+      var parsed_data = JSON.parse(wall_hold_data);
+      polys = parsed_data.holds;
+      ratio = img.offsetWidth / img.naturalWidth;
+      for (let index = 0; index < polys.length; index++) {
+          // Adjust ratio
+          for (let i = 0; i < polys[index].length; i++) {
+              polys[index][i][0] *= ratio;
+              polys[index][i][1] *= ratio;
+          }
+      }
+
+      for (var i = 0; i < holds.length; i++) {
+        holds[i].radius = radius * cnvs.width;
+      }
+
+      drawAll();
+};
+
 window.holds = holds;
 window.polys = polys;
 window.ratio = ratio;
@@ -313,6 +401,8 @@ window.dragok = dragok;
 window.wasDragged = wasDragged;
 window.radius = radius;
 window.holdDetectionActive = holdDetectionActive;
+window.boulderCreateInit = boulderCreateInit;
+window.boulderLoadInit = boulderLoadInit;
 window.hexToRGBA = hexToRGBA;
 window.draw = draw;
 window.fillCanvasWithGray = fillCanvasWithGray;
