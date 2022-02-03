@@ -69,7 +69,7 @@ function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
     }
     // push to hold array
     if (shouldPush == true) {
-      holdArray.push({ x: x / cnvs.width, y: y / cnvs.height, color: color, radius: radius });
+      holdArray.push({ x: x / ctx.width, y: y / ctx.height, color: color, radius: radius });
     }
 }
 

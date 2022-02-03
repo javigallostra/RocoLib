@@ -6,6 +6,12 @@
     /* padding-left: 1.5rem; */
 }
 
+.custom-switch {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+}
+
 .custom-control-input {
     position: absolute;
     z-index: -1;
