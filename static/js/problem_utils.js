@@ -359,6 +359,8 @@ function setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId) {
 function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
   addHoldDetectionCallback(holdDetectionSwitchId);
   setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId);
+
+  var cnvs = document.getElementById(canvasId);
   
   // listen for mouse events
   cnvs.onmousedown = myDown;
