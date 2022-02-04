@@ -98,7 +98,7 @@ footer {
   display: block;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 767px) {
   .topnav a:not(:first-child),
   .dropdown .dropbtn {
     display: none;
@@ -110,7 +110,7 @@ footer {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 767px) {
   .topnav.responsive {
     position: relative;
   }

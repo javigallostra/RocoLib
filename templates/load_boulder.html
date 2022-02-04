@@ -21,15 +21,20 @@
               <p><a href="/">Home</a></p>
             </div>
             <div class="col">
+              <div style="text-align: center;">
+                <h5>{{ boulder_name }}</h5>
+              </div>        
+            </div>
+            <div class="col">
               <p><a href="/{{ origin }}">Back</a></p>
             </div>
           </div>
         </div>
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
-      <div style="text-align: center;">
+      <!-- <div style="text-align: center;">
         <h5>{{ boulder_name }}</h5>
-      </div>
+      </div> -->
       <div style="text-align: center;">
         {{ boulder_data['feet'] }}
       </div>
@@ -197,8 +202,8 @@
       /* text-align: center; */
       justify-content: center;
       margin-left: auto;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      /* margin-top: 1rem; */
+      /* margin-bottom: 1rem; */
     }
 
     img {
@@ -208,7 +213,7 @@
       width: 45%;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 767px) {
       img {
         width: 95%;
         margin-left: auto;
@@ -237,7 +242,7 @@
       font-size: inherit;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 767px) {
       .star-rating {
         /* line-height: 15px; */
         font-size: 0.8em;
