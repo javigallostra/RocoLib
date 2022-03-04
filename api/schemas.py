@@ -1,6 +1,6 @@
 import os
 
-from config import PORT
+from config import PORT, DOCKER_ENV
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
@@ -10,7 +10,7 @@ from marshmallow import Schema, fields
 
 host = 'http://localhost:'
 localhost_port = PORT
-if os.environ['DOCKER_ENV'] == "True":
+if DOCKER_ENV == "True":
     localhost_port = 9090
 
 

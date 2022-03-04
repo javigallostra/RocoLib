@@ -3,7 +3,6 @@ FROM ubuntu:20.04
 
 # to prevent debconf from asking questions
 ENV DEBIAN_FRONTEND=noninteractive
-ENV DOCKER_ENV=True 
 
 LABEL maintainer="Juan Gallostra <juangallostra@gmail.com>"
 
@@ -18,4 +17,4 @@ RUN python3.9 -m pip install --no-cache-dir -r requirements.txt
 
 COPY . /rocolib
 
-CMD [ "python3.9", "./application.py" ]
+CMD [ "python3.9", "./application.py", "docker" ]

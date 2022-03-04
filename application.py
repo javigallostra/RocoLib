@@ -536,7 +536,7 @@ if __name__ == '__main__':
         generate_api_docs(app)
     if RUN_SERVER:
         set_creds_file(CREDS)
-        if os.environ['DOCKER_ENV'] == "True":
+        if DOCKER_ENV == "True":
             app.run(debug=DEBUG, host='0.0.0.0', port=80)
         else:
             app.run(debug=DEBUG, port=PORT)
