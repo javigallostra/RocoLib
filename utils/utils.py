@@ -176,6 +176,7 @@ def map_and_complete_boulder_data(data: list[Data], radius: dict[str, float]) ->
         boulder['safe_name'] = secure_filename(boulder['name'])
         boulder['radius'] = radius[boulder['section']]
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+        boulder['age'] = get_time_since_creation(boulder['time'])
     return sorted(
         data,
         key=lambda x: datetime.datetime.strptime(
@@ -234,3 +235,29 @@ def load_data(request: Request) -> Tuple[dict, bool]:
     return request.json, False
   else:
     return dict(), False
+
+def get_time_since_creation(time):
+    current = datetime.datetime.now()
+    time = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
+    diff = current - time
+
+    years, rem = divmod(diff.days, 365)
+    months, days = divmod(rem, 30)
+    days = diff.days
+    hours, rem = divmod(diff.seconds, 3600)
+    minutes, seconds = divmod(rem, 60)
+
+    if years > 0:
+        nb, name = years, "years"
+    elif months > 0:
+        nb, name = months, "months"
+    elif days > 0:
+        nb, name = days, "days"
+    elif hours > 0:
+        nb, name = hours, "hours"   
+    elif minutes > 0:
+        nb, name = minutes, "minutes"  
+    else:
+        nb, name = seconds, "seconds"  
+
+    return str(nb)+" "+str(name)
