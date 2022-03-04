@@ -89,7 +89,8 @@ def get_gym() -> str:
     """
     if session.get('gym', ''):
         return session['gym']
-    return 'sancu'
+    gyms = db_controller.get_gyms(get_db())
+    return gyms[0]['id']
 
 
 @app.route('/', methods=['GET', 'POST'])
