@@ -236,7 +236,7 @@ def load_data(request: Request) -> Tuple[dict, bool]:
   else:
     return dict(), False
 
-def get_time_since_creation(time):
+def get_time_since_creation(time: str) -> str:
     current = datetime.datetime.now()
     time = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
     diff = current - time
