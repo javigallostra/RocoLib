@@ -310,7 +310,7 @@ def random_problem() -> str:
         boulder_name=boulder_name,
         wall_image=wall_image,
         boulder_data=boulder,
-        origin=request.form.get('origin', 'home'),
+        origin=request.form.get('origin', ''),
         hold_data=hold_data
     )
 
