@@ -109,3 +109,4 @@ Once the container is up and running, the app can be accessed at http://localhos
 ## Links of interest
 
 * [Yolo Bouldering](https://github.com/yarkhinephyo/yolo_bouldering)
+* [Climbnet](https://github.com/cydivision/climbnet)
