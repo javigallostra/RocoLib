@@ -92,7 +92,7 @@
                       <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 5 else 'fas fa-star' }}"></span>
                     </div>
                     <p style="margin-left: 10px; margin-top: 0px;">
-                      {{ boulder.get('raters', 0) }} ratings
+                      {{ boulder.get('raters', 0) }} {{ 'ratings' if boulder.get('raters', 0) != 1 else 'rating' }}
                     </p>
                   </div>
                 </div>

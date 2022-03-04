@@ -248,16 +248,16 @@ def get_time_since_creation(time: str) -> str:
     minutes, seconds = divmod(rem, 60)
 
     if years > 0:
-        nb, name = years, "years"
+        nb, name = years, 'year' if years > 1 else 'year'
     elif months > 0:
-        nb, name = months, "months"
+        nb, name = months, 'months' if months > 1 else 'month'
     elif days > 0:
-        nb, name = days, "days"
+        nb, name = days, 'days' if days > 1 else 'day'
     elif hours > 0:
-        nb, name = hours, "hours"   
+        nb, name = hours, 'hours' if hours > 1 else 'hour'
     elif minutes > 0:
-        nb, name = minutes, "minutes"  
+        nb, name = minutes, 'minutes' if minutes > 1 else 'minute'
     else:
-        nb, name = seconds, "seconds"  
+        nb, name = seconds, 'seconds' if seconds > 1 else 'second'
 
-    return str(nb)+" "+str(name)
+    return f'{nb} {name}'
