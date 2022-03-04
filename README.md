@@ -93,15 +93,7 @@ Once the container is up and running, the app can be accessed at http://localhos
    ```
 3. Set up [MongoDB](https://www.mongodb.com). This can either be a local instance of MongoDB or an instance running on the cloud. We are currently using MongoDB Atlas free tier.
 4. Configure MongoDB connection so that the application code can talk with the DDBB.
-5. Set required environment variables. On windows, if you just want to set them for the current session:
-   ```
-   $env:DOCKER_ENV="False"
-   ```
-   Alternatively, if you want to set them permamently -You will need admin privileges and a terminal restart after executing the command-:
-   ```
-   [Environment]::SetEnvironmentVariable("DOCKER_ENV", "False", "Machine")
-   ```
-6. Run
+5. Run
    ```
    python application.py
    ```

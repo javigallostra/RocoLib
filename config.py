@@ -1,3 +1,5 @@
+from sys import argv
+
 CREDS = 'creds.txt'
 CREDS_DEV = 'creds_dev.txt'
 
@@ -6,6 +8,10 @@ PORT = 5050
 DB_NAME = 'RocoLib'
 WALLS_PATH = 'images/walls/'
 ITEMS = 'Items'
+
+DOCKER_ENV="False"
+if len(argv) > 1 and str(argv[1]) == "docker":
+    DOCKER_ENV="True"
 
 BOULDER_COLOR_MAP = {
     'green': '#2CC990',
