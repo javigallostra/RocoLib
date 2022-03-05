@@ -97,6 +97,7 @@ def get_wall_image(gym: str, section: str, walls_path: str, static_assets_path: 
         filename='{}{}/{}.JPG'.format(walls_path, gym, section)
     )
 
+
 def get_wall_json(gym: str, section: str, walls_path: str, static_assets_path: str = 'static') -> str:
     """
     Given a gym section, return its image url
@@ -216,6 +217,7 @@ def find_closest(gyms: list[Data], lat: float, long: float) -> str:
         return closest_gym.get('id', '')
     return gyms[0].get('id', '')
 
+
 def load_data(request: Request) -> Tuple[dict, bool]:
   """
   Load data from the request body into a dict and return it
@@ -235,6 +237,7 @@ def load_data(request: Request) -> Tuple[dict, bool]:
     return request.json, False
   else:
     return dict(), False
+
 
 def get_time_since_creation(time: str) -> str:
     current = datetime.datetime.now()
