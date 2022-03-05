@@ -271,6 +271,6 @@ def get_time_since_creation(time: str) -> str:
     elif minutes > 0:
         nb, name = minutes, 'minutes' if minutes > 1 else 'minute'
     else:
-        nb, name = seconds, 'seconds' if seconds > 1 else 'second'
+        nb, name = seconds, 'seconds' if seconds != 1 else 'second'
 
     return f'{nb} {name}'
