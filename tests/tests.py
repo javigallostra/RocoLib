@@ -96,6 +96,17 @@ class UtilsTests(unittest.TestCase):
         self.assertIs(type(image), str)
         self.assertEqual(image, f'/static/{path}{gym}/{section}.JPG')
 
+    def test_get_time_since_creation(self):
+        # Given
+        from utils.utils import get_time_since_creation
+        import datetime
+        test_year = 2021
+        test_time = f'{test_year}-01-01T00:00:00.0000'
+        current = datetime.datetime.now()
+        # When
+        time_since = get_time_since_creation(test_time)
+        # Then
+        self.assertEqual(time_since, f'{current.year - test_year} {"years" if current.year - test_year > 1 else "year"}')
 
 class BoulderCreationTests(unittest.TestCase):
 
