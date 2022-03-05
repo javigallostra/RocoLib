@@ -240,6 +240,16 @@ def load_data(request: Request) -> Tuple[dict, bool]:
 
 
 def get_time_since_creation(time: str) -> str:
+    """
+    Get the time since creation in a readable user friendly
+    format, where only the biggest unit (years, months, days, etc)
+    is used for the representation
+
+    :param time: creation time
+    :type time: str
+    :return: time since creation in a readable user friendly format
+    :rtype: str
+    """
     current = datetime.datetime.now()
     time = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
     diff = current - time
