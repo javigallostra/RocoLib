@@ -1,11 +1,11 @@
 {% extends "base_template.html" %}
 
-{% block title %}Sign up{% endblock %}
+{% block title %}{{ sign_up }}{% endblock %}
 
 {% block content %}
 <div class="container" style="margin-top: 1rem;">
     {% if error %}
-    <p style="color: red;"><strong>Error:</strong> {{ error }}
+    <p style="color: red;"><strong>{{ error }}:</strong> {{ error }}
         {% endif %}
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}

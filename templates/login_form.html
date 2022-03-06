@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{{ login }}{% endblock %}
 
 {% block content %}
 <div class="container" style="margin-top: 1rem;">
@@ -45,5 +45,5 @@
     </form>
 </div>
 <br>
-<div class="container">¿Don't have an account? <a href="{{ url_for('show_signup_form') }}">Sign up</a></div>
+<div class="container">{{ no_account }}<a href="{{ url_for('show_signup_form') }}">{{ sign_up }}</a></div>
 {% endblock %}

@@ -21,12 +21,12 @@
       </div>
       <div class="row">
         <div class="container">
-          <h5 style="margin-bottom:0.5rem;">Current Gym: </h5>
+          <h5 style="margin-bottom:0.5rem;">{{ current_gym_ }}: </h5>
           <p>{{ current_gym }}</p>
         </div>
       </div>
       <hr style="margin-top: 0; margin-bottom: 1rem;" />
-      <label>Select Gym: </label>
+      <label>{{ select_a_gym }}: </label>
       <div class="row gym-selector">
         <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/" method="POST">
@@ -45,7 +45,7 @@
               <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
                 <i id="location-icon" class="bi bi-geo-alt"></i>
                 <span class="button-text">
-                  Locate Nearest Gym
+                  {{ locate_nearest_gym }}
                 </span>
               </button>
             </div>
@@ -57,7 +57,7 @@
         <div style="margin-bottom:0.5rem;">
           <a href="/create?options=boulder" style="padding-right: 1rem; margin-left:0.9rem;">
             <button class="btn btn-primary">
-              <i class="bi bi-plus"></i> Create Boulder
+              <i class="bi bi-plus"></i> {{ create_boulder }}
             </button>
           </a>
         </div>
@@ -65,14 +65,14 @@
         <div class="button-row">
           <a href="/explore" style="padding-right: 1rem;">
             <button class="btn btn-primary">
-              <i class="bi bi-eye"></i> Explore
+              <i class="bi bi-eye"></i> {{ explore }}
             </button>
           </a>
         </div>
         <div class="button-row">
           <a href="/random_problem">
             <button class="btn btn-primary">
-              <i class="bi bi-dice-2"></i> Random problem
+              <i class="bi bi-dice-2"></i> {{ random_problem }}
             </button>
           </a>
         </div>
@@ -82,7 +82,7 @@
         <div class="container">
           <div class="row">
             <div class="col-sm-12 m-auto text-center">
-              <h4>Stats</h4>
+              <h4>{{ stats_ }}</h4>
             </div>
           </div>
           <div class="row">

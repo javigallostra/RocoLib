@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Save{% endblock %}
+{% block title %}{{ save }}{% endblock %}
 
 {% block content %}
 <div id="holder">
@@ -25,30 +25,29 @@
       <div class="row" style="display: grid; justify-content: center;">
         <div class="col-sm"></div>
         <div class="col-sm">
-          <h3>Save Boulder</h3>
+          <h3>{{ save_boulder }}</h3>
 
           <form action="/save" onsubmit="return validateForm()" method="POST">
-            Boulder name:<br />
+            {{ boulder_name }}:<br />
             <input id="name-field" type="text" name="name" value="" maxlength="60" required /><br /><br />
-            Creator:<br />
+            {{ creator }}:<br />
             <input id="creator-field" type="text" name="creator" value="{{ username }}" maxlength="60"
               required /><br /><br />
-            Suggested difficulty:<br />
+            {{ suggested_difficulty }}:<br />
             <input type="radio" name="difficulty" value="green" checked />
-            Green<br />
+            {{ green }}<br />
             <input type="radio" name="difficulty" value="blue" />
-            Blue<br />
+            {{ blue }}<br />
             <input type="radio" name="difficulty" value="yellow" />
-            Yellow<br />
+            {{ yellow }}<br />
             <input type="radio" name="difficulty" value="red" />
-            Red<br /><br />
-            Feet:<br />
-            <input type="radio" name="feet" value="follow" checked /> Feet
-            Follow Hands<br />
-            <input type="radio" name="feet" value="free" /> Free Feet<br />
+            {{ red }}<br /><br />
+            {{ feet }}:<br />
+            <input type="radio" name="feet" value="follow" checked /> {{ feet_follow_hands }}<br />
+            <input type="radio" name="feet" value="free" /> {{ free_feet }}<br />
             <input type="radio" name="feet" value="no-feet" />
-            Campus<br /><br />
-            Notes:<br />
+            {{ campus }}<br /><br />
+            {{ notes }}:<br />
             <textarea rows="5" cols="26" name="Notes"></textarea>
             <br /><br />
             <input type="submit" value="Submit" />

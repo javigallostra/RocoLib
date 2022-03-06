@@ -50,7 +50,7 @@
       <div class="container">
         <div class="row d-flex justify-content-center">
           <p style="margin-top: 0; margin-bottom: 0.5rem;">
-            <b>Notes:</b>
+            <b>{{ notes }}:</b>
           </p>
           <div class="col-lg-12 d-flex justify-content-center">
             {{ boulder_data.get('notes', '') }}
@@ -92,7 +92,7 @@
                 <p>
                   &bull;
                   <button type="submit" name="add_boulder_to_tick_list" value="add-boulder" class="custom-link">
-                    Add to ticklist!
+                    {{ add_to_ticklist }}!
                   </button>
                   <!-- Required fields -->
                   <input type="hidden" name="origin" value="{{ origin }}" />
@@ -108,7 +108,7 @@
                 <p>
                   &bull;
                   <button type="submit" name="mark_boulder_as_done" value="done" class="custom-link">
-                    Done!
+                    {{ done }}!
                   </button>
                   <!-- Required fields -->
                   <input type="hidden" name="is_done" value="true" />
@@ -125,7 +125,7 @@
               <p>
                 &bull;
                 <button type="button" onclick="downloadProblemAsImage()" class="custom-link">
-                  Export as image
+                  {{ export_as_image }}
                 </button>
               </p>
               </form>

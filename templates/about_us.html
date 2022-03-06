@@ -1,13 +1,12 @@
 {% extends "base_template.html" %}
 
-{% block title %}About us{% endblock %}
+{% block title %}{{ about_us }}{% endblock %}
 
 {% block content %}
 <div id="holder">
   <div id="body">
     <div class="container">
-      RocoLib is an opensource tool to help create, rate, and share bouldering problems and routes amongst climbing gyms
-      all over the world.
+      {{ app_description }}
     </div>
   </div>
 </div>

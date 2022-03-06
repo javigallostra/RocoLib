@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Create{% endblock %}
+{% block title %}{{ create }}{% endblock %}
 
 {% block content %}
 <div id="holder">
@@ -17,8 +17,8 @@
       <br />
       <div>
         <row>
-          <button>Done</button>
-          <button>Cancel</button>
+          <button>{{ done }}</button>
+          <button>{{ cancel }}</button>
         </row>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 import ast
 import datetime
@@ -34,6 +35,7 @@ SWAGGER_URL = '/api/docs'
 API_URL = '/api/docs/swagger.json'
 GENERATE_API_DOCS = True
 RUN_SERVER = True
+DEFAULT_LANG = 'en_US'
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -55,7 +57,6 @@ login_manager.login_view = 'login'
 
 def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
-
 
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
@@ -82,6 +83,13 @@ def favicon() -> Response:
         mimetype='image/vnd.microsoft.icon'
     )
 
+# load languages files
+LANG={}
+language_list = glob.glob("language/*.json")
+for lang in language_list:
+    lang_code = lang.split('/')[1].split('.')[0]
+    with open(lang, 'r', encoding='utf8') as file:
+        LANG[lang_code] = json.loads(file.read())
 
 def get_gym() -> str:
     """
@@ -92,6 +100,21 @@ def get_gym() -> str:
     gyms = db_controller.get_gyms(get_db())
     return gyms[0]['id']
 
+def choose_language(request):
+    """
+    Choose the first known user language else DEFAULT_LANG
+    """
+    user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
+    for u in user_lang:
+        for l in LANG.keys():
+            if u in l:
+                return l
+    return DEFAULT_LANG
+
+@app.context_processor
+def inject_langauge():
+    lang = choose_language(request)
+    return {**LANG[DEFAULT_LANG],**LANG[lang]}
 
 @app.route('/', methods=['GET', 'POST'])
 def home() -> str:
