@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Add new Gym{% endblock %}
+{% block title %}{{ add_new_gym }}{% endblock %}
 
 {% block content %}
 {% if not current_user.is_anonymous and current_user.is_admin %}

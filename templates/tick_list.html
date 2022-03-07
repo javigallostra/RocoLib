@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Tick List{% endblock %}
+{% block title %}{{ ticklist }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tick_list.css') }}" />
@@ -13,22 +13,22 @@
     <div class="container">
       <div class=" form-group row text-left">
         <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-          Sort by:
+          {{ sort_by }}:
         </div>
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
           <div class="row">
             <div class="col-6 col-md-4">
               <select class="form-control" id="sortTickListCriteria">
-                <option value="date-recent" selected>Creation Date</option>
-                <option value="rating">Rating</option>
-                <option value="difficulty">Difficulty</option>
-                <option value="section">Wall Section</option>
+                <option value="date-recent" selected>{{ creation_date }}</option>
+                <option value="difficulty">{{ difficulty }}</option>
+                <option value="rating">{{ rating }}</option>
+                <option value="section">{{ wall_section }}</option>
               </select>
             </div>
             <div class="col-6 col-md-4">
               <select class="form-control" id="sortTickListAscending">
-                <option value="increasing">Increasing</option>
-                <option value="decreasing" selected>Decreasing</option>
+                <option value="increasing">{{ increasing }}</option>
+                <option value="decreasing" selected>{{ decreasing }}</option>
               </select>
             </div>
           </div>
@@ -36,15 +36,15 @@
       </div>
       <div class="row text-left">
         <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-          Show:
+          {{ show }}:
         </div>
         <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
           <div class="row">
             <div class="col-6 col-md-4">
               <select class="form-control" id="hideDone">
-                <option value="all">All</option>
-                <option value="todo" selected>To Do</option>
-                <option value="done">Done</option>
+                <option value="all">{{ all }}</option>
+                <option value="todo" selected>{{ to_do }}</option>
+                <option value="done">{{ done }}</option>
               </select>
             </div>
           </div>
@@ -54,7 +54,7 @@
       <br />
       <br />
       <div class="d-flex justify-content-center">
-        <h5>No boulders in ticklist</h5>
+        <h5>{{ no_boulders_in_ticklist }}</h5>
       </div>
       {% endif %}
       <div id="tickList">

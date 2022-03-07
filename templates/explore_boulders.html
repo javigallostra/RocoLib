@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Explore{% endblock %}
+{% block title %}{{ explore }}{% endblock %}
 
 {% block content %}
 <br />
@@ -23,19 +23,19 @@
       </div>
       <div class="row text-left">
         <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1 mb-1">
-          Sort by:
+          {{ sort_by }}:
         </div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
           <div class="form-group row" style="margin: inherit; padding: inherit;">
             <select class="form-control col-5 col-md-4 mr-3" id="sortCriteria">
-              <option value="date-recent" selected>Creation Date</option>
-              <option value="rating">Rating</option>
-              <option value="difficulty">Difficulty</option>
-              <option value="section">Wall Section</option>
+              <option value="date-recent" selected>{{ creation_date }}</option>
+              <option value="rating">{{ rating }}</option>
+              <option value="difficulty">{{ difficulty }}</option>
+              <option value="section">{{ wall_section }}</option>
             </select>
             <select class="form-control col-5" id="sortAscending">
-              <option value="increasing">Increasing</option>
-              <option value="decreasing" selected>Decreasing</option>
+              <option value="increasing">{{ increasing }}</option>
+              <option value="decreasing" selected>{{ decreasing }}</option>
             </select>
           </div>
         </div>
@@ -43,14 +43,14 @@
       {% if is_authenticated %}
       <div class="row text-left mb-3 mt-3" style="padding-left: 2.75rem;">
         <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
-        <label class="form-check-label" for="hideDoneCheck">Hide done</label>
+        <label class="form-check-label" for="hideDoneCheck">{{ hide_done }}</label>
       </div>
       {% endif %}
       {% if not boulder_list %}
       <br />
       <br />
       <div class="d-flex justify-content-center">
-        <h5>No boulders matching the specified criteria</h5>
+        <h5>{{ no_boulder }}</h5>
       </div>
       {% endif %}
       <div id="bouldersList">
@@ -77,9 +77,9 @@
             <li>Section: {{ wall['name'] }}</li>
             {%- endif -%}
             {% endfor %}
-            <li>Creator: {{boulder["creator"]}}</li>
-            <li>Feet: {{boulder["feet"]}}</li>
-            <li>Added {{boulder["age"]}} ago</li>
+            <li>{{ creator }}: {{boulder["creator"]}}</li>
+            <li>{{ feet }}: {{boulder["feet"]}}</li>
+            <li>{{ added }} {{boulder["age"]}} {{ ago }}</li>
             <li>
               <div class="container">
                 <div class="row d-flex justify-content-left">

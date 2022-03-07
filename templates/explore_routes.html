@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Explore{% endblock %}
+{% block title %}{{ explore }}{% endblock %}
 
 {% block content %}
 <br />
@@ -36,9 +36,9 @@
           </div>
         </div>
         <ul>
-          <li>Section: {{route["section"]}}</li>
-          <li>Creator: {{route["creator"]}}</li>
-          <li>Feet: {{route["feet"]}}</li>
+          <li>{{ section }}: {{route["section"]}}</li>
+          <li>{{ creator}}: {{route["creator"]}}</li>
+          <li>{{ feet }}: {{route["feet"]}}</li>
         </ul>
       </div>
       {% endfor %}

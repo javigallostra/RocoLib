@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Create{% endblock %}
+{% block title %}{{ create }}{% endblock %}
 
 {% block head %}
 <link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
@@ -32,12 +32,12 @@
         <div class="col-sm">
           <div style="text-align: center;">
             <h3>
-              Section: {{ wall_name }}
+              {{ section }}: {{ wall_name }}
             </h3>
           </div>
           <div class="custom-control custom-switch">
             <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
-            <label class="custom-control-label" for="holdDetectionSwitch">Hold detection</label>
+            <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection }}</label>
           </div>
           <br />
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
@@ -46,19 +46,19 @@
         <br />
           <div class="col-sm">
             <div style="text-align: center;">
-              <h5>Hold type</h5>
+              <h5>{{ hold_type }}</h5>
               <div class="row">
                 <div class="col-4">
                   <input type="radio" name="hold_type" value="#00ff00" checked />
-                  Start<br />
+                  {{ start }}<br />
                 </div>
                 <div class="col-4">
                   <input type="radio" name="hold_type" value="#0000ff" />
-                  Normal<br />
+                  {{ normal }}<br />
                 </div>
                 <div class="col-4">
                   <input type="radio" name="hold_type" value="#ff0000" />
-                  Top<br />
+                  {{ top }}<br />
                 </div>
               </div>
             </div>
@@ -72,18 +72,18 @@
             <div class="row" style="display: flex;">
               <div class="col-4" style="display: grid;">
                 <button class="btn btn-outline-dark" onclick="undoMove()">
-                  Undo
+                  {{ undo }}
                 </button>
               </div>
               <div class="col-4" style="display: grid;">
                 <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
-                  <input class="btn btn-outline-dark" style="width:100%;" type="submit" value="Done" name="Submit"
+                  <input class="btn btn-outline-dark" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
                     onclick="return setHolds();" />
                   <input type="hidden" name="holds" id="holds-array" value="" />
                 </form>
               </div>
               <div class="col-4" style="display: grid;">
-                <a href="/" class="btn btn-outline-dark">Cancel</a>
+                <a href="/" class="btn btn-outline-dark">{{ cancel }}</a>
               </div>
             </div>
           </div>
