@@ -27,7 +27,7 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 ###### Some of the features on our TODO list are
 
 * Public API
-* Localize app
+* ~~Localize app~~ Thanks to [Pan6ora](https://github.com/Pan6ora)
 * Include a map to locate registered gyms
 * Show the number of repetitions of each problem
 * For registered users: Include a stats page
