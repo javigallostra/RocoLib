@@ -256,12 +256,11 @@ def get_time_since_creation(time: str) -> str:
 
     years, rem = divmod(diff.days, 365)
     months, days = divmod(rem, 30)
-    days = diff.days
     hours, rem = divmod(diff.seconds, 3600)
     minutes, seconds = divmod(rem, 60)
 
     if years > 0:
-        nb, name = years, 'year' if years > 1 else 'year'
+        nb, name = years, 'years' if years > 1 else 'year'
     elif months > 0:
         nb, name = months, 'months' if months > 1 else 'month'
     elif days > 0:
