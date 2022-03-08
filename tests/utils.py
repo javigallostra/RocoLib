@@ -29,7 +29,7 @@ class FakeRequest:
         return None
 
 
-def get_creds(file: str = 'creds_dev.txt') -> Union[str, None]:
+def get_creds(file: str = 'creds.local.txt') -> Union[str, None]:
     """
     Get DDBB credentials
     """
