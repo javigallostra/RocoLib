@@ -13,6 +13,7 @@ package-lock.json
 
 # credentials
 creds.txt
+creds.dev.txt
 
 # VSCode
 .vscode
