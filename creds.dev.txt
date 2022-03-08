@@ -1,0 +1,1 @@
+mongodb+srv://RocoLib:admin@cluster0.bo3ao.mongodb.net/myFirstDatabase?retryWrites=true&w=majority

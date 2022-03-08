@@ -3,7 +3,7 @@ import unittest
 from application import app
 
 from api.schemas import BoulderFields
-from config import CREDS, CREDS_DEV
+from config import CREDS, CREDS_LOCAL
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
@@ -24,7 +24,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         Set up method that will run before every test
         """
         set_creds_file(
-            CREDS_DEV)  # set development credentials for the application
+            CREDS_LOCAL)  # set development credentials for the application
         # connect to testing ddbb and get test client
         self.db = get_db()
         self.client = app.test_client()

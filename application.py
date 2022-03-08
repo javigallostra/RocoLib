@@ -3,7 +3,6 @@ import glob
 import json
 import ast
 import datetime
-import random
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
@@ -11,7 +10,7 @@ from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
-from api.blueprint import api_blueprint, boulder_create
+from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
 from werkzeug.utils import secure_filename
@@ -558,8 +557,9 @@ if __name__ == '__main__':
     if GENERATE_API_DOCS:
         generate_api_docs(app)
     if RUN_SERVER:
-        set_creds_file(CREDS)
         if DOCKER_ENV == "True":
+            set_creds_file(CREDS_DEV)
             app.run(debug=DEBUG, host='0.0.0.0', port=80)
         else:
+            set_creds_file(CREDS)
             app.run(debug=DEBUG, port=PORT)

@@ -1,7 +1,8 @@
 from sys import argv
 
 CREDS = 'creds.txt'
-CREDS_DEV = 'creds_dev.txt'
+CREDS_DEV = 'creds.dev.txt'
+CREDS_LOCAL = 'creds.local.txt'
 
 PORT = 5050
 
