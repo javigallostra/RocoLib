@@ -2,6 +2,7 @@
 from typing import List, Tuple
 from pymongo.database import Database
 from db.mongodb_controller import get_gyms, get_gym_walls
+import bson
 
 
 def is_gym_valid(gym_id: str, db: Database) -> bool:
@@ -39,3 +40,28 @@ def validate_gym_and_section(gym_id: str, wall_section: str, db: Database) -> Tu
             {'wall_section': f'Wall section {wall_section} does not exist in gym {gym_id}'}
         ) if not valid_section else None
     return valid_gym and valid_section, errors
+
+def is_rating_valid(rating: int) -> bool:
+    """
+    Validate that the provided rating is valid,
+    which means an int between 0 and 5.
+
+    :param rating: boulder rating
+    :type rating: int
+    :return: rating validity
+    :rtype: bool
+    """
+    if rating in range(0, 6) and type(rating) == int:
+        return True
+    return False
+
+def is_bson_id_valid(id: str) -> bool:
+    """
+    Validate that the provided id is valid
+
+    :param id: id to validate
+    :type id: str
+    :return: id validity
+    :rtype: bool
+    """
+    return bson.objectid.ObjectId.is_valid(id)

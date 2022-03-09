@@ -1,5 +1,3 @@
-import os
-
 from config import PORT, DOCKER_ENV
 
 from apispec import APISpec
@@ -115,6 +113,27 @@ class CreateBoulderErrorResponse(Schema):
     """
     created = fields.Bool()
     errors = fields.Dict()
+
+class RateBoulderRequestBody(Schema):
+    """
+    Data Schema to rate a boulder
+    """
+    rating = fields.Int(required=True)
+
+class RateBoulderResponseBody(Schema):
+    """
+    Data schema of the response to a successful boulder rating request
+    """
+    _id = fields.Str()
+    rated = fields.Bool()
+
+
+class RateBoulderErrorResponse(Schema):
+    """
+    Data schema of the response to a unsuccessful boulder rating request
+    """
+    errors = fields.Dict()
+    rated = fields.Bool()
 
 
 class AuthenticationRequestBody(Schema):

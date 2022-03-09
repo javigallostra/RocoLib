@@ -83,7 +83,7 @@ def favicon() -> Response:
     )
 
 # load languages files
-LANG={}
+LANG = {}
 language_list = glob.glob("language/*.json")
 for lang in language_list:
     lang_code = lang.split(os.path.sep)[1].split('.')[0]

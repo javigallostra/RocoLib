@@ -1,3 +1,4 @@
+from logging import error
 from typing import Tuple
 from flask import Blueprint, jsonify, send_from_directory, request, g, current_app
 from flask_httpauth import HTTPTokenAuth
@@ -7,7 +8,7 @@ import ast
 import datetime
 from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
-from api.validation import validate_gym_and_section
+from api.validation import is_bson_id_valid, is_gym_valid, is_rating_valid, validate_gym_and_section
 from api.schemas import BoulderFields
 from utils.utils import get_db
 from models import User
@@ -376,6 +377,89 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
 
+@api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>/rate', methods=['POST'])
+def rate_boulder(gym_id: str, boulder_id: str) -> Response:
+    """Rate a boulder problem
+    ---
+    post:
+      tags:
+        - Boulders
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: BoulderIDParameter
+      requestBody:
+        description: Boulder rating
+        required: true
+        content:
+          application/json:
+            schema: RateBoulderRequestBody
+          application/x-www-form-urlencoded:
+            schema: RateBoulderRequestBody
+          text/json:
+            schema: RateBoulderRequestBody
+          text/plain:
+            schema: RateBoulderRequestBody
+      responses:
+        201:
+          description:
+            Rating successful
+          content:
+            text/plain:
+              schema: RateBoulderResponseBody
+            text/json:
+              schema: RateBoulderResponseBody
+            application/json:
+              schema: RateBoulderResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: RateBoulderErrorResponse
+            text/json:
+              schema: RateBoulderErrorResponse
+            application/json:
+              schema: RateBoulderErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    if request.method == 'POST':
+      data, _ = load_data(request)
+      # validate gym
+      db = get_db()
+      if not is_gym_valid(gym_id, db):
+        return jsonify(dict(rated=False, errors={'gym_id' : 'Gym not found'})), 404
+      # validate rating
+      if not is_rating_valid(data.get('rating', -1)):
+        return jsonify(dict(rated=False, errors={'rating': 'Rating not valid, should be an int between 0 and 5'})), 400
+      if not is_bson_id_valid(boulder_id):
+        return jsonify(dict(rated=False, errors={'boulder_id': 'Boulder ID not valid'})), 400
+      
+      boulder = db_controller.get_boulder_by_id(gym_id, boulder_id, db)
+      
+      if not bool(boulder): # boulder is empty -> it wasn't found
+        return jsonify(dict(rated=False, errors={'boulder_id': 'Boulder not found'})), 404
+
+      # rate boulder, update stats
+      boulder['rating'] = (boulder['rating'] * boulder['raters'] +
+                            int(data.get('rating'))) / (boulder['raters'] + 1)
+      boulder['raters'] += 1
+
+      db_controller.update_boulder_by_id(
+          gym=gym_id,
+          boulder_id=boulder_id,
+          data=boulder,
+          database=db
+      )
+
+      return jsonify(dict(rated=True, _id=boulder_id)), 200
+    return jsonify(dict(rated=False, errors={'method': 'Invalid HTTP method. This endpoint only accepts POST requests'})), 400
 
 @api_blueprint.route('/user/signup', methods=['POST'])
 def new_user() -> Response:
@@ -588,7 +672,7 @@ def get_user_ticklist() -> Response:
     return jsonify(dict(boulders=ticklist_boulders)), 200
 
 
-@api_blueprint.route('/user/resource', methods=['GET'])
+@api_blueprint.route('/user/test-auth', methods=['GET'])
 @auth.login_required
 def get_resource() -> Response:
     """
