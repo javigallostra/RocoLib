@@ -588,7 +588,7 @@ def get_user_ticklist() -> Response:
     return jsonify(dict(boulders=ticklist_boulders)), 200
 
 
-@api_blueprint.route('/user/resource', methods=['GET'])
+@api_blueprint.route('/user/test-auth', methods=['GET'])
 @auth.login_required
 def get_resource() -> Response:
     """
