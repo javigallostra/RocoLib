@@ -1,11 +1,15 @@
 Changelog
 =========
 
+
 0.1.0 - (unreleased)
 ======================
 
+
 Features
 --------
+
+- #123 Add changelog
 - #121 API endpoint to rate boulders
 - #116 Add language support and french translation
 - #114 Display time since creation in boulders list
@@ -25,8 +29,10 @@ Features
 - #20 Support for multiple gyms
 - #10 Problem drawing
 
+
 Fixes
 -----
+
 - #118 Remove production DDBB credentials from Docker image
 - #117 Fix `get_time_since_creation` function
 - #112 Fix going back from `random_problem` page
