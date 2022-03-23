@@ -45,7 +45,7 @@ function draw(event) {
 function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
   // Test if click inside hold
   var hold_found = false;
-  if (holdDetectionActive) {
+  if (holdDetectionActive && polys.length > 0) {
     for (let index = 0; index < polys.length; index++) {
       var poly = {
         type: 'Polygon',
@@ -58,7 +58,7 @@ function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
       }
     }
   }
-  if (hold_found == false || holdDetectionActive == false) {
+  if (hold_found == false || holdDetectionActive == false || polys.length == 0) {
     // Draw circle
     ctx.globalCompositeOperation = "source-over";
     ctx.beginPath();
@@ -339,12 +339,18 @@ function setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId) {
   var ctx = cnvs.getContext("2d");
   ctx.width = cnvs.width;
   ctx.height = cnvs.height;
-  if (holdDetectionActive) {
-    fillCanvasWithGray(ctx, cnvs);
-  }
 
   var wall_hold_data = holdData;
   var parsed_data = JSON.parse(wall_hold_data);
+  
+  if (holdDetectionActive) {
+    fillCanvasWithGray(ctx, cnvs);
+  }
+  
+  if (parsed_data === null) { // No hold data
+    return;
+  }
+
   polys = parsed_data.holds;
   ratio = img.offsetWidth / img.naturalWidth;
   for (let index = 0; index < polys.length; index++) {
