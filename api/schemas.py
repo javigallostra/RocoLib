@@ -31,6 +31,7 @@ class WallSchema(Schema):
     image = fields.Str()
     name = fields.Str()
     radius = fields.Float()
+    latest = fields.Bool()
 
 
 class GymNameSchema(Schema):

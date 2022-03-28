@@ -93,6 +93,11 @@ def get_gym_walls(gym_id: str) -> Response:
       parameters:
       - in: path
         schema: GymIDParameter
+      - in: query
+        name: latest
+        schema:
+          type: boolean
+        description: if true, get only latest wall versions. Defaults to false
       responses:
         200:
           description:
@@ -114,7 +119,8 @@ def get_gym_walls(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db()))), 200
+    latest = request.args.get('latest', False)
+    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db(), latest=latest))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
