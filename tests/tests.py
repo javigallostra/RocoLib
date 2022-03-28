@@ -3,7 +3,7 @@ import unittest
 import random
 from application import app
 
-from api.schemas import CreateBoulderRequestBody, CreateBoulderRequestValidator, BoulderFields
+from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 
 # class BaseAPITestClass(unittest.TestCase):
