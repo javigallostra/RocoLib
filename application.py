@@ -138,7 +138,8 @@ def create() -> str:
     """
     Create page handler.
     """
-    walls = db_controller.get_gym_walls(get_gym(), get_db())
+    latest = request.args.get('latest', False)
+    walls = db_controller.get_gym_walls(get_gym(), get_db(), latest=latest)
     for wall in walls:
         wall['image_path'] = utils.get_wall_image(
             get_gym(), wall['image'], WALLS_PATH)

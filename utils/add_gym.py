@@ -74,8 +74,12 @@ def create_walls_collection(gym_code: str, radius: float = 0.02) -> None:
     # Prompt user for wall names
     for wall in os.listdir(f'{walls_path}/{gym_code}'):
         name = input(f'Wall name for image {wall}: ')
-        wall_data = {'image': os.path.splitext(
-            wall)[0], 'name': name, 'radius': radius}
+        wall_data = {
+            'image': os.path.splitext(wall)[0], 
+            'name': name, 
+            'radius': radius, 
+            'latest': True
+        }
         gym_collection.insert_one(wall_data)
 
 

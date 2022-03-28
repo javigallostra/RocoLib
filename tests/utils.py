@@ -77,8 +77,12 @@ def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
     if f'{gym_code}_walls' in db.list_collection_names():
         return
     gym_collection = db[f'{gym_code}_walls']
-    wall_data = {'image': wall_section,
-                 'name': wall_name, 'radius': wall_radius}
+    wall_data = {
+        'image': wall_section,
+        'name': wall_name, 
+        'radius': wall_radius,
+        'latest': True
+    }
     gym_collection.insert_one(wall_data)
 
 

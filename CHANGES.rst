@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #125 Add wall versioning, list only latest sets for problem creation
 - #123 Add changelog
 - #121 API endpoint to rate boulders
 - #116 Add language support and french translation

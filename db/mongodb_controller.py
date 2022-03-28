@@ -1,4 +1,3 @@
-from pdb import set_trace
 from typing import Optional
 
 import functools
@@ -73,13 +72,15 @@ def get_gyms(database: Database) -> list[Data]:
 
 
 @serializable
-def get_gym_walls(gym: str, database: Database) -> list[Data]:
+def get_gym_walls(gym: str, database: Database, latest: bool=False) -> list[Data]:
     """
     Return the list of available walls for a specific
     Gym
     """
-    return list(database[f'{gym}_walls'].find())
-
+    walls = list(database[f'{gym}_walls'].find())
+    if latest:
+        walls = [wall for wall in walls if wall['latest'] == True]
+    return walls
 
 def get_gym_pretty_name(gym: str, database: Database) -> str:
     """
