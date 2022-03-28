@@ -51,7 +51,7 @@
             {% else %}
             <li>{{ current_user.name }}</li>
             <li> | </li>
-            <li><a href="{{ url_for('tick_list') }}">{{ tick_list }}</a></li>
+            <li><a href="{{ url_for('tick_list') }}">{{ ticklist }}</a></li>
             <li> | </li>
             <li><a href="{{ url_for('logout') }}">{{ logout }}</a></li>
             {% endif %}
