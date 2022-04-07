@@ -55,7 +55,7 @@
       {% endif %}
       <div id="bouldersList" class="accordion" style="padding-top: 1.5rem;">
         {% for boulder in boulder_list %}
-        <div class="card" id="{{ boulder['safe_name'] }}">
+        <div class="card" id="{{ boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
           <div class="card-header" id="{{ boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
               <div class="col-11 col-md-4" style="padding-right: 0px;">
@@ -75,7 +75,7 @@
               </div>
               <div class="col-1 col-md-8" style="padding-left: 0px;">
                 <button class="btn btn-link" 
-                        style="width: 100%; padding-left: 1rem; display: flex; justify-content: end;" 
+                        style="width: 100%; padding-left: 1rem; display: flex; justify-content: end; text-decoration: none;" 
                         type="button" 
                         data-toggle="collapse" 
                         data-target="#{{ boulder['safe_name'] + '-collapse' }}" 
