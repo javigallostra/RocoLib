@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #127 Show problems as collapsible cards in problem lists
 - #125 Add wall versioning, list only latest sets for problem creation
 - #123 Add changelog
 - #121 API endpoint to rate boulders
