@@ -10,7 +10,7 @@ from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NA
 from tests.tests_config import TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
 from utils.utils import set_creds_file
-from tests.utils import add_user_with_ticklist, drop_users, get_db
+from tests.utils import add_user_with_ticklist, drop_users, get_db_connection
 from tests.utils import create_walls_collection, add_wall, drop_boulders, add_boulder
 
 class BaseIntegrationTestClass(unittest.TestCase):
@@ -26,7 +26,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
         set_creds_file(
             CREDS_LOCAL)  # set development credentials for the application
         # connect to testing ddbb and get test client
-        self.db = get_db()
+        self.db = get_db_connection()
         self.client = app.test_client()
         # create test gym collection
         create_walls_collection(
