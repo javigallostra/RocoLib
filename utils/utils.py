@@ -56,7 +56,7 @@ def get_creds(file: str) -> Union[str, None]:
     return creds
 
 
-def get_db() -> Database:
+def get_db_connection() -> Database:
     """
     Opens a new database connection if there is none yet for the
     current application context.
