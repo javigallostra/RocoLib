@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #128 Fix fields rendering in user's ticklist problem cards
 - #127 Show problems as collapsible cards in problem lists
 - #125 Add wall versioning, list only latest sets for problem creation
 - #123 Add changelog
