@@ -109,10 +109,10 @@ def choose_language(request):
     Choose the first known user language else DEFAULT_LANG
     """
     user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
-    for u in user_lang:
-        for l in LANG.keys():
-            if u in l:
-                return l
+    
+    lang_matches = set(user_lang).intersection(LANG.keys())    
+    if lang_matches:
+        return lang_matches.pop()
     return DEFAULT_LANG
 
 @app.context_processor
