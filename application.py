@@ -100,7 +100,8 @@ def get_gym() -> str:
     """
     if session.get('gym', ''):
         return session['gym']
-    gyms = db_controller.get_gyms(get_db_connection())
+    # gyms = db_controller.get_gyms(get_db_connection())
+    gyms = db_controller.get_gyms(g.db)
     return gyms[0]['id']
 
 def choose_language(request):
