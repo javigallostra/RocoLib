@@ -5,7 +5,7 @@ import ast
 import datetime
 from typing import NoReturn, Union
 
-from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack
+from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, g
 from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -22,7 +22,7 @@ import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
 from utils.generate_open_api_spec import generate_api_docs
-from utils.utils import get_db, set_creds_file
+from utils.utils import get_db_connection, set_creds_file
 
 import ticklist_handler
 
@@ -57,6 +57,10 @@ login_manager.login_view = 'login'
 def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
+@app.before_request
+def open_database_connection():
+    g.db = get_db_connection()
+
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
     """
@@ -70,7 +74,7 @@ def close_db_connection(exception) -> None:
 # user loading callback
 @login_manager.user_loader
 def load_user(user_id) -> Union[User, None]:
-    return User.get_by_id(user_id, get_db())
+    return User.get_by_id(user_id, get_db_connection())
 
 
 # Load favicon
@@ -96,7 +100,8 @@ def get_gym() -> str:
     """
     if session.get('gym', ''):
         return session['gym']
-    gyms = db_controller.get_gyms(get_db())
+    # gyms = db_controller.get_gyms(get_db_connection())
+    gyms = db_controller.get_gyms(g.db)
     return gyms[0]['id']
 
 def choose_language(request):
@@ -104,10 +109,10 @@ def choose_language(request):
     Choose the first known user language else DEFAULT_LANG
     """
     user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
-    for u in user_lang:
-        for l in LANG.keys():
-            if u in l:
-                return l
+    
+    lang_matches = set(user_lang).intersection(LANG.keys())    
+    if lang_matches:
+        return lang_matches.pop()
     return DEFAULT_LANG
 
 @app.context_processor
@@ -120,7 +125,7 @@ def home() -> str:
     """
     Homepage handler.
     """
-    gyms = db_controller.get_gyms(get_db())
+    gyms = db_controller.get_gyms(g.db)
     if request.method == 'POST':
         session['gym'] = request.form.get('gym')
     return render_template(
@@ -128,7 +133,7 @@ def home() -> str:
         gyms=gyms,
         selected=get_gym(),
         current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
-        stats=utils.get_stats(get_db())
+        stats=utils.get_stats(g.db)
     )
 
 
@@ -139,7 +144,7 @@ def create() -> str:
     Create page handler.
     """
     latest = request.args.get('latest', False)
-    walls = db_controller.get_gym_walls(get_gym(), get_db(), latest=latest)
+    walls = db_controller.get_gym_walls(get_gym(), g.db, latest=latest)
     for wall in walls:
         wall['image_path'] = utils.get_wall_image(
             get_gym(), wall['image'], WALLS_PATH)
@@ -171,7 +176,7 @@ def explore() -> str:
     """
     Explore page handler.
     """
-    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), get_db()))
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
@@ -189,7 +194,7 @@ def explore_boulders() -> str:
                 request.form.get('filters')
             ).items() if val not in ['all', '']
         }
-        boulders = utils.get_boulders_list(gym, filters, get_db(), session)
+        boulders = utils.get_boulders_list(gym, filters, g.db, session)
 
     elif request.method == 'GET':
         gym = request.args.get('gym', '')
@@ -197,8 +202,8 @@ def explore_boulders() -> str:
             gym = get_gym()
         filters = None
 
-    boulders = utils.get_boulders_list(gym, filters, get_db(), session)
-    gym_walls = db_controller.get_gym_walls(gym, get_db())
+    boulders = utils.get_boulders_list(gym, filters, g.db, session)
+    gym_walls = db_controller.get_gym_walls(gym, g.db)
 
     if current_user.is_authenticated:
         done_boulders = [
@@ -228,7 +233,7 @@ def rate_boulder() -> Union[Response, NoReturn]:
         boulder = db_controller.get_boulder_by_name(
             gym=gym,
             name=boulder_name,
-            database=get_db()
+            database=g.db
         )
         # Update stats
         boulder['rating'] = (boulder['rating'] * boulder['raters'] +
@@ -238,7 +243,7 @@ def rate_boulder() -> Union[Response, NoReturn]:
             gym=gym,
             boulder_id=boulder['_id'],
             data=boulder,
-            database=get_db()
+            database=g.db
         )
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
     return abort(400)
@@ -263,13 +268,13 @@ def load_boulder() -> Union[str, NoReturn]:
             boulder = db_controller.get_boulder_by_name(
                 gym=request.args.get('gym'),
                 name=request.args.get('name'),
-                database=get_db()
+                database=g.db
             )
             boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
             boulder['safe_name'] = secure_filename(boulder['name'])
             boulder['radius'] = utils.get_wall_radius(
                 session,
-                get_db(),
+                g.db,
                 request.args.get('gym') + '/' + boulder['section'])
             boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
             boulder['gym'] = request.args.get('gym')
@@ -309,14 +314,14 @@ def random_problem() -> str:
     Show a random problem
     """
     # get random boulder from gym
-    boulder = db_controller.get_random_boulder(get_gym(), get_db())
+    boulder = db_controller.get_random_boulder(get_gym(), g.db)
     if not boulder:
         return abort(404)
     boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
     boulder['safe_name'] = secure_filename(boulder['name'])
     boulder['radius'] = utils.get_wall_radius(
         session,
-        get_db(),
+        g.db,
         get_gym() + '/' + boulder['section'])
     boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
     boulder['gym'] = get_gym()
@@ -360,7 +365,7 @@ def wall_section(wall_section) -> str:
         template = 'create_route.html'
 
     if not session.get('walls_radius', ''):
-        session['walls_radius'] = db_controller.get_walls_radius_all(get_db())
+        session['walls_radius'] = db_controller.get_walls_radius_all(g.db)
 
     # load hold data
     filename = utils.get_wall_json(get_gym(), wall_section, WALLS_PATH, app.static_folder)
@@ -372,10 +377,10 @@ def wall_section(wall_section) -> str:
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
         wall_name=db_controller.get_gym_section_name(
-            get_gym(), wall_section, get_db()),
+            get_gym(), wall_section, g.db),
         section=wall_section,
         radius=utils.get_wall_radius(
-            session, get_db(), get_gym() + '/' + wall_section),
+            session, g.db, get_gym() + '/' + wall_section),
         hold_data=hold_data
     )
 
@@ -392,7 +397,7 @@ def save() -> Response:
             if key.lower() == 'holds':
                 data[key.lower()] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        db_controller.put_boulder(data, gym=get_gym(), database=get_db())
+        db_controller.put_boulder(data, gym=get_gym(), database=g.db)
     return redirect('/')
 
 
@@ -435,7 +440,7 @@ def login() -> Union[str, Response]:
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.get_user_by_email(form.email.data, get_db())
+        user = User.get_user_by_email(form.email.data, g.db)
         if user is not None and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
@@ -458,14 +463,14 @@ def show_signup_form() -> Union[str, Response]:
         name = form.name.data
         email = form.email.data
         password = form.password.data
-        user = User.get_user_by_email(email, get_db())
+        user = User.get_user_by_email(email, g.db)
         if user is not None:
             error = f'The email {email} is already registered'
         else:
             # Create and save user
             user = User(name=name, email=email)
             user.set_password(password)
-            user.save(get_db())
+            user.save(g.db)
             # Keep user logged in
             login_user(user, remember=True)
             next_page = request.args.get('next', None)
@@ -497,18 +502,18 @@ def tick_list() -> Union[str, Response]:
         if 'add_boulder_to_tick_list' in request.form:
             # Just add boulder to ticklist, it hasn't been climbed yet
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                request, current_user, get_db())
+                request, current_user, g.db)
         elif 'mark_boulder_as_done' in request.form:
             # Add boulder to ticklist if not present, mark as done or add new
             # climbed date
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                request, current_user, get_db(), mark_as_done_clicked=True
+                request, current_user, g.db, mark_as_done_clicked=True
             )
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
             return redirect(url_for('explore_boulders', gym=get_gym()))
     boulder_list, walls_list = ticklist_handler.load_user_ticklist(
-        current_user, get_db())
+        current_user, g.db)
     return render_template(
         'tick_list.html',
         boulder_list=boulder_list,
@@ -523,7 +528,7 @@ def delete_ticklist_problem() -> Union[Response, NoReturn]:
     """
     if request.method == 'POST':
         current_user.ticklist = ticklist_handler.delete_problem_from_ticklist(
-            request, current_user, get_db())
+            request, current_user, g.db)
         return redirect(url_for('tick_list'))
     return abort(400)
 
@@ -538,7 +543,7 @@ def get_nearest_gym() -> Response:
     closest_gym = utils.get_closest_gym(
         float(dict(request.form)['longitude']),
         float(dict(request.form)['latitude']),
-        get_db()
+        g.db
     )
     # Set closest gym as actual gym
     session['gym'] = closest_gym

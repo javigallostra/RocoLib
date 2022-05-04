@@ -40,7 +40,7 @@ def get_creds(file: str = 'creds.local.txt') -> Union[str, None]:
     return creds
 
 
-def get_db() -> database.Database:
+def get_db_connection() -> database.Database:
     """
     Opens a new database connection if there is none yet for the
     current application context.

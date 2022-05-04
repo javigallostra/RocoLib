@@ -7,7 +7,7 @@ from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from api.validation import is_bson_id_valid, is_gym_valid, is_rating_valid, validate_gym_and_section
 from api.schemas import BoulderFields
-from utils.utils import get_db
+from utils.utils import get_db_connection
 from models import User
 import ticklist_handler
 from utils.utils import load_data
@@ -34,12 +34,15 @@ def verify_token(token: str) -> bool:
   :return: Token validity. True if valid, False otherwise
   :rtype: bool
   """
-  user = User.verify_auth_token(token, current_app, get_db())
+  user = User.verify_auth_token(token, current_app, g.db)
   if user is None:
     return False
   g.user = user
   return True
 
+@api_blueprint.before_request
+def open_database_connection():
+    g.db = get_db_connection()
 
 @api_blueprint.route('/docs/swagger.json')
 def api_docs() -> Response:
@@ -77,7 +80,7 @@ def get_gyms() -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(gyms=db_controller.get_gyms(get_db()))), 200
+    return jsonify(dict(gyms=db_controller.get_gyms(g.db))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/walls', methods=['GET'])
@@ -117,7 +120,7 @@ def get_gym_walls(gym_id: str) -> Response:
             Server Error
     """
     latest = request.args.get('latest', False)
-    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, get_db(), latest=latest))), 200
+    return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, g.db, latest=latest))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/name', methods=['GET'])
@@ -151,7 +154,7 @@ def get_gym_pretty_name(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, get_db()))), 200
+    return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, g.db))), 200
 
 
 @api_blueprint.route('/gym/<string:gym_id>/<string:wall_section>/name', methods=['GET'])
@@ -187,7 +190,7 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, get_db()))), 200
+    return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, g.db))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
@@ -221,7 +224,7 @@ def get_gym_boulders(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, get_db()).get('Items', []))), 200
+    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, g.db).get('Items', []))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>', methods=['GET'])
@@ -257,7 +260,7 @@ def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulder=db_controller.get_boulder_by_id(gym_id, boulder_id, get_db()))), 200
+    return jsonify(dict(boulder=db_controller.get_boulder_by_id(gym_id, boulder_id, g.db))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/name/<string:boulder_name>', methods=['GET'])
@@ -293,7 +296,7 @@ def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, get_db()))), 200
+    return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, g.db))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
@@ -350,7 +353,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
     """
     if request.method == 'POST':
         # Validate gym and wall section
-        db = get_db()
+        db = g.db
         boulder_fields = BoulderFields()
         valid, errors = validate_gym_and_section(gym_id, wall_section, db)
         if not valid:
@@ -435,7 +438,7 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
     if request.method == 'POST':
       data, _ = load_data(request)
       # validate gym
-      db = get_db()
+      db = g.db
       if not is_gym_valid(gym_id, db):
         return jsonify(dict(rated=False, errors={'gym_id' : 'Gym not found'})), 404
       # validate rating
@@ -533,14 +536,14 @@ def new_user() -> Response:
     }
     if username is None or password is None or email is None:
         return jsonify(dict(errors=[errors[key] for key in errors.keys() if data.get(key, None) is None])), 400
-    if User.get_user_by_username(username, get_db()) is not None:
+    if User.get_user_by_username(username, g.db) is not None:
         return jsonify(dict(errors=['Username already exists'])), 400
-    if User.get_user_by_email(email, get_db()) is not None:
+    if User.get_user_by_email(email, g.db) is not None:
         return jsonify(dict(errors=['Email already exists'])), 400
     # Create and save user
     user = User(name=username, email=email)
     user.set_password(password)
-    user.save(get_db())
+    user.save(g.db)
     return jsonify({'username': user.name}), 201
 
 
@@ -609,9 +612,9 @@ def get_auth_token() -> Response:
     password = user_data.get('password')
     user = None
     if username:
-      user = User.get_user_by_username(username, get_db())
+      user = User.get_user_by_username(username, g.db)
     elif email:
-      user = User.get_user_by_email(email, get_db())
+      user = User.get_user_by_email(email, g.db)
     if user is not None and user.check_password(password):
         token = user.generate_auth_token(current_app)
         return jsonify(dict(token=token.decode('ascii'))), 200
@@ -671,7 +674,7 @@ def get_user_ticklist() -> Response:
     # and stored in the g object, which is accessible and global
     # while processing the request
     ticklist_boulders, _ = ticklist_handler.load_user_ticklist(
-        g.user, get_db())
+        g.user, g.db)
     return jsonify(dict(boulders=ticklist_boulders)), 200
 
 
