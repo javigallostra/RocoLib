@@ -30,8 +30,9 @@ import ticklist_handler
 app = Flask(__name__)
 
 DEBUG = True
-SWAGGER_URL = '/api/docs'
-API_URL = '/api/docs/swagger.json'
+API_VERSION = 'v1'
+SWAGGER_URL = f'/api/{API_VERSION}/docs'
+API_URL = f'/api/{API_VERSION}/docs/swagger.json'
 GENERATE_API_DOCS = True
 RUN_SERVER = True
 DEFAULT_LANG = 'en_US'

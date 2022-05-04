@@ -12,6 +12,7 @@ from models import User
 import ticklist_handler
 from utils.utils import load_data
 
+API_VERSION = 'v1'
 
 auth = HTTPTokenAuth(scheme='Bearer')
 
@@ -20,7 +21,7 @@ api_blueprint = Blueprint(
     __name__,
     static_folder='static',
     template_folder='templates',
-    url_prefix='/api'
+    url_prefix=f'/api/{API_VERSION}'
 )
 
 
