@@ -13,6 +13,8 @@ from utils.utils import set_creds_file
 from tests.utils import add_user_with_ticklist, drop_users, get_db_connection
 from tests.utils import create_walls_collection, add_wall, drop_boulders, add_boulder
 
+API_VERSION = 'v1'
+
 class BaseIntegrationTestClass(unittest.TestCase):
     """
     Base Class for integration tests. Connects to DDBB and creates
@@ -80,7 +82,7 @@ class APITests(BaseIntegrationTestClass):
         Get available gyms
         """
         # Given
-        route = '/api/gym/list'
+        route = f'/api/{API_VERSION}/gym/list'
         # When
         resp = self.client.get(route)
         # Then
@@ -92,7 +94,7 @@ class APITests(BaseIntegrationTestClass):
         Get available walls from a gym
         """
         # Given
-        route = f'/api/gym/{TEST_GYM_CODE}/walls'
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/walls'
         # When
         resp = self.client.get(route)
         # Then
@@ -115,7 +117,7 @@ class APITests(BaseIntegrationTestClass):
         }
         # When
         resp = self.client.post(
-            f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
+            f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
         # Then
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.json['created'], True)
@@ -126,7 +128,7 @@ class APITests(BaseIntegrationTestClass):
         """
         # Given
         non_existing_gym = 'blabla'
-        route = f'/api/boulders/{non_existing_gym}/{TEST_WALL_SECTION}/create'
+        route = f'/api/{API_VERSION}/boulders/{non_existing_gym}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
@@ -148,7 +150,7 @@ class APITests(BaseIntegrationTestClass):
         """
         # Given
         non_existing_wall_section = 'blabla'
-        route = f'/api/boulders/{TEST_GYM_CODE}/{non_existing_wall_section}/create'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{non_existing_wall_section}/create'
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
@@ -169,7 +171,7 @@ class APITests(BaseIntegrationTestClass):
         Create a boulder without data
         """
         # Given
-        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         data = {}
         errors = {
             'creator': ['Missing data for required field.'],
@@ -191,7 +193,7 @@ class APITests(BaseIntegrationTestClass):
         Create a boulder with invalid data
         """
         # Given
-        route = f'/api/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
@@ -214,7 +216,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user without a username.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'email': TEST_EMAIL,
             'password': TEST_PASSWORD
@@ -230,7 +232,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user without a password.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'email': TEST_EMAIL,
             'username': TEST_USERNAME
@@ -246,7 +248,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user without an email.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'password': TEST_PASSWORD,
             'username': TEST_USERNAME
@@ -262,7 +264,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user without an email.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {}
         # When
         resp = self.client.post(route, json=data)
@@ -278,7 +280,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user with an already taken username.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'password': TEST_PASSWORD,
             'username': TEST_USERNAME,
@@ -295,7 +297,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user with an already taken email.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'password': TEST_PASSWORD,
             'username': 'fake_username',
@@ -312,7 +314,7 @@ class APITests(BaseIntegrationTestClass):
         Create a user with valid data.
         """
         # Given
-        route = f'/api/user/signup'
+        route = f'/api/{API_VERSION}/user/signup'
         data = {
             'password': 'fake_password',
             'username': 'fake_username',
@@ -329,12 +331,12 @@ class APITests(BaseIntegrationTestClass):
         Get the test user's ticklist
         """
         # Given
-        route = f'/api/user/ticklist'
+        route = f'/api/{API_VERSION}/user/ticklist'
         user_data = {
             'username': TEST_USERNAME,
             'password': TEST_PASSWORD
         }
-        resp = self.client.post('/api/user/auth', json=user_data)
+        resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
         token = resp.json.get('token')
         # When
         resp = self.client.get(route, headers={'Authorization': f'Bearer {token}'})
