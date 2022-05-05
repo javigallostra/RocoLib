@@ -55,15 +55,15 @@
       {% endif %}
       <div id="bouldersList" class="accordion" style="padding-top: 1.5rem;">
         {% for boulder in boulder_list %}
-        <div class="card" id="{{ boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
-          <div class="card-header" id="{{ boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
+        <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
+          <div class="card-header" id="{{ 'id_' + boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
               <div class="col-11 col-md-4" style="padding-right: 0px;">
                 <!-- TODO: Add safename field to boulder -->
                 <form action="/load_boulder" method="post">
-                  <input type="hidden" name="boulder_data" id="{{ boulder['_id'] + boulder['name'] }}"
+                  <input type="hidden" name="boulder_data" id="{{ 'id_' + boulder['_id'] + boulder['name'] }}"
                     value="{{boulder}}" />
-                  <input type="hidden" name="origin" id="{{ boulder['name'] + boulder['_id'] }}"
+                  <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
                     value="explore_boulders" />
                   <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
                     <div class="row">
@@ -78,15 +78,15 @@
                         style="width: 100%; padding-left: 1rem; display: flex; justify-content: end; text-decoration: none;" 
                         type="button" 
                         data-toggle="collapse" 
-                        data-target="#{{ boulder['safe_name'] + '-collapse' }}" 
+                        data-target="#{{ 'id_' + boulder['safe_name'] + '-collapse' }}" 
                         aria-expanded="true" 
-                        aria-controls="{{ boulder['safe_name'] + '-collapse' }}">
+                        aria-controls="{{ 'id_' + boulder['safe_name'] + '-collapse' }}">
                   <span>+</span>
                 </button>
               </div>
             </div>
           </div>
-          <div id="{{ boulder['safe_name'] + '-collapse' }}" class="collapse" aria-labelledby="{{ boulder['safe_name'] + '-heading' }}" data-parent="#bouldersList">
+          <div id="{{ 'id_' + boulder['safe_name'] + '-collapse' }}" class="collapse" aria-labelledby="{{ 'id_' + boulder['safe_name'] + '-heading' }}" data-parent="#bouldersList">
             <div class="card-body" style="padding: 0px;">
               <ul>
               {%- for wall in walls_list -%}
