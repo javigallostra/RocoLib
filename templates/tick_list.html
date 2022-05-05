@@ -59,7 +59,7 @@
       {% endif %}
       <div id="tickList">
         {% for boulder in boulder_list %}
-        <div class="card" id="{{ boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
+        <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" data-done="{{boulder['is_done']}}">
           <div class="row">
             <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
             <!-- TODO: Add safename field to boulder -->
