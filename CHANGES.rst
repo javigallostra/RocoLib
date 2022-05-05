@@ -10,7 +10,6 @@ Features
 --------
 
 - #129 Refactor DDBB connection handling
-- #128 Fix fields rendering in user's ticklist problem cards
 - #127 Show problems as collapsible cards in problem lists
 - #125 Add wall versioning, list only latest sets for problem creation
 - #123 Add changelog
@@ -37,6 +36,8 @@ Features
 Fixes
 -----
 
+- #132 Fix malformed HTML element IDs in problem lists
+- #128 Fix fields rendering in user's ticklist problem cards
 - #118 Remove production DDBB credentials from Docker image
 - #117 Fix `get_time_since_creation` function
 - #112 Fix going back from `random_problem` page
