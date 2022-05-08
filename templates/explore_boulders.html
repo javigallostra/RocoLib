@@ -58,7 +58,7 @@
         <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
           <div class="card-header" id="{{ 'id_' + boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
-              <div class="col-11 col-md-4" style="padding-right: 0px;">
+              <div class="col-11 col-md-4" style="padding-right: 0px; overflow: visible;">
                 <!-- TODO: Add safename field to boulder -->
                 <form action="/load_boulder" method="post" style="overflow: visible;">
                   <input type="hidden" name="boulder_data" id="{{ 'id_' + boulder['_id'] + boulder['name'] }}"
