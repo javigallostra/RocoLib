@@ -58,22 +58,22 @@
         <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
           <div class="card-header" id="{{ 'id_' + boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
-              <div class="col-11" style="padding-right: 0px; overflow: visible;">
+              <div class="col-11 col-md-4" style="padding-right: 0px;">
                 <!-- TODO: Add safename field to boulder -->
-                <form action="/load_boulder" method="post" style="overflow: visible;">
+                <form action="/load_boulder" method="post">
                   <input type="hidden" name="boulder_data" id="{{ 'id_' + boulder['_id'] + boulder['name'] }}"
                     value="{{boulder}}" />
                   <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
                     value="explore_boulders" />
-                  <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link" style="overflow: visible;">
-                    <div class="row" style="overflow: visible;">
+                  <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
+                    <div class="row">
                       <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
-                      <h5 style="padding-left: 0.5rem; overflow: visible;">{{boulder['name']}}</h5>
+                      <h5 style="padding-left: 0.5rem;">{{boulder['name']}}</h5>
                     </div>
                   </button>
                 </form>
               </div>
-              <div class="col-1" style="padding-left: 0px;">
+              <div class="col-1 col-md-8" style="padding-left: 0px;">
                 <button class="btn btn-link" 
                         style="width: 100%; padding-left: 1rem; display: flex; justify-content: end; text-decoration: none;" 
                         type="button" 
