@@ -65,7 +65,7 @@
                     value="{{boulder}}" />
                   <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
                     value="explore_boulders" />
-                  <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
+                  <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link" style="overflow: visible;">
                     <div class="row" style="overflow: visible;">
                       <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
                       <h5 style="padding-left: 0.5rem; overflow: visible;">{{boulder['name']}}</h5>
