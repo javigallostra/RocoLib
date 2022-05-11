@@ -69,5 +69,6 @@
     "locate_nearest_gym": "Locate nearest gym",
     "create_boulder": "Create boulder",
     "random_problem": "Random problem",
-    "stats": "Stats"
+    "stats": "Stats",
+    "repetitions": "Repetitions"
 }

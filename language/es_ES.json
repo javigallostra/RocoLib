@@ -69,5 +69,6 @@
     "locate_nearest_gym": "Búscar rocódromo más cercano",
     "create_boulder": "Crear problema",
     "random_problem": "Problema aleatorio",
-    "stats": "Estadísticas"
+    "stats": "Estadísticas",
+    "repetitions": "Repeticiones"
 }

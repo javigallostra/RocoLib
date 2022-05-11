@@ -68,5 +68,6 @@
     "locate_nearest_gym": "Trouver la salle la plus proche",
     "create_boulder": "Créer un bloc",
     "random_problem": "Bloc au hasard",
-    "stats_": "Statistiques"
+    "stats_": "Statistiques",
+    "repetitions": "Répétitions"
 }
