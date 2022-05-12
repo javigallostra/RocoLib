@@ -500,24 +500,31 @@ def tick_list() -> Union[str, Response]:
     Tick list page handler.
     """
     if request.method == 'POST':
+        data, _ = load_data(request)
+        boulder = db_controller.get_boulder_by_name(
+            data.get('gym'),
+            data.get('name'),
+            g.db
+        )
+        boulder_id = boulder.get('_id', '')
         if 'add_boulder_to_tick_list' in request.form:
             # Just add boulder to ticklist, it hasn't been climbed yet
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                request, current_user, g.db)
-        elif 'mark_boulder_as_done' in request.form:
-            # Add boulder to ticklist if not present, mark as done or add new
-            # climbed date
-            current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                request, current_user, g.db, mark_as_done_clicked=True
-            )
-            # update number of repetitions
-            data, _ = load_data(request)
-            boulder = db_controller.get_boulder_by_name(
-                data.get('gym'),
-                data.get('name'),
+                data, 
+                boulder_id,
+                current_user,
                 g.db
             )
-            boulder_id = boulder.get('_id', '')
+        elif 'mark_boulder_as_done' in request.form:
+            # Add boulder to ticklist if not present, mark as done or add new climbed date
+            current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
+                data, 
+                boulder_id, 
+                current_user, 
+                g.db, 
+                mark_as_done=True
+            )
+            # update number of repetitions
             boulder['repetitions'] += 1
             db_controller.update_boulder_by_id(
                 gym=data.get('gym'),
@@ -528,8 +535,10 @@ def tick_list() -> Union[str, Response]:
         # if the request origin is the explore boulders page, go back to it
         if request.form.get('origin', '') and request.form.get('origin') == 'explore_boulders':
             return redirect(url_for('explore_boulders', gym=get_gym()))
+
     boulder_list, walls_list = ticklist_handler.load_user_ticklist(
         current_user, g.db)
+
     return render_template(
         'tick_list.html',
         boulder_list=boulder_list,

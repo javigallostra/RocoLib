@@ -7,6 +7,7 @@ from tests.tests_config import DB_NAME, WALLS_COLLECTION
 import ticklist_handler
 from tests.tests_config import TEST_GYM_CODE, TEST_NAME, TEST_WALL_SECTION, TEST_USERNAME
 import db.mongodb_controller as mongodb_controller
+from utils.utils import load_data
 
 class FakeRequest:
     def __init__(self, db):
@@ -116,5 +117,19 @@ def add_user_with_ticklist(db, username, password, email):
     user.set_password(password)
     user.save(db)
     # Boulder comes in the Fake Request
-    ticklist_handler.add_boulder_to_ticklist(FakeRequest(db), User().get_user_by_username(TEST_USERNAME, db), db, mark_as_done_clicked=True)
+    data, _ = load_data(FakeRequest(db))
+    boulder = mongodb_controller.get_boulder_by_name(
+        data.get('gym'),
+        data.get('name'),
+        db
+    )
+    boulder_id = boulder.get('_id', '')
+
+    ticklist_handler.add_boulder_to_ticklist(
+        data, 
+        boulder_id, 
+        User().get_user_by_username(TEST_USERNAME, db), 
+        db, 
+        mark_as_done=True
+    )
 
