@@ -13,7 +13,11 @@ from utils.typing import Data
 def postprocess_boulder_data(func):
     """
     Postprocess the data returned by the DB and add/delete
-    missing fields
+    missing fields. This decorator is used to make sure that
+    the data returned by the DB is consistent and contains
+    the expected fields.
+    It acts as an anti curruption layer to keep models up to
+    data if any changes have been made to the models.
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -23,19 +27,28 @@ def postprocess_boulder_data(func):
         #   1. list 
         #   2. dict containing multiple objects
         #   3. single object as dict
+        fields_to_check = {
+            'repetitions': 0
+        }
         if isinstance(boulder_data, list):
             for boulder in boulder_data:
-                if 'repetitions' not in boulder:
-                    boulder['repetitions'] = 0
+                for field in fields_to_check:
+                    if field in boulder:
+                        continue
+                    boulder[field] = fields_to_check[field]
         elif isinstance(boulder_data, dict):
             # check if Items is key
             if 'Items' in boulder_data:
                 for boulder in boulder_data['Items']:
-                    if 'repetitions' not in boulder:
-                        boulder['repetitions'] = 0
+                    for field in fields_to_check:
+                        if field in boulder:
+                            continue
+                        boulder[field] = fields_to_check[field]
             else:
-                if 'repetitions' not in boulder_data:
-                    boulder_data['repetitions'] = 0
+                for field in fields_to_check:
+                    if field in boulder_data:
+                        continue
+                    boulder_data[field] = fields_to_check[field]
         return boulder_data
     return wrapper
 
