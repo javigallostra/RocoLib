@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #133 Include repetitions as part of the data of a problem. Enable sorting by repetitions.
 - #129 Refactor DDBB connection handling
 - #127 Show problems as collapsible cards in problem lists
 - #125 Add wall versioning, list only latest sets for problem creation
