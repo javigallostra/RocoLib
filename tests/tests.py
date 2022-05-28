@@ -49,18 +49,20 @@ def get_fake_boulder_data():
 class UtilsTests(unittest.TestCase):
     def test_get_credentials(self):
         # Given
+        from os.path import exists
         from utils.utils import get_creds_file
         with open('.env', 'r') as f:
             creds_file_before = f.read()
         # When
-        creds = get_creds_file()
-        # Then
-        self.assertIsNotNone(creds)
-        self.assertTrue(isinstance(creds, str))
-        self.assertTrue(isfile(creds))
-        with open('.env', 'r') as f:
-            creds_file_after = f.read()
-        self.assertEqual(creds_file_before, creds_file_after)
+        if exists(creds_file_before):
+            creds = get_creds_file()
+            # Then
+            self.assertIsNotNone(creds)
+            self.assertTrue(isinstance(creds, str))
+            self.assertTrue(isfile(creds))
+            with open('.env', 'r') as f:
+                creds_file_after = f.read()
+            self.assertEqual(creds_file_before, creds_file_after)
 
     def test_get_credentials_not_found(self):
         # Given
