@@ -2,7 +2,6 @@ import datetime
 from genericpath import isfile
 import unittest
 import random
-from winreg import REG_OPENED_EXISTING_KEY
 from application import app
 
 from api.schemas import CreateBoulderRequestValidator, BoulderFields
