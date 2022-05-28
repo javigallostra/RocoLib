@@ -8,6 +8,7 @@ TEST_WALL_NAME = 'Test Wall'
 TEST_WALL_SECTION = 'wall'
 TEST_WALL_RADIUS = 0.02
 # Boulder
+TEST_ID = 'aedfaedfaedfaedfaedfaedf'
 TEST_CREATOR = 'test user'
 TEST_DIFFICULTY = 'green'
 TEST_FEET = 'free'

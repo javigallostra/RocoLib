@@ -10,6 +10,7 @@ from flask.wrappers import Request
 import pymongo
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
+from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
 from config import *
@@ -18,7 +19,7 @@ from utils.typing import Data
 
 def get_creds_file(env: str = '.env') -> str:
     """
-    Get the name of the file where the credentials 
+    Get the name of the file where the credentials
     to connect to the DDBB are stored.
     """
     creds = ''
@@ -188,7 +189,7 @@ def map_and_complete_boulder_data(data: list[Data], radius: dict[str, float]) ->
 
 def get_closest_gym(long: float, lat: float, database: Database) -> str:
     """
-    Find closest gym to a given set of coordinates 
+    Find closest gym to a given set of coordinates
     """
     return find_closest(db_controller.get_gyms(database), lat, long)
 
@@ -228,13 +229,17 @@ def load_data(request: Request) -> Tuple[dict, bool]:
   :rtype: Tuple[dict, bool]
   """
   # Handle the different content types
-  request.get_data()  # required?
-  if request.data:
-    return json.loads(request.data), False
+  # request.get_data()  # required?
+  if request.json:
+    return request.json, False
   elif request.form:
     return request.form, True
-  elif request.json:
-    return request.json, False
+  elif request.data:
+        try:
+            return json.loads(request.data), False
+        except json.JSONDecodeError:
+            # try to load from query string
+            return urlparse.parse_qs(request.data), False
   else:
     return dict(), False
 

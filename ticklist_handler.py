@@ -66,22 +66,16 @@ def load_user_ticklist(current_user, database: Database):
     return boulder_list, walls_list
 
 
-def add_boulder_to_ticklist(request, current_user, database: Database, mark_as_done_clicked=False) -> list[TickListProblem]:
+def add_boulder_to_ticklist(request_data, boulder_id, current_user, database: Database, mark_as_done=False) -> list[TickListProblem]:
     """
     Add a boulder to a user's ticklist
     """
     # needed values: gym, id, section, is_done
-    data, _ = load_data(request)
     boulder = {
-        'gym': data.get('gym'),
-        'iden':
-            mongodb_controller.get_boulder_by_name(
-                data.get('gym'),
-                data.get('name'),
-                database
-        ).get('_id', ''),
-        'is_done': True if data.get('is_done', '') else False,
-        'section': data.get('section')
+        'gym': request_data.get('gym'),
+        'iden': boulder_id,
+        'is_done': True if request_data.get('is_done', '') else False,
+        'section': request_data.get('section')
     }
     # update user's ticklist
     return [
@@ -89,6 +83,6 @@ def add_boulder_to_ticklist(request, current_user, database: Database, mark_as_d
             boulder,
             current_user.id,
             database,
-            mark_as_done_clicked
+            mark_as_done
         )
     ]

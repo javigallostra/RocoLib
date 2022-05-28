@@ -32,6 +32,7 @@
               <option value="rating">{{ rating }}</option>
               <option value="difficulty">{{ difficulty }}</option>
               <option value="section">{{ wall_section }}</option>
+              <option value="repetitions">{{ repetitions }}</option>
             </select>
             <select class="form-control col-5" id="sortAscending">
               <option value="increasing">{{ increasing }}</option>
@@ -97,6 +98,7 @@
               <li>{{ creator }}: {{boulder["creator"]}}</li>
               <li>{{ feet }}: {{boulder["feet"]}}</li>
               <li>{{ added }} {{boulder["age"]}} {{ ago }}</li>
+              <li>{{ repetitions }} : {{boulder['repetitions'] }}</li>
               <li>
                 <div class="container">
                   <div class="row d-flex justify-content-left">
@@ -151,7 +153,7 @@
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     boulders_data["boulders"].forEach((boulder) => {
-      $("#" + boulder["safe_name"])
+      $("#id_" + boulder["safe_name"])
         .css(
           'display',
           (boulder.is_done && checked) ? 'none' : 'flex'
@@ -169,6 +171,7 @@
     // Some hackery to turn data into valid JS JSON
     var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+
     // Sort data
     if (this.value === "date-recent") {
       function sortBoulders(a, b) {
@@ -176,7 +179,8 @@
         var dateB = Date.parse(b["time"]);
         return dateB - dateA;
       }
-    } else if (this.value === "difficulty") {
+    } 
+    else if (this.value === "difficulty") {
       function sortBoulders(a, b) {
         var difficulties = ["red", "yellow", "blue", "green"];
         return (
@@ -184,7 +188,8 @@
           difficulties.indexOf(b["difficulty"])
         );
       }
-    } else if (this.value === "section") {
+    } 
+    else if (this.value === "section") {
       function sortBoulders(a, b) {
         return a["section"] < b["section"]
           ? 1
@@ -192,21 +197,28 @@
             ? -1
             : 0;
       }
-    } else if (this.value === "rating") {
+    } 
+    else if (this.value === "rating") {
       function sortBoulders(a, b) {
         return b["rating"] - a["rating"];
       }
     }
+    else if (this.value === "repetitions") {
+      function sortBoulders(a, b) {
+        return b["repetitions"] - a["repetitions"];
+      }
+    }
+
     boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
 
-    if ($("#sortAscending").val() == "increasing") {
+    if ($("#sortAscending").val() === "increasing") {
       boulders_data["boulders"].reverse();
     }
 
     boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
       $("#bouldersList")
-        .find("#" + boulder["safe_name"])
+        .find("#id_" + boulder["safe_name"])
         .each(function () {
           $(this).parent().append(this);
         });

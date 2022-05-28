@@ -10,6 +10,48 @@ from models import TickListProblem
 from utils.typing import Data
 
 
+def postprocess_boulder_data(func):
+    """
+    Postprocess the data returned by the DB and add/delete
+    missing fields. This decorator is used to make sure that
+    the data returned by the DB is consistent and contains
+    the expected fields.
+    It acts as an anti curruption layer to keep models up to
+    data if any changes have been made to the models.
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        boulder_data = func(*args, **kwargs)
+        # Add/delete required boulder fields
+        # handle 3 possible types: 
+        #   1. list 
+        #   2. dict containing multiple objects
+        #   3. single object as dict
+        fields_to_check = {
+            'repetitions': 0
+        }
+        if isinstance(boulder_data, list):
+            for boulder in boulder_data:
+                for field in fields_to_check:
+                    if field in boulder:
+                        continue
+                    boulder[field] = fields_to_check[field]
+        elif isinstance(boulder_data, dict):
+            # check if Items is key
+            if 'Items' in boulder_data:
+                for boulder in boulder_data['Items']:
+                    for field in fields_to_check:
+                        if field in boulder:
+                            continue
+                        boulder[field] = fields_to_check[field]
+            else:
+                for field in fields_to_check:
+                    if field in boulder_data:
+                        continue
+                    boulder_data[field] = fields_to_check[field]
+        return boulder_data
+    return wrapper
+
 def serializable(func):
     """
     Make sure that the value returned by a function
@@ -38,7 +80,6 @@ def serializable(func):
                 return str(value)
             return value
     return wrapper
-
 
 def make_object_serializable(element: Data) -> Data:
     """
@@ -135,6 +176,7 @@ def get_walls_radius_all(database: Database) -> dict[str, float]:
 
 
 @serializable
+@postprocess_boulder_data
 def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of boulders for the specified gym
@@ -285,6 +327,7 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
 
 
 @serializable
+@postprocess_boulder_data
 def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
     """
     Given a ticklist problem, get the remaining problem fields
@@ -306,6 +349,7 @@ def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
 
 
 @serializable
+@postprocess_boulder_data
 def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     """
     Given a boulder name and a Gym, return the boulder data
@@ -316,6 +360,7 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     return boulder if boulder else {}
 
 @serializable
+@postprocess_boulder_data
 def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
     """
     Given a boulder name and a Gym, return the boulder data
@@ -327,6 +372,7 @@ def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
 
 
 @serializable
+@postprocess_boulder_data
 def get_random_boulder(gym: str, database: Database) -> Data:
     """Given a gym code, return a random boulder from it
 
@@ -356,6 +402,7 @@ def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Databa
 
 
 @serializable
+@postprocess_boulder_data
 def get_boulders_filtered(
     gym: str,
     database: Database,
@@ -379,9 +426,8 @@ def get_boulders_filtered(
     query = {}
     for key, value in conditions.items():
         if key in equals:
-            # build query
             query[key] = value
-    # get data
+
     filtered_boulder_data = list(database[f'{gym}_boulders'].find(query))
 
     if not filtered_boulder_data:
@@ -400,8 +446,6 @@ def get_boulders_filtered(
     return {'Items': [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
 
 # User related functions
-
-
 @serializable
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
