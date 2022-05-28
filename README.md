@@ -29,7 +29,7 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 * Public API
 * ~~Localize app~~ Thanks to [Pan6ora](https://github.com/Pan6ora)
 * Include a map to locate registered gyms
-* Show the number of repetitions of each problem
+* ~~Show the number of repetitions of each problem~~ PR #133
 * For registered users: Include a stats page
 * Enable setting routes as well as problems
 * Enable setting routes that span multiple images
