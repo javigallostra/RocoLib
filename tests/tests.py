@@ -2,6 +2,7 @@ import datetime
 from genericpath import isfile
 import unittest
 import random
+from winreg import REG_OPENED_EXISTING_KEY
 from application import app
 
 from api.schemas import CreateBoulderRequestValidator, BoulderFields
@@ -131,7 +132,7 @@ class UtilsTests(unittest.TestCase):
     def test_boulder_data_no_repetitions_postprocessing_decorator(self):
         # Given
         from db.mongodb_controller import postprocess_boulder_data
-
+        rep_key = 'repetitions'
         # When
         @postprocess_boulder_data
         def get_single_fake_boulder_data():
@@ -158,26 +159,27 @@ class UtilsTests(unittest.TestCase):
         boulder_dict = get_fake_boulders_dict()
         
         # Then
-        self.assertIn('repetitions', single_boulder)
-        self.assertEqual(single_boulder['repetitions'], 0)
+        self.assertIn(rep_key, single_boulder)
+        self.assertEqual(single_boulder[rep_key], 0)
 
         for b in boulder_list:
-            self.assertIn('repetitions', b)
-            self.assertEqual(b['repetitions'], 0)
+            self.assertIn(rep_key, b)
+            self.assertEqual(b[rep_key], 0)
 
         for b in boulder_dict['Items']:
-            self.assertIn('repetitions', b)
-            self.assertEqual(b['repetitions'], 0)
+            self.assertIn(rep_key, b)
+            self.assertEqual(b[rep_key], 0)
 
     def test_boulder_data_repetitions_postprocessing_decorator(self):
         # Given
         from db.mongodb_controller import postprocess_boulder_data
         repetitions = 23
+        rep_key = 'repetitions'
         # When
         @postprocess_boulder_data
         def get_single_fake_boulder_data():
             b = get_fake_boulder_data()
-            b['repetitions'] = repetitions
+            b[rep_key] = repetitions
             return b
 
         @postprocess_boulder_data
@@ -187,7 +189,7 @@ class UtilsTests(unittest.TestCase):
                 get_fake_boulder_data()
             ]
             for b in b_list:
-                b['repetitions'] = repetitions
+                b[rep_key] = repetitions
             return b_list
 
         @postprocess_boulder_data
@@ -197,7 +199,7 @@ class UtilsTests(unittest.TestCase):
                 get_fake_boulder_data()
             ]
             for b in b_list:
-                b['repetitions'] = repetitions
+                b[rep_key] = repetitions
             return dict(Items=b_list)
 
         single_boulder = get_single_fake_boulder_data()
@@ -205,16 +207,16 @@ class UtilsTests(unittest.TestCase):
         boulder_dict = get_fake_boulders_dict()
         
         # Then
-        self.assertIn('repetitions', single_boulder)
-        self.assertEqual(single_boulder['repetitions'], repetitions)
+        self.assertIn(rep_key, single_boulder)
+        self.assertEqual(single_boulder[rep_key], repetitions)
 
         for b in boulder_list:
-            self.assertIn('repetitions', b)
-            self.assertEqual(b['repetitions'], repetitions)
+            self.assertIn(rep_key, b)
+            self.assertEqual(b[rep_key], repetitions)
 
         for b in boulder_dict['Items']:
-            self.assertIn('repetitions', b)
-            self.assertEqual(b['repetitions'], repetitions)
+            self.assertIn(rep_key, b)
+            self.assertEqual(b[rep_key], repetitions)
 
     def test_boulder_data_serialization(self):
         pass
