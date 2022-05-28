@@ -1,3 +1,4 @@
+import datetime
 from genericpath import isfile
 import unittest
 import random
@@ -5,6 +6,11 @@ from application import app
 
 from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
+from bson.objectid import ObjectId
+
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY
+from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
+from tests.tests_config import  TEST_NOTES, TEST_WALL_SECTION
 
 # class BaseAPITestClass(unittest.TestCase):
 #     """
@@ -23,6 +29,20 @@ from marshmallow import ValidationError
 #         """
 #         pass
 
+def get_fake_boulder_data():
+    return {
+        'name': TEST_NAME,
+        'rating': random.randint(1, 5),
+        'raters': random.randint(1, 10),
+        'wall_section': TEST_WALL_SECTION,
+        'difficulty': TEST_DIFFICULTY,
+        'feet': TEST_FEET,
+        'holds': TEST_HOLDS,
+        'notes': TEST_NOTES,
+        'creator': TEST_CREATOR,
+        'created_at': datetime.datetime.now(),
+        'updated_at': datetime.datetime.now()
+    }
 
 class UtilsTests(unittest.TestCase):
     def test_get_credentials(self):
@@ -107,6 +127,97 @@ class UtilsTests(unittest.TestCase):
         time_since = get_time_since_creation(test_time)
         # Then
         self.assertEqual(time_since, f'{current.year - test_year} {"years" if current.year - test_year > 1 else "year"}')
+
+    def test_boulder_data_no_repetitions_postprocessing_decorator(self):
+        # Given
+        from db.mongodb_controller import postprocess_boulder_data
+
+        # When
+        @postprocess_boulder_data
+        def get_single_fake_boulder_data():
+            return get_fake_boulder_data()
+
+        @postprocess_boulder_data
+        def get_fake_boulders_list():
+            return [
+                get_fake_boulder_data(), 
+                get_fake_boulder_data()
+            ]
+
+        @postprocess_boulder_data
+        def get_fake_boulders_dict():
+            return dict(
+                Items=[
+                    get_fake_boulder_data(), 
+                    get_fake_boulder_data()
+                ]
+            )
+
+        single_boulder = get_single_fake_boulder_data()
+        boulder_list = get_fake_boulders_list()
+        boulder_dict = get_fake_boulders_dict()
+        
+        # Then
+        self.assertIn('repetitions', single_boulder)
+        self.assertEqual(single_boulder['repetitions'], 0)
+
+        for b in boulder_list:
+            self.assertIn('repetitions', b)
+            self.assertEqual(b['repetitions'], 0)
+
+        for b in boulder_dict['Items']:
+            self.assertIn('repetitions', b)
+            self.assertEqual(b['repetitions'], 0)
+
+    def test_boulder_data_repetitions_postprocessing_decorator(self):
+        # Given
+        from db.mongodb_controller import postprocess_boulder_data
+        repetitions = 23
+        # When
+        @postprocess_boulder_data
+        def get_single_fake_boulder_data():
+            b = get_fake_boulder_data()
+            b['repetitions'] = repetitions
+            return b
+
+        @postprocess_boulder_data
+        def get_fake_boulders_list():
+            b_list = [
+                get_fake_boulder_data(), 
+                get_fake_boulder_data()
+            ]
+            for b in b_list:
+                b['repetitions'] = repetitions
+            return b_list
+
+        @postprocess_boulder_data
+        def get_fake_boulders_dict():
+            b_list = [
+                get_fake_boulder_data(), 
+                get_fake_boulder_data()
+            ]
+            for b in b_list:
+                b['repetitions'] = repetitions
+            return dict(Items=b_list)
+
+        single_boulder = get_single_fake_boulder_data()
+        boulder_list = get_fake_boulders_list()
+        boulder_dict = get_fake_boulders_dict()
+        
+        # Then
+        self.assertIn('repetitions', single_boulder)
+        self.assertEqual(single_boulder['repetitions'], repetitions)
+
+        for b in boulder_list:
+            self.assertIn('repetitions', b)
+            self.assertEqual(b['repetitions'], repetitions)
+
+        for b in boulder_dict['Items']:
+            self.assertIn('repetitions', b)
+            self.assertEqual(b['repetitions'], repetitions)
+
+    def test_boulder_data_serialization(self):
+        pass
 
 class BoulderCreationTests(unittest.TestCase):
 
