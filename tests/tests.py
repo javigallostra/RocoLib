@@ -9,7 +9,7 @@ from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 from bson.objectid import ObjectId
 
-from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
 from tests.tests_config import  TEST_NOTES, TEST_WALL_SECTION
 
@@ -32,6 +32,7 @@ from tests.tests_config import  TEST_NOTES, TEST_WALL_SECTION
 
 def get_fake_boulder_data():
     return {
+        '_id': ObjectId(TEST_ID),
         'name': TEST_NAME,
         'rating': random.randint(1, 5),
         'raters': random.randint(1, 10),
@@ -55,7 +56,7 @@ class UtilsTests(unittest.TestCase):
         creds = get_creds_file()
         # Then
         self.assertIsNotNone(creds)
-        self.assertIs(type(creds), str)
+        self.assertTrue(isinstance(creds, str))
         self.assertTrue(isfile(creds))
         with open('.env', 'r') as f:
             creds_file_after = f.read()
@@ -73,7 +74,7 @@ class UtilsTests(unittest.TestCase):
         creds = get_creds_file(non_existing_file)
         # Then
         self.assertIsNotNone(creds)
-        self.assertIs(type(creds), str)
+        self.assertTrue(isinstance(creds, str))
         self.assertFalse(isfile(creds))
         self.assertEqual(creds, '')
 
@@ -87,7 +88,7 @@ class UtilsTests(unittest.TestCase):
         # Then
         for d in processed_data:
             self.assertIsNotNone(d)
-            self.assertIs(type(d), dict)
+            self.assertTrue(isinstance(d, dict))
         self.assertListEqual(processed_data, expected_data)
 
     def test_make_boulder_data_valid_js_wrong_data_type(self):
@@ -100,7 +101,7 @@ class UtilsTests(unittest.TestCase):
         # Then
         for d in processed_data:
             self.assertIsNotNone(d)
-            self.assertIs(type(d), dict)
+            self.assertTrue(isinstance(d, dict))
         self.assertListEqual(processed_data, expected_data)
 
     def test_get_wall_image(self):
@@ -114,7 +115,7 @@ class UtilsTests(unittest.TestCase):
             image = get_wall_image(gym=gym, section=section, walls_path=path)
         # Then
         self.assertIsNotNone(image)
-        self.assertIs(type(image), str)
+        self.assertTrue(isinstance(image, str))
         self.assertEqual(image, f'/static/{path}{gym}/{section}.JPG')
 
     def test_get_time_since_creation(self):
@@ -219,7 +220,53 @@ class UtilsTests(unittest.TestCase):
             self.assertEqual(b[rep_key], repetitions)
 
     def test_boulder_data_serialization(self):
-        pass
+        # Given
+        from db.mongodb_controller import serializable
+
+        # When
+        @serializable
+        def get_boulder_data():
+            return get_fake_boulder_data()
+
+        @serializable
+        def get_boulder_data_list():
+            return [
+                get_fake_boulder_data(),
+                get_fake_boulder_data()
+            ]
+
+        @serializable
+        def get_boulder_data_dict():
+            return dict(
+                Items=[
+                    get_fake_boulder_data(),
+                    get_fake_boulder_data()
+                ]
+            )
+
+        @serializable
+        def get_boulder_data_dict_single_item():
+            return dict(Items=get_fake_boulder_data())
+
+
+        boulder = get_boulder_data()
+        boulder_list = get_boulder_data_list()
+        boulder_dict = get_boulder_data_dict()
+        boulder_dict_single = get_boulder_data_dict_single_item()
+
+        # Then
+        self.assertEqual(TEST_ID, boulder['_id'])
+        self.assertTrue(isinstance(boulder['_id'], str))
+        for b in boulder_list:
+            self.assertEqual(TEST_ID, b['_id'])
+            self.assertTrue(isinstance(b['_id'], str))
+        for b in boulder_dict['Items']:
+            self.assertEqual(TEST_ID, b['_id'])
+            self.assertTrue(isinstance(b['_id'], str))
+        self.assertEqual(TEST_ID, boulder_dict_single['Items']['_id'])
+        self.assertTrue(
+            isinstance(boulder_dict_single['Items']['_id'], str)
+        )
 
 class BoulderCreationTests(unittest.TestCase):
 
