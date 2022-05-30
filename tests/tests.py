@@ -223,7 +223,7 @@ class UtilsTests(unittest.TestCase):
     def test_boulder_data_serialization(self):
         # Given
         from db.mongodb_controller import serializable
-
+        id_key = '_id'
         # When
         @serializable
         def get_boulder_data():
@@ -256,17 +256,17 @@ class UtilsTests(unittest.TestCase):
         boulder_dict_single = get_boulder_data_dict_single_item()
 
         # Then
-        self.assertEqual(TEST_ID, boulder['_id'])
-        self.assertTrue(isinstance(boulder['_id'], str))
+        self.assertEqual(TEST_ID, boulder[id_key])
+        self.assertTrue(isinstance(boulder[id_key], str))
         for b in boulder_list:
-            self.assertEqual(TEST_ID, b['_id'])
-            self.assertTrue(isinstance(b['_id'], str))
+            self.assertEqual(TEST_ID, b[id_key])
+            self.assertTrue(isinstance(b[id_key], str))
         for b in boulder_dict['Items']:
-            self.assertEqual(TEST_ID, b['_id'])
-            self.assertTrue(isinstance(b['_id'], str))
-        self.assertEqual(TEST_ID, boulder_dict_single['Items']['_id'])
+            self.assertEqual(TEST_ID, b[id_key])
+            self.assertTrue(isinstance(b[id_key], str))
+        self.assertEqual(TEST_ID, boulder_dict_single['Items'][id_key])
         self.assertTrue(
-            isinstance(boulder_dict_single['Items']['_id'], str)
+            isinstance(boulder_dict_single['Items'][id_key], str)
         )
 
 class BoulderCreationTests(unittest.TestCase):
