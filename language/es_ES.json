@@ -2,7 +2,7 @@
     "home": "Menú",
     "login": "Acceder",
     "sign_up": "Registrarse",
-    "select_a_gym": "Seleccionar rocódromo",
+    "select_gym": "Seleccionar rocódromo",
     "sort_by": "Ordenar por",
     "section": "Sección",
     "creator": "Creador",
@@ -67,8 +67,8 @@
     "add_your_gym": "Añade tu rocódromo",
     "current_gym_": "Rocódromo actual",
     "locate_nearest_gym": "Búscar rocódromo más cercano",
-    "create_boulder": "Crear problema",
-    "random_problem": "Problema aleatorio",
+    "create_boulder": "Crear Problema",
+    "random_problem": "Problema Aleatorio",
     "stats": "Estadísticas",
     "repetitions": "Repeticiones"
 }

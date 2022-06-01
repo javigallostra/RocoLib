@@ -2,7 +2,7 @@
     "home": "Accueil",
     "login": "Se connecter",
     "sign_up": "Inscription",
-    "select_a_gym": "Choisir une salle",
+    "select_gym": "Choisir salle",
     "sort_by": "Trier par",
     "section": "Secteur",
     "creator": "Créateur",
@@ -45,7 +45,7 @@
     "notes": "Remarques",
     "add_to_ticklist": "Ajouter aux projets",
     "export_as_image": "Télécharger l'image",
-    "no_account": "Pas de compte ?",
+    "no_account": "Pas de compte?",
     "save": "Enregistrer",
     "save_boulder": "Enregistrer le bloc",
     "boulder_name": "Nom du bloc",
@@ -66,8 +66,8 @@
     "add_your_gym": "Ajouter une salle",
     "current_gym_": "Salle sélectionnée",
     "locate_nearest_gym": "Trouver la salle la plus proche",
-    "create_boulder": "Créer un bloc",
-    "random_problem": "Bloc au hasard",
+    "create_boulder": "Créer un Bloc",
+    "random_problem": "Bloc au Hasard",
     "stats_": "Statistiques",
     "repetitions": "Répétitions"
 }

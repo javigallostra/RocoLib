@@ -20,13 +20,15 @@
         </div>
       </div>
       <div class="row">
-        <div class="container">
-          <h5 style="margin-bottom:0.5rem;">{{ current_gym_ }}: </h5>
-          <p>{{ current_gym }}</p>
+        <div class="container" style="display: flex; margin-bottom: 0.5rem;">
+          <p style="margin-bottom:0; align-self:center;"><strong>{{ current_gym_ }}: </strong></p>
+          <div class="alert alert-info" role="alert" style="margin-left: 0.5rem; margin-bottom:0;">
+            <h5 style="font-size: 1.1rem; align-self: center; margin-bottom: 0;">{{ current_gym }}</h5>
+          </div>
         </div>
       </div>
       <hr style="margin-top: 0; margin-bottom: 1rem;" />
-      <label>{{ select_a_gym }}: </label>
+      <label>{{ select_gym }}: </label>
       <div class="row gym-selector">
         <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/" method="POST">
@@ -42,7 +44,7 @@
         <div class="col-md-4 col-xs-12">
           <form id="nearest_gym_form" action="/get_nearest_gym" method="POST">
             <div class="btn-group d-flex">
-              <button id="locate-button" type="button" class="btn btn-primary cstm-button" onclick="getLocation()">
+              <button id="locate-button" type="button" class="btn btn-outline-primary cstm-button" onclick="getLocation()">
                 <i id="location-icon" class="bi bi-geo-alt"></i>
                 <span class="button-text">
                   {{ locate_nearest_gym }}
@@ -56,23 +58,23 @@
       <div class="row group-button-row" style="display: flex;">
         <div style="margin-bottom:0.5rem;">
           <a href="/create?options=boulder&latest=True" style="padding-right: 1rem; margin-left:0.9rem;">
-            <button class="btn btn-primary">
-              <i class="bi bi-plus"></i> {{ create_boulder }}
+            <button class="btn btn-primary" style="min-width: 48%; text-align:left;">
+              <i class="bi bi-plus" style="margin-right: 0.4rem;"></i> {{ create_boulder }}
             </button>
           </a>
         </div>
         <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
         <div class="button-row">
           <a href="/explore" style="padding-right: 1rem;">
-            <button class="btn btn-primary">
-              <i class="bi bi-eye"></i> {{ explore }}
+            <button class="btn btn-primary" style="min-width: 50%; text-align:left;">
+              <i class="bi bi-eye" style="margin-right: 0.4rem;"></i> {{ explore }}
             </button>
           </a>
         </div>
         <div class="button-row">
           <a href="/random_problem">
-            <button class="btn btn-primary">
-              <i class="bi bi-dice-2"></i> {{ random_problem }}
+            <button class="btn btn-primary" style="min-width: 50%; text-align:left;">
+              <i class="bi bi-dice-2" style="margin-right: 0.4rem;"></i> {{ random_problem }}
             </button>
           </a>
         </div>
