@@ -30,11 +30,11 @@
             &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
               {{ wall["name"] }}</a>
           </p> -->
-          <a href="/walls/{{ wall['image'] }}?options={{options}}">
-            <button class="btn btn-outline-primary" style="margin-bottom: 0.4rem;">
+          <button class="btn btn-outline-primary" style="margin-bottom: 0.6rem; padding: 0.2rem;">
+              <a href="/walls/{{ wall['image'] }}?options={{options}}">
               {{ wall["name"] }}</a>
-            </button>
-          </a>
+            </a>
+          </button>
           <img id="{{ wall['image'] }}-img" class="thumbnail" src="{{ wall['image_path'] }}" alt="Preview" />
           <!-- The Modal -->
           <div id="{{ wall['image'] }}-modal" class="modal">
@@ -92,6 +92,23 @@
 
 {% block styles %}
 <style>
+
+
+  a:link {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: white;
+  }
+
+  a {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   .mob-container {
     padding-right: 15px; 
     padding-left: 15px; 
