@@ -7,7 +7,7 @@
   <div id="body">
     <div class="container">
       <br />
-      <div class="row text-center">
+      <div class="row text-center header-buttons">
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
         <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
@@ -21,64 +21,70 @@
         </div>
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
-      <br />
-      <h3>{{ choose_wall }}</h3>
+      <h4 class="selection-title">{{ choose_wall }}</h4>
+      <div class="row">
       {% for wall in walls %}
-      <br />
-      <div class="container">
-        <p>
-          &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
-            {{ wall["name"] }}</a>
-        </p>
-        <img id="{{ wall['image'] }}-img" class="thumbnail" src="{{ wall['image_path'] }}" alt="Preview" />
-        <!-- The Modal -->
-        <div id="{{ wall['image'] }}-modal" class="modal">
-          <!-- The Close Button -->
-          <span class="{{ wall['image'] }}-close close">&times;</span>
-          <!-- Modal Content (The Image) -->
-          <img id="{{ wall['image'] }}" />
-          <!-- Modal Caption (Image Text) -->
-          <div class="modal-caption" id="{{ wall['image'] }}-caption"></div>
+        <br />
+        <div class="mob-container" style="display: flex; flex-direction:column; align-items:center;">
+          <!-- <p style="margin-bottom: 0.4rem;">
+            &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
+              {{ wall["name"] }}</a>
+          </p> -->
+          <button class="btn btn-outline-primary" style="margin-bottom: 0.6rem; padding: 0.2rem;">
+              <a href="/walls/{{ wall['image'] }}?options={{options}}">
+              {{ wall["name"] }}</a>
+            </a>
+          </button>
+          <img id="{{ wall['image'] }}-img" class="thumbnail" src="{{ wall['image_path'] }}" alt="Preview" />
+          <!-- The Modal -->
+          <div id="{{ wall['image'] }}-modal" class="modal">
+            <!-- The Close Button -->
+            <span class="{{ wall['image'] }}-close close">&times;</span>
+            <!-- Modal Content (The Image) -->
+            <img id="{{ wall['image'] }}" />
+            <!-- Modal Caption (Image Text) -->
+            <div class="modal-caption" id="{{ wall['image'] }}-caption"></div>
+          </div>
         </div>
-      </div>
-      <!-- JS -->
-      <script>
-        // Get the modal
-        var modal = document.getElementById("{{ wall['image'] }}-modal");
+        <!-- JS -->
+        <script>
+          // Get the modal
+          var modal = document.getElementById("{{ wall['image'] }}-modal");
 
-        // Get the image and insert it inside the modal - use its "alt" text as a caption
-        var img = document.getElementById("{{ wall['image'] }}-img");
+          // Get the image and insert it inside the modal - use its "alt" text as a caption
+          var img = document.getElementById("{{ wall['image'] }}-img");
 
-        var modalImg = document.getElementById("{{ wall['image'] }}");
+          var modalImg = document.getElementById("{{ wall['image'] }}");
 
-        var captionText = document.getElementById(
-          "{{ wall['image'] }}-caption"
-        );
-        img.onclick = function () {
-          modal.style.display = "block";
-          modalImg.src = this.src;
-          console.log(this);
-          if (this.width >= this.height) {
-            modalImg.className = "";
-            modalImg.classList.add("modal-content-landscape");
-          } else {
-            modalImg.className = "";
-            modalImg.classList.add("modal-content-portrait");
-          }
-          captionText.innerHTML = this.alt;
-        };
+          var captionText = document.getElementById(
+            "{{ wall['image'] }}-caption"
+          );
+          img.onclick = function () {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            console.log(this);
+            if (this.width >= this.height) {
+              modalImg.className = "";
+              modalImg.classList.add("modal-content-landscape");
+            } else {
+              modalImg.className = "";
+              modalImg.classList.add("modal-content-portrait");
+            }
+            captionText.innerHTML = this.alt;
+          };
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName(
-          "{{ wall['image'] }}-close"
-        )[0];
+          // Get the <span> element that closes the modal
+          var span = document.getElementsByClassName(
+            "{{ wall['image'] }}-close"
+          )[0];
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-          modal.style.display = "none";
-        };
-      </script>
+          // When the user clicks on <span> (x), close the modal
+          span.onclick = function () {
+            modal.style.display = "none";
+          };
+        </script>
       {% endfor %}
+    </div>
     </div>
   </div>
 </div>
@@ -86,6 +92,41 @@
 
 {% block styles %}
 <style>
+
+
+  a:link {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: white;
+  }
+
+  a {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mob-container {
+    padding-right: 15px; 
+    padding-left: 15px; 
+    margin-right: auto; 
+    margin-left: auto;
+    margin-bottom: 2rem;
+  }
+
+  .selection-title {
+    display: flex; 
+    justify-content:center; 
+    margin-bottom:2rem;
+  }
+
+  .header-buttons {
+    margin-bottom: 2rem;
+  }
+
   .thumbnail {
     border: 1px solid #ddd;
     /* Gray border */
@@ -200,6 +241,25 @@
     .modal-content-portrait {
       height: 100%;
     }
+
+    .mob-container {
+      width: 100%;
+      padding-right: 15px; 
+      padding-left: 15px; 
+      margin-right: auto; 
+      margin-left: auto;
+      margin-bottom: 2rem;
+    }
+
+    .selection-title {
+      display: flex; 
+      justify-content:center; 
+      margin-bottom:1rem;
+    } 
+    .header-buttons {
+      margin-bottom: 0rem;
+    }
+  
   }
 </style>
 {% endblock %}

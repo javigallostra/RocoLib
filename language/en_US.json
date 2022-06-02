@@ -2,7 +2,7 @@
     "home": "Home",
     "login": "Login",
     "sign_up": "Sign up",
-    "select_a_gym": "Select a gym",
+    "select_gym": "Select gym",
     "sort_by": "Sort by",
     "section": "Section",
     "creator": "Creator",
@@ -45,7 +45,7 @@
     "notes": "Notes",
     "add_to_ticklist": "Add to ticklist",
     "export_as_image": "Export as image",
-    "no_account": "Don't have an account ?",
+    "no_account": "Don't have an account?",
     "save": "Save",
     "save_boulder": "Save boulder",
     "boulder_name": "Boulder name",
@@ -67,8 +67,8 @@
     "add_your_gym": "Add your gym",
     "current_gym_": "Current gym",
     "locate_nearest_gym": "Locate nearest gym",
-    "create_boulder": "Create boulder",
-    "random_problem": "Random problem",
+    "create_boulder": "Create Boulder",
+    "random_problem": "Random Problem",
     "stats": "Stats",
     "repetitions": "Repetitions"
 }

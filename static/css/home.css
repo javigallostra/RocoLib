@@ -55,6 +55,10 @@
     opacity: 0;
 }
 
+.button-loading:hover {
+    background-color: white;
+}
+
 .button-loading::after {
     content: "";
     position: absolute;
@@ -66,7 +70,7 @@
     bottom: 0;
     margin: auto;
     border: 4px solid transparent;
-    border-top-color: #ffffff;
+    border-top-color: #007bff;
     border-radius: 50%;
     animation: button-loading-spinner 1s ease infinite;
 }
