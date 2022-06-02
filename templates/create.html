@@ -7,7 +7,7 @@
   <div id="body">
     <div class="container">
       <br />
-      <div class="row text-center" style="margin-bottom: 1rem;">
+      <div class="row text-center header-buttons">
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
         <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
@@ -21,7 +21,7 @@
         </div>
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
-      <h3 class="selection-title">{{ choose_wall }}</h3>
+      <h4 class="selection-title">{{ choose_wall }}</h4>
       <div class="row">
       {% for wall in walls %}
         <br />
@@ -120,7 +120,11 @@
   .selection-title {
     display: flex; 
     justify-content:center; 
-    margin-bottom:3rem;
+    margin-bottom:2rem;
+  }
+
+  .header-buttons {
+    margin-bottom: 2rem;
   }
 
   .thumbnail {
@@ -250,8 +254,12 @@
     .selection-title {
       display: flex; 
       justify-content:center; 
-      margin-bottom:2rem;
-    }  
+      margin-bottom:1rem;
+    } 
+    .header-buttons {
+      margin-bottom: 0rem;
+    }
+  
   }
 </style>
 {% endblock %}
