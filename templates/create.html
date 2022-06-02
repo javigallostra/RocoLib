@@ -7,7 +7,7 @@
   <div id="body">
     <div class="container">
       <br />
-      <div class="row text-center">
+      <div class="row text-center" style="margin-bottom: 1rem;">
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
         <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xl-4">
           <div class="row text-center">
@@ -21,15 +21,20 @@
         </div>
         <div class="col-xs-1 col-sm-1 col-md-4 col-lg-4 col-xl-4"></div>
       </div>
-      <br />
-      <h3 style="display: flex; justify-content:center;">{{ choose_wall }}</h3>
+      <h3 class="selection-title">{{ choose_wall }}</h3>
+      <div class="row">
       {% for wall in walls %}
         <br />
-        <div class="container" style="display: flex; flex-direction:column; align-items:center;">
-          <p>
+        <div class="mob-container" style="display: flex; flex-direction:column; align-items:center;">
+          <!-- <p style="margin-bottom: 0.4rem;">
             &bull;<a href="/walls/{{ wall['image'] }}?options={{options}}">
               {{ wall["name"] }}</a>
-          </p>
+          </p> -->
+          <a href="/walls/{{ wall['image'] }}?options={{options}}">
+            <button class="btn btn-outline-primary" style="margin-bottom: 0.4rem;">
+              {{ wall["name"] }}</a>
+            </button>
+          </a>
           <img id="{{ wall['image'] }}-img" class="thumbnail" src="{{ wall['image_path'] }}" alt="Preview" />
           <!-- The Modal -->
           <div id="{{ wall['image'] }}-modal" class="modal">
@@ -80,12 +85,27 @@
         </script>
       {% endfor %}
     </div>
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block styles %}
 <style>
+  .mob-container {
+    padding-right: 15px; 
+    padding-left: 15px; 
+    margin-right: auto; 
+    margin-left: auto;
+    margin-bottom: 2rem;
+  }
+
+  .selection-title {
+    display: flex; 
+    justify-content:center; 
+    margin-bottom:3rem;
+  }
+
   .thumbnail {
     border: 1px solid #ddd;
     /* Gray border */
@@ -200,6 +220,21 @@
     .modal-content-portrait {
       height: 100%;
     }
+
+    .mob-container {
+      width: 100%;
+      padding-right: 15px; 
+      padding-left: 15px; 
+      margin-right: auto; 
+      margin-left: auto;
+      margin-bottom: 2rem;
+    }
+
+    .selection-title {
+      display: flex; 
+      justify-content:center; 
+      margin-bottom:2rem;
+    }  
   }
 </style>
 {% endblock %}
