@@ -20,14 +20,14 @@
         </div>
       </div>
       <div class="row">
-        <div class="container" style="display: flex; margin-bottom: 0.5rem;">
+        <div class="container" style="display: flex; margin-bottom: 0.5rem; margin-top:0.5rem;">
           <p style="margin-bottom:0; align-self:center;"><strong>{{ current_gym_ }}: </strong></p>
-          <div class="alert alert-info" role="alert" style="margin-left: 0.5rem; margin-bottom:0;">
+          <div class="alert alert-info" role="alert" style="margin-left: 0.5rem; margin-bottom:0; padding: 0.7rem;">
             <h5 style="font-size: 1.1rem; align-self: center; margin-bottom: 0;">{{ current_gym }}</h5>
           </div>
         </div>
       </div>
-      <hr style="margin-top: 0; margin-bottom: 1rem;" />
+      <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;" />
       <label>{{ select_gym }}: </label>
       <div class="row gym-selector">
         <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
@@ -54,32 +54,32 @@
           </form>
         </div>
       </div>
-      <br />
+      <hr style="margin-top: 2rem; margin-bottom: 2rem;" />
       <div class="row group-button-row" style="display: flex;">
-        <div style="margin-bottom:0.5rem;">
-          <a href="/create?options=boulder&latest=True" style="padding-right: 1rem; margin-left:0.9rem;">
-            <button class="btn btn-primary" style="min-width: 48%; text-align:left;">
+        <div class="div-btn-center-mobile">
+          <a class="mobile" href="/create?options=boulder&latest=True" style="padding-right: 1rem; margin-left:0.9rem;">
+            <button class="btn btn-primary btn-center-mobile-2" >
               <i class="bi bi-plus" style="margin-right: 0.4rem;"></i> {{ create_boulder }}
             </button>
           </a>
         </div>
         <!-- <p>&bull;<a href="/create?options=route"> Create Route</a></p> -->
-        <div class="button-row">
-          <a href="/explore" style="padding-right: 1rem;">
-            <button class="btn btn-primary" style="min-width: 50%; text-align:left;">
+        <div class="button-row div-btn-center-mobile">
+          <a class="mobile" href="/explore" style="padding-right: 1rem;">
+            <button class="btn btn-primary btn-center-mobile">
               <i class="bi bi-eye" style="margin-right: 0.4rem;"></i> {{ explore }}
             </button>
           </a>
         </div>
-        <div class="button-row">
-          <a href="/random_problem">
-            <button class="btn btn-primary" style="min-width: 50%; text-align:left;">
+        <div class="button-row div-btn-center-mobile">
+          <a class="mobile" href="/random_problem" style="padding-right: 1rem;">
+            <button class="btn btn-primary btn-center-mobile">
               <i class="bi bi-dice-2" style="margin-right: 0.4rem;"></i> {{ random_problem }}
             </button>
           </a>
         </div>
       </div>
-      <hr />
+      <hr class="no-margin-top-mobile" />
       <section class="module stats" id="counter">
         <div class="container">
           <div class="row">
