@@ -35,7 +35,7 @@
               {{ wall_name }}
             </h3>
           </div>
-          <div class="custom-control custom-switch">
+          <div class="custom-control custom-switch" style="padding-right:0;">
             <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
             <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection }}</label>
           </div>
@@ -71,19 +71,19 @@
           <div class="col-xs-12 col-md-6">
             <div class="row" style="display: flex;">
               <div class="col-4" style="display: grid;">
-                <button class="btn btn-outline-dark" onclick="undoMove()">
+                <button class="btn btn-outline-primary" onclick="undoMove()">
                   {{ undo }}
                 </button>
               </div>
               <div class="col-4" style="display: grid;">
                 <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
-                  <input class="btn btn-outline-dark" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
+                  <input class="btn btn-outline-primary" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
                     onclick="return setHolds();" />
                   <input type="hidden" name="holds" id="holds-array" value="" />
                 </form>
               </div>
               <div class="col-4" style="display: grid;">
-                <a href="/" class="btn btn-outline-dark">{{ cancel }}</a>
+                <a href="/" class="btn btn-outline-primary">{{ cancel }}</a>
               </div>
             </div>
           </div>
