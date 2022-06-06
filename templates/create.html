@@ -31,7 +31,7 @@
               {{ wall["name"] }}</a>
           </p> -->
           <button class="btn btn-outline-primary" style="margin-bottom: 0.6rem; padding: 0.2rem;">
-              <a href="/walls/{{ wall['image'] }}?options={{options}}">
+              <a class="wall-link" href="/walls/{{ wall['image'] }}?options={{options}}">
               {{ wall["name"] }}</a>
             </a>
           </button>
@@ -93,16 +93,15 @@
 {% block styles %}
 <style>
 
-
-  a:link {
+  a.wall-link:link {
     text-decoration: none;
   }
 
-  a:hover {
+  a.wall-link:hover {
     color: white;
   }
 
-  a {
+  a.wall-link {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     padding-left: 1rem;

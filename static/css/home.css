@@ -37,11 +37,38 @@
     font-weight: bold;
 }
 
+.btn-center-mobile {
+    min-width: 50%;
+    text-align: left;
+  }
+
+.btn-center-mobile-2 {
+    min-width: 48%;
+    text-align: left;
+  
+}
+
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 700px) {
+    a.mobile {
+        width: 100%;
+    }
     #logo-img {
         max-width: 50%;
     }
+    .btn-center-mobile, .btn-center-mobile-2 {
+      width: 100%;
+      text-align: center;
+    }
+    .div-btn-center-mobile {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+    }
+    .no-margin-top-mobile {
+        margin-top: 0;
+    }
+
 }
 
 @media only screen and (min-width: 701px) {

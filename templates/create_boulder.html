@@ -31,9 +31,9 @@
       <div class="row">
         <div class="col-sm">
           <div style="text-align: center;">
-            <h3>
-              {{ section }}: {{ wall_name }}
-            </h3>
+            <h4>
+              {{ wall_name }}
+            </h4>
           </div>
           <div class="custom-control custom-switch">
             <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
@@ -46,7 +46,7 @@
         <br />
           <div class="col-sm">
             <div style="text-align: center;">
-              <h5>{{ hold_type }}</h5>
+              <h6>{{ hold_type }}</h6>
               <div class="row">
                 <div class="col-4">
                   <input type="radio" name="hold_type" value="#00ff00" checked />
@@ -64,26 +64,24 @@
             </div>
           </div>
       </div>
-      <br />
-      <br />
-      <div class="container">
+      <div class="container mt-4">
         <div class="row">
           <div class="col-xs-12 col-md-6">
             <div class="row" style="display: flex;">
               <div class="col-4" style="display: grid;">
-                <button class="btn btn-outline-dark" onclick="undoMove()">
+                <button class="btn btn-outline-primary" onclick="undoMove()">
                   {{ undo }}
                 </button>
               </div>
               <div class="col-4" style="display: grid;">
                 <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
-                  <input class="btn btn-outline-dark" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
+                  <input class="btn btn-outline-primary" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
                     onclick="return setHolds();" />
                   <input type="hidden" name="holds" id="holds-array" value="" />
                 </form>
               </div>
               <div class="col-4" style="display: grid;">
-                <a href="/" class="btn btn-outline-dark">{{ cancel }}</a>
+                <a href="/" class="btn btn-outline-primary">{{ cancel }}</a>
               </div>
             </div>
           </div>
