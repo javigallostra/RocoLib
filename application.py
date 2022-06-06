@@ -574,6 +574,14 @@ def get_nearest_gym() -> Response:
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
+@app.route('/contact', methods=['GET'])
+def show_contact() -> Union[Response, NoReturn]:
+    """
+    Contact page
+    """
+    return render_template(
+        'contact.html'
+    )
 
 @app.errorhandler(404)
 def page_not_found(error) -> tuple[str, int]:

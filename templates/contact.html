@@ -1,0 +1,17 @@
+{% extends "base_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div id="holder">
+  <div id="body">
+    <div class="container" style="text-align: center;">
+        Get in touch and say hi by writing an email to juangallostra@gmail.com
+    </div>
+  </div>
+</div>
+{% endblock %}

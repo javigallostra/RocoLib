@@ -25,36 +25,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <!-- Bootstrap tooltips -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
     <!-- JQuery -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Bootstrap core JavaScript -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <!-- MDB core JavaScript -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
     <!-- My guess is that scripts and links defined in each page will be more -->
     <!-- specific and hence should be the ones that rule -->
     {% block head %}{% endblock %}
 </head>
 
 <body>
-    <div class="container">
-        <ul class="user-info">
-            <li><a href="{{ url_for('home') }}">{{ home }}</a></li>
-            <li> | </li>
-            <li><a href="{{ url_for('add_gym') }}">{{ add_your_gym }}</a></li>
-            <li> | </li>
+    <div class="container nav-mob">
+        <ul class="nav user-info-s">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('home') }}">{{ home }}</a>
+            </li>
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_gym') }}">{{ add_your_gym }}</a>
+            </li> -->
             {% if current_user.is_anonymous %}
-            <li><a href="{{ url_for('login') }}">{{ login }}</a></li>
-            <li> | </li>
-            <li><a href="{{ url_for('show_signup_form') }}">{{ sign_up }}</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('login') }}">{{ login }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('show_signup_form') }}">{{ sign_up }}</a>
+            </li>
             {% else %}
-            <li>{{ current_user.name }}</li>
-            <li> | </li>
-            <li><a href="{{ url_for('tick_list') }}">{{ ticklist }}</a></li>
-            <li> | </li>
-            <li><a href="{{ url_for('logout') }}">{{ logout }}</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('tick_list') }}">{{ ticklist }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">{{ current_user.name }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">{{ logout }}</a>
+            </li>
             {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('show_contact') }}">{{ contact }}</a>
+            </li>
         </ul>
     </div>
     {% block content %}{% endblock %}
@@ -65,24 +80,29 @@
 {% block scripts %} {% endblock %}
 
 <style>
-    .user-info {
-        list-style: none;
-        margin: 0;
-        padding: 0;
+    .user-info-s {
+        padding-left: 0;
     }
 
-    .user-info li {
-        display: inline-block;
-        margin: 0;
-        padding: 0 10px 0 0;
+    .nav-mob {
+        padding-left: 0;
     }
 
     @media (max-width: 767px) {
-        .user-info li {
-            display: inline-block;
-            margin: 0;
-            padding: 0 5px 0 0;
+        .user-info-s {
+            padding-left: 0;
+            justify-content: center;
         }
+    
+        .user-info-s li a {
+            padding: 0.8rem 0.5rem;
+        }
+
+        .nav-mob {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    
     }
 </style>
 
