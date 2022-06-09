@@ -38,7 +38,7 @@
       <div style="text-align: center;">
         {{ boulder_data['feet'] }}
       </div>
-      <div class="custom-control custom-switch">
+      <div class="custom-control custom-switch" style="margin-left:2rem;">
         <input type="checkbox" checked class="custom-control-input" id="holdDetectionSwitch">
         <label class="custom-control-label" for="holdDetectionSwitch">Hold detection</label>
       </div>
@@ -61,8 +61,8 @@
       {% endif %}
       <div class="container">
         <div class="row d-flex justify-content-center">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <p style="margin-top: 5px; margin-right: 10px;">
+          <div class="col-12 d-flex justify-content-center" style="align-items: center;">
+            <p style="margin-top: 5px; margin-right: 10px; margin-bottom:6px;">
               Rate this boulder:
             </p>
             <div class="star-rating">
@@ -76,22 +76,15 @@
                 <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
               </form>
             </div>
+            <button onclick="$('#bForm').submit();" class="btn btn-outline-dark mbl-size" style="margin-left:1.5rem;">Rate</button>
           </div>
         </div>
-        <div class="row d-flex justify-content-center">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <button onclick="$('#bForm').submit();" class="btn btn-outline-dark">Submit</button>
-          </div>
-        </div>
-        <div class="row d-flex justify-content-center" style="margin-top: 1rem;">
-          <ul class="user-info">
+        <div class="row d-flex justify-content-center act-btn-container" style="align-items:center;">
             {% if not current_user.is_anonymous %}
-            <li>
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
               <!-- TODO: Add safename field to boulder -->
               <form id="addForm" action="/tick_list" method="post">
-                <p>
-                  &bull;
-                  <button type="submit" name="add_boulder_to_tick_list" value="add-boulder" class="custom-link">
+                  <button type="submit" name="add_boulder_to_tick_list" value="add-boulder" style="width: 100%;" class="btn btn-outline-primary cstm-button">
                     {{ add_to_ticklist }}!
                   </button>
                   <!-- Required fields -->
@@ -99,15 +92,11 @@
                   <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
                   <input type="hidden" name="section" value="{{ boulder_data['section'] }}" />
                   <input type="hidden" name="name" value="{{ boulder_data['name'] }}" />
-                </p>
               </form>
-            </li>
-            <li> | </li>
-            <li>
+            </div>
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
               <form id="markAsDoneForm" action="/tick_list" method="post">
-                <p>
-                  &bull;
-                  <button type="submit" name="mark_boulder_as_done" value="done" class="custom-link">
+                  <button type="submit" name="mark_boulder_as_done" value="done" style="width: 100%;" class="btn btn-outline-primary cstm-button">
                     {{ done }}!
                   </button>
                   <!-- Required fields -->
@@ -116,21 +105,15 @@
                   <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
                   <input type="hidden" name="section" value="{{ boulder_data['section'] }}" />
                   <input type="hidden" name="name" value="{{ boulder_data['name'] }}" />
-                </p>
               </form>
-            </li>
-            <li> | </li>
+            </div>
             {% endif %}
-            <li>
-              <p>
-                &bull;
-                <button type="button" onclick="downloadProblemAsImage()" class="custom-link">
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
+                <button type="button" onclick="downloadProblemAsImage()" style="width: 100%;" class="btn btn-outline-primary cstm-button">
                   {{ export_as_image }}
                 </button>
-              </p>
               </form>
-            </li>
-          </ul>
+            </div>
         </div>
       </div>
       <br />
@@ -231,7 +214,7 @@
     }
 
     /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
-    .custom-link {
+    /*.custom-link {
       border: none;
       outline: none;
       background: none;
@@ -240,7 +223,16 @@
       padding: 0;
       font-family: inherit;
       font-size: inherit;
-    }
+    }*/
+
+.mbl-size {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.act-btn-container {
+  margin-top: 3rem;
+}
 
     @media (max-width: 767px) {
       .star-rating {
@@ -251,6 +243,14 @@
       hr {
         width: 95%;
       }
+      .mbl-size {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .act-btn-container {
+        margin-top: 2rem;
+      }
+      
     }
   </style>
   {% endblock %}
