@@ -38,6 +38,7 @@ Features
 Fixes
 -----
 
+- #136 Fix visualization of action buttons on problem view footer
 - #132 Fix malformed HTML element IDs in problem lists
 - #128 Fix fields rendering in user's ticklist problem cards
 - #118 Remove production DDBB credentials from Docker image
