@@ -119,7 +119,6 @@ class User(UserMixin):
             return None # valid token, but expired
         except BadSignature:
             return None # invalid token
-        # user = User.query.get(data['id'])
         user_data = mongodb_controller.get_user_data_by_id(data['id'], database)
         if not user_data:
             return None

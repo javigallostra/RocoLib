@@ -5,7 +5,8 @@ import ast
 import datetime
 from typing import NoReturn, Union
 
-from flask import Flask, render_template, request, url_for, redirect, abort, session, send_from_directory, _app_ctx_stack, g
+from flask import Flask, render_template, request, url_for, redirect, abort
+from flask import  session, send_from_directory, _app_ctx_stack, g
 from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -60,6 +61,10 @@ def make_cache_key_create() -> str:
 
 @app.before_request
 def open_database_connection():
+    """
+    Open DDBB connection before request so that
+    it can be accessed during the request processing
+    """
     g.db = get_db_connection()
 
 @app.teardown_appcontext
@@ -81,11 +86,17 @@ def load_user(user_id) -> Union[User, None]:
 # Load favicon
 @app.route('/favicon.ico')
 def favicon() -> Response:
+    """Load page favicon
+
+    :return: the favicon file
+    :rtype: Response
+    """
     return send_from_directory(
         os.path.join(app.root_path, 'static/images/favicon'),
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
 
 # load languages files
 LANG = {}
@@ -94,6 +105,25 @@ for lang in language_list:
     lang_code = lang.split(os.path.sep)[1].split('.')[0]
     with open(lang, 'r', encoding='utf8') as file:
         LANG[lang_code] = json.loads(file.read())
+
+
+def choose_language(request) -> str:
+    """
+    Choose the first known user language else DEFAULT_LANG
+    """
+    user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
+    
+    lang_matches = set(user_lang).intersection(LANG.keys())    
+    if lang_matches:
+        return lang_matches.pop()
+    return DEFAULT_LANG
+
+
+@app.context_processor
+def inject_langauge():
+    lang = choose_language(request)
+    return {**LANG[DEFAULT_LANG],**LANG[lang]}
+
 
 def get_gym() -> str:
     """
@@ -105,21 +135,6 @@ def get_gym() -> str:
     gyms = db_controller.get_gyms(g.db)
     return gyms[0]['id']
 
-def choose_language(request):
-    """
-    Choose the first known user language else DEFAULT_LANG
-    """
-    user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
-    
-    lang_matches = set(user_lang).intersection(LANG.keys())    
-    if lang_matches:
-        return lang_matches.pop()
-    return DEFAULT_LANG
-
-@app.context_processor
-def inject_langauge():
-    lang = choose_language(request)
-    return {**LANG[DEFAULT_LANG],**LANG[lang]}
 
 @app.route('/', methods=['GET', 'POST'])
 def home() -> str:

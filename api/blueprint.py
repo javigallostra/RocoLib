@@ -43,6 +43,11 @@ def verify_token(token: str) -> bool:
 
 @api_blueprint.before_request
 def open_database_connection():
+    """
+    Open a new database connection before processing the request and store 
+    it in the global request g object so that it can be accessed from within
+    the request
+    """
     g.db = get_db_connection()
 
 @api_blueprint.route('/docs/swagger.json')
