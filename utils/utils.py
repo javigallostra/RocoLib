@@ -278,3 +278,48 @@ def get_time_since_creation(time: str) -> str:
         nb, name = seconds, 'seconds' if seconds != 1 else 'second'
 
     return f'{nb} {name}'
+
+
+def get_boulder_from_request(request, db, session, gym_code):
+    if request.method == 'POST':
+        return get_boulder_from_post_request(request, gym_code)
+    return get_boulder_from_get_request(request, db, session)
+
+
+def get_boulder_from_get_request(request, db, session):
+    boulder = db_controller.get_boulder_by_name(
+        gym=request.args.get('gym'),
+        name=request.args.get('name'),
+        database=db
+    )
+    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+    boulder['safe_name'] = secure_filename(boulder['name'])
+    boulder['radius'] = get_wall_radius(
+        session,
+        db,
+        request.args.get('gym') + '/' + boulder['section'])
+    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+    boulder['gym'] = request.args.get('gym')
+    wall_image = get_wall_image(
+        request.args.get('gym'), boulder['section'], WALLS_PATH)
+    return boulder, wall_image
+
+
+def get_boulder_from_post_request(request, gym_code):
+    boulder = make_boulder_data_valid_js(request.form.get('boulder_data'))
+    if not boulder.get('gym', ''):
+        boulder['gym'] = gym_code
+    wall_image = get_wall_image(
+        boulder['gym'], boulder['section'], WALLS_PATH)
+    print(boulder, wall_image)
+    return boulder, wall_image
+
+
+def get_hold_data(gym, section, static_folder_path):
+    # get hold data
+    filename = get_wall_json(gym, section, WALLS_PATH, static_folder_path)
+    hold_data = None
+    if os.path.exists(filename):
+        with open(filename) as f:
+            hold_data = json.load(f)
+    return hold_data

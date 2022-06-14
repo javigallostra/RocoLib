@@ -23,7 +23,6 @@ import db.mongodb_controller as db_controller
 from config import *
 import utils.utils as utils
 from utils.generate_open_api_spec import generate_api_docs
-from utils.utils import get_db_connection, load_data, set_creds_file
 
 import ticklist_handler
 
@@ -60,12 +59,12 @@ def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
 @app.before_request
-def open_database_connection():
+def open_database_connection() -> None:
     """
     Open DDBB connection before request so that
     it can be accessed during the request processing
     """
-    g.db = get_db_connection()
+    g.db = utils.get_db_connection()
 
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
@@ -79,8 +78,8 @@ def close_db_connection(exception) -> None:
 
 # user loading callback
 @login_manager.user_loader
-def load_user(user_id) -> Union[User, None]:
-    return User.get_by_id(user_id, get_db_connection())
+def load_user(user_id: str) -> Union[User, None]:
+    return User.get_by_id(user_id, utils.get_db_connection())
 
 
 # Load favicon
@@ -120,7 +119,7 @@ def choose_language(request) -> str:
 
 
 @app.context_processor
-def inject_langauge():
+def inject_langauge() -> dict:
     lang = choose_language(request)
     return {**LANG[DEFAULT_LANG],**LANG[lang]}
 
@@ -131,7 +130,6 @@ def get_gym() -> str:
     """
     if session.get('gym', ''):
         return session['gym']
-    # gyms = db_controller.get_gyms(get_db_connection())
     gyms = db_controller.get_gyms(g.db)
     return gyms[0]['id']
 
@@ -213,9 +211,7 @@ def explore_boulders() -> str:
         boulders = utils.get_boulders_list(gym, filters, g.db, session)
 
     elif request.method == 'GET':
-        gym = request.args.get('gym', '')
-        if not gym:
-            gym = get_gym()
+        gym = request.args.get('gym', get_gym())
         filters = None
 
     boulders = utils.get_boulders_list(gym, filters, g.db, session)
@@ -244,8 +240,7 @@ def rate_boulder() -> Union[Response, NoReturn]:
     if request.method == 'POST':
         boulder_name = request.form.get('boulder_name')
         boulder_rating = request.form.get('boulder_rating')
-        gym = request.form.get('gym') if request.form.get(
-            'gym', '') else get_gym()
+        gym = request.form.get('gym', get_gym())
         boulder = db_controller.get_boulder_by_name(
             gym=gym,
             name=boulder_name,
@@ -272,42 +267,13 @@ def load_boulder() -> Union[str, NoReturn]:
     Load a boulder in the required format to be rendered in the page.
     """
     try:
-        if request.method == 'POST':
-            boulder = utils.make_boulder_data_valid_js(request.form.get('boulder_data'))
-            boulder_name = boulder['name']
-            section = boulder['section']
-            if not boulder.get('gym', ''):
-                boulder['gym'] = get_gym()
-            wall_image = utils.get_wall_image(
-                boulder['gym'], section, WALLS_PATH)
-        elif request.method == 'GET':
-            boulder = db_controller.get_boulder_by_name(
-                gym=request.args.get('gym'),
-                name=request.args.get('name'),
-                database=g.db
-            )
-            boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-            boulder['safe_name'] = secure_filename(boulder['name'])
-            boulder['radius'] = utils.get_wall_radius(
-                session,
-                g.db,
-                request.args.get('gym') + '/' + boulder['section'])
-            boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-            boulder['gym'] = request.args.get('gym')
-            boulder_name = boulder['name']
-            section = boulder['section']
-            wall_image = utils.get_wall_image(
-                request.args.get('gym'), section, WALLS_PATH)
+        boulder, wall_image = utils.get_boulder_from_request(request, g.db, session, get_gym())
         # get hold data
-        filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
-        hold_data = None
-        if os.path.exists(filename):
-            with open(filename) as f:
-                hold_data = json.load(f)
+        hold_data = utils.get_hold_data(get_gym(), boulder['section'], app.static_folder)
 
         return render_template(
             'load_boulder.html',
-            boulder_name=boulder_name,
+            boulder_name=boulder.get('name', ''),
             wall_image=wall_image,
             boulder_data=boulder,
             origin=request.form.get('origin', 'explore_boulders'),
@@ -347,11 +313,8 @@ def random_problem() -> str:
         get_gym(), section, WALLS_PATH)
 
     # get hold data
-    filename = utils.get_wall_json(get_gym(), boulder['section'], WALLS_PATH, app.static_folder)
-    hold_data = None
-    if os.path.exists(filename):
-        with open(filename) as f:
-            hold_data = json.load(f)
+    hold_data = utils.get_hold_data(get_gym(), boulder['section'], app.static_folder)
+
     
     return render_template(
         'load_boulder.html',
@@ -384,11 +347,8 @@ def wall_section(wall_section) -> str:
         session['walls_radius'] = db_controller.get_walls_radius_all(g.db)
 
     # load hold data
-    filename = utils.get_wall_json(get_gym(), wall_section, WALLS_PATH, app.static_folder)
-    hold_data = None
-    if os.path.exists(filename):
-        with open(filename) as f:
-            hold_data = json.load(f)
+    hold_data = utils.get_hold_data(get_gym(), wall_section, app.static_folder)
+
     return render_template(
         template,
         wall_image=utils.get_wall_image(get_gym(), wall_section, WALLS_PATH),
@@ -513,7 +473,7 @@ def tick_list() -> Union[str, Response]:
     Tick list page handler.
     """
     if request.method == 'POST':
-        data, _ = load_data(request)
+        data, _ = utils.load_data(request)
         boulder = db_controller.get_boulder_by_name(
             data.get('gym'),
             data.get('name'),
@@ -587,14 +547,14 @@ def get_nearest_gym() -> Response:
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
+
 @app.route('/contact', methods=['GET'])
 def show_contact() -> Union[Response, NoReturn]:
     """
     Contact page
     """
-    return render_template(
-        'contact.html'
-    )
+    return render_template('contact.html')
+
 
 @app.errorhandler(404)
 def page_not_found(error) -> tuple[str, int]:
@@ -616,8 +576,8 @@ if __name__ == '__main__':
         generate_api_docs(app)
     if RUN_SERVER:
         if DOCKER_ENV == "True":
-            set_creds_file(CREDS_DEV)
+            utils.set_creds_file(CREDS_DEV)
             app.run(debug=DEBUG, host='0.0.0.0', port=80)
         else:
-            set_creds_file(CREDS)
+            utils.set_creds_file(CREDS)
             app.run(debug=DEBUG, port=PORT)
