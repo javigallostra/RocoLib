@@ -505,9 +505,7 @@ def logout() -> Response:
     return redirect(url_for('home'))
 
 
-# User related
-
-
+# User related endpoints
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list() -> Union[str, Response]:
