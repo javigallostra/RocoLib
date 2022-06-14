@@ -7,23 +7,22 @@ from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort
 from flask import  session, send_from_directory, _app_ctx_stack, g
-from werkzeug.wrappers.response import Response
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+
+from werkzeug.wrappers.response import Response
+from werkzeug.utils import secure_filename
+from werkzeug.urls import url_parse
+
 from api.blueprint import api_blueprint
 from models import User
 from forms import LoginForm, SignupForm
-from werkzeug.utils import secure_filename
-from werkzeug.urls import url_parse
 from utils.typing import Data
-
-
-import db.mongodb_controller as db_controller
 from config import *
-import utils.utils as utils
 from utils.generate_open_api_spec import generate_api_docs
-
+import utils.utils as utils
+import db.mongodb_controller as db_controller
 import ticklist_handler
 
 # create the application object
