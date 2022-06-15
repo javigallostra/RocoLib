@@ -10,6 +10,7 @@ from flask.wrappers import Request
 import pymongo
 from pymongo.database import Database
 from werkzeug.utils import secure_filename
+from werkzeug.local import LocalProxy
 from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
@@ -280,42 +281,84 @@ def get_time_since_creation(time: str) -> str:
     return f'{nb} {name}'
 
 
-def get_boulder_from_request(request, db, session, gym_code):
+def get_boulder_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Load boulder data from a given request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :param gym_code: the gym code of the boulder
+    :type gym_code: str
+    :return: the boulder data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
     if request.method == 'POST':
         return get_boulder_from_post_request(request, gym_code)
     return get_boulder_from_get_request(request, db, session)
 
 
-def get_boulder_from_get_request(request, db, session):
+def get_boulder_from_get_request(request: LocalProxy, db: Database, session: LocalProxy) -> Tuple[dict, str]:
+    """
+    Get boulder data from a GET request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :return: the boulder data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
     boulder = db_controller.get_boulder_by_name(
         gym=request.args.get('gym'),
         name=request.args.get('name'),
         database=db
     )
-    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-    boulder['safe_name'] = secure_filename(boulder['name'])
-    boulder['radius'] = get_wall_radius(
-        session,
+    return load_full_boulder_data(
+        boulder,
+        request.args.get('gym'),
         db,
-        request.args.get('gym') + '/' + boulder['section'])
-    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-    boulder['gym'] = request.args.get('gym')
-    wall_image = get_wall_image(
-        request.args.get('gym'), boulder['section'], WALLS_PATH)
-    return boulder, wall_image
+        session
+    )
 
 
-def get_boulder_from_post_request(request, gym_code):
+def get_boulder_from_post_request(request: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Get boulder data from a POST request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param gym_code: code of the gym the boulder belongs to
+    :type gym_code: str
+    :return: The boulder data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
     boulder = make_boulder_data_valid_js(request.form.get('boulder_data'))
     if not boulder.get('gym', ''):
         boulder['gym'] = gym_code
     wall_image = get_wall_image(
         boulder['gym'], boulder['section'], WALLS_PATH)
-    print(boulder, wall_image)
     return boulder, wall_image
 
 
-def get_hold_data(gym, section, static_folder_path):
+def get_hold_data(gym: str, section: str, static_folder_path: str) -> dict:
+    """
+    Get the computed hold polygon data for a given wall
+
+    :param gym: code of the gym the wall belongs to
+    :type gym: str
+    :param section: wall section from which to get the hold data
+    :type section: str
+    :param static_folder_path: path to the folder with the static assets
+    :type static_folder_path: str
+    :return: the hols data for the specified wall
+    :rtype: dict
+    """
     # get hold data
     filename = get_wall_json(gym, section, WALLS_PATH, static_folder_path)
     hold_data = None
@@ -323,3 +366,33 @@ def get_hold_data(gym, section, static_folder_path):
         with open(filename) as f:
             hold_data = json.load(f)
     return hold_data
+
+
+def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: LocalProxy) -> Tuple[dict, str]:
+    """
+    Complete boulder data by adding the fields that can be lazily
+    computed when loading a boulder and hence need not to be stored
+    on the DDBB
+
+    :param boulder: original boulder data as stored in the DDBB
+    :type boulder: dict
+    :param gym_code: the code of the gym the boulder belongs to
+    :type gym_code: str
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :return: the boulder data with the additional fields and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+    boulder['safe_name'] = secure_filename(boulder['name'])
+    boulder['radius'] = get_wall_radius(
+        session,
+        db,
+        gym_code + '/' + boulder['section'])
+    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+    boulder['gym'] = gym_code
+    wall_image = get_wall_image(
+        gym_code, boulder['section'], WALLS_PATH)
+    return boulder, wall_image

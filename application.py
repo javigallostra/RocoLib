@@ -6,7 +6,7 @@ import datetime
 from typing import NoReturn, Union
 
 from flask import Flask, render_template, request, url_for, redirect, abort
-from flask import  session, send_from_directory, _app_ctx_stack, g
+from flask import session, send_from_directory, _app_ctx_stack, g
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -28,7 +28,7 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
-DEBUG = True
+DEBUG = False
 API_VERSION = 'v1'
 SWAGGER_URL = f'/api/{API_VERSION}/docs'
 API_URL = f'/api/{API_VERSION}/docs/swagger.json'
@@ -48,7 +48,8 @@ app.register_blueprint(swaggerui_blueprint)
 app.register_blueprint(api_blueprint)
 
 # app.config.from_pyfile('config.py')
-app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^' #Might have to change how this is computed
+# Might have to change how this is computed
+app.secret_key = b'\xf7\x81Q\x89}\x02\xff\x98<et^'
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -57,6 +58,7 @@ login_manager.login_view = 'login'
 def make_cache_key_create() -> str:
     return (request.path + get_gym()).encode('utf-8')
 
+
 @app.before_request
 def open_database_connection() -> None:
     """
@@ -64,6 +66,7 @@ def open_database_connection() -> None:
     it can be accessed during the request processing
     """
     g.db = utils.get_db_connection()
+
 
 @app.teardown_appcontext
 def close_db_connection(exception) -> None:
@@ -109,9 +112,10 @@ def choose_language(request) -> str:
     """
     Choose the first known user language else DEFAULT_LANG
     """
-    user_lang = request.headers.get('Accept_Language').replace('-','_').split(';')[0].split(',')
-    
-    lang_matches = set(user_lang).intersection(LANG.keys())    
+    user_lang = request.headers.get('Accept_Language').replace(
+        '-', '_').split(';')[0].split(',')
+
+    lang_matches = set(user_lang).intersection(LANG.keys())
     if lang_matches:
         return lang_matches.pop()
     return DEFAULT_LANG
@@ -120,7 +124,7 @@ def choose_language(request) -> str:
 @app.context_processor
 def inject_langauge() -> dict:
     lang = choose_language(request)
-    return {**LANG[DEFAULT_LANG],**LANG[lang]}
+    return {**LANG[DEFAULT_LANG], **LANG[lang]}
 
 
 def get_gym() -> str:
@@ -266,9 +270,18 @@ def load_boulder() -> Union[str, NoReturn]:
     Load a boulder in the required format to be rendered in the page.
     """
     try:
-        boulder, wall_image = utils.get_boulder_from_request(request, g.db, session, get_gym())
+        boulder, wall_image = utils.get_boulder_from_request(
+            request,
+            g.db,
+            session,
+            get_gym()
+        )
         # get hold data
-        hold_data = utils.get_hold_data(get_gym(), boulder['section'], app.static_folder)
+        hold_data = utils.get_hold_data(
+            get_gym(),
+            boulder['section'],
+            app.static_folder
+        )
 
         return render_template(
             'load_boulder.html',
@@ -289,6 +302,7 @@ def explore_routes() -> str:
     """
     return render_template('explore_routes.html')
 
+
 @app.route('/random_problem')
 def random_problem() -> str:
     """
@@ -298,26 +312,24 @@ def random_problem() -> str:
     boulder = db_controller.get_random_boulder(get_gym(), g.db)
     if not boulder:
         return abort(404)
-    boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-    boulder['safe_name'] = secure_filename(boulder['name'])
-    boulder['radius'] = utils.get_wall_radius(
-        session,
+
+    boulder_data, wall_image = utils.load_full_boulder_data(
+        boulder,
+        get_gym(),
         g.db,
-        get_gym() + '/' + boulder['section'])
-    boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-    boulder['gym'] = get_gym()
-    boulder_name = boulder['name']
-    section = boulder['section']
-    wall_image = utils.get_wall_image(
-        get_gym(), section, WALLS_PATH)
+        session
+    )
 
     # get hold data
-    hold_data = utils.get_hold_data(get_gym(), boulder['section'], app.static_folder)
+    hold_data = utils.get_hold_data(
+        get_gym(),
+        boulder['section'],
+        app.static_folder
+    )
 
-    
     return render_template(
         'load_boulder.html',
-        boulder_name=boulder_name,
+        boulder_name=boulder_data['name'],
         wall_image=wall_image,
         boulder_data=boulder,
         origin=request.form.get('origin', ''),
@@ -482,7 +494,7 @@ def tick_list() -> Union[str, Response]:
         if 'add_boulder_to_tick_list' in request.form:
             # Just add boulder to ticklist, it hasn't been climbed yet
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                data, 
+                data,
                 boulder_id,
                 current_user,
                 g.db
@@ -490,10 +502,10 @@ def tick_list() -> Union[str, Response]:
         elif 'mark_boulder_as_done' in request.form:
             # Add boulder to ticklist if not present, mark as done or add new climbed date
             current_user.ticklist = ticklist_handler.add_boulder_to_ticklist(
-                data, 
-                boulder_id, 
-                current_user, 
-                g.db, 
+                data,
+                boulder_id,
+                current_user,
+                g.db,
                 mark_as_done=True
             )
             # update number of repetitions
