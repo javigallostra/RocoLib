@@ -27,7 +27,7 @@
         </button>
       </div>
       <div class="collapse" id="collapseExample" style="margin-bottom: 0.5rem;">
-        <div class="card card-body" style="padding-top: 1.5rem; padding-bottom:1.5rem;">
+        <div class="card card-body" style="padding-top: 1.5rem; padding-bottom:1.5rem; border: 0.1em solid lightslategray;">
           <div class="row text-left">
             <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 mt-1 mb-1">
               {{ select_gym }}:
@@ -82,7 +82,7 @@
       {% endif %}
       <div id="bouldersList" class="accordion">
         {% for boulder in boulder_list %}
-        <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid; border-radius: 0.25rem;">
+        <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid lightgrey; border-radius: 0rem;">
           <div class="card-header" id="{{ 'id_' + boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
               <div class="col-11 col-md-4" style="padding-right: 0px;">
