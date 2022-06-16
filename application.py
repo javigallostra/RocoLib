@@ -12,7 +12,6 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 from flask_swagger_ui import get_swaggerui_blueprint
 
 from werkzeug.wrappers.response import Response
-from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
 from api.blueprint import api_blueprint
@@ -28,7 +27,7 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
-DEBUG = False
+DEBUG = True
 API_VERSION = 'v1'
 SWAGGER_URL = f'/api/{API_VERSION}/docs'
 API_URL = f'/api/{API_VERSION}/docs/swagger.json'
@@ -211,11 +210,12 @@ def explore_boulders() -> str:
                 request.form.get('filters')
             ).items() if val not in ['all', '']
         }
-        boulders = utils.get_boulders_list(gym, filters, g.db, session)
 
     elif request.method == 'GET':
         gym = request.args.get('gym', get_gym())
         filters = None
+
+    session['filters'] = filters
 
     boulders = utils.get_boulders_list(gym, filters, g.db, session)
     gym_walls = db_controller.get_gym_walls(gym, g.db)
@@ -228,12 +228,40 @@ def explore_boulders() -> str:
 
     return render_template(
         'explore_boulders.html',
+        gyms=db_controller.get_gyms(g.db),
+        selected=gym,
         boulder_list=boulders,
         walls_list=gym_walls,
         origin='explore_boulders',
         is_authenticated=current_user.is_authenticated
     )
 
+@app.route('/change_gym', methods=['POST'])
+def change_gym_problem_list() -> str:
+    """
+    Load the list of problems for the selected gym
+    """
+    gym = request.form.get('gym', get_gym())
+    filters = session.get('filters', None)
+
+    boulders = utils.get_boulders_list(gym, filters, g.db, session)
+    gym_walls = db_controller.get_gym_walls(gym, g.db)
+
+    if current_user.is_authenticated:
+        done_boulders = [
+            boulder.iden for boulder in current_user.ticklist if boulder.is_done]
+        for boulder in boulders:
+            boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
+
+    return render_template(
+        'explore_boulders.html',
+        gyms=db_controller.get_gyms(g.db),
+        selected=gym,
+        boulder_list=boulders,
+        walls_list=gym_walls,
+        origin='explore_boulders',
+        is_authenticated=current_user.is_authenticated
+    )
 
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder() -> Union[Response, NoReturn]:
