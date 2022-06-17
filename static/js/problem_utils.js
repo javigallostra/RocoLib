@@ -21,7 +21,7 @@ function hexToRGBA(hex, alpha) {
 
 function fillCanvasWithGray(context, canvas) {
   // fill canvas with gray
-  context.fillStyle = hexToRGBA("#000000", 0.45);
+  context.fillStyle = hexToRGBA("#000000", 0.35);
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#000000";
 }
