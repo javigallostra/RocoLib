@@ -10,7 +10,7 @@ Features
 --------
 
 - #138 Enable changing gym from problems list page & UI improvements
-- #134 #140 UI improvements
+- #134 #140 #142 UI improvements
 - #133 Include repetitions as part of the data of a problem. Enable sorting by repetitions.
 - #129 Refactor DDBB connection handling
 - #127 Show problems as collapsible cards in problem lists

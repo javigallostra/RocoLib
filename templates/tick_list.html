@@ -11,11 +11,25 @@
 <div id="holder">
   <div id="body">
     <div class="container">
-      <div class=" form-group row text-left">
-        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-          {{ sort_by }}:
+      <div class="row">
+        <div class="col" style="display: flex; margin-left: 8px;">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
         </div>
-        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
+        <div class="col" style="display: flex; justify-content:end;">
+          <button style="margin-right: 8px;" class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fa fa-cog"></i>
+          </button>
+        </div>
+      </div>
+      <div class="collapse" id="collapseExample" style="margin-bottom: 0.5rem;">
+        <div class="card card-body" style="padding-top: 1rem; padding-bottom:1.5rem; border: 0.1em solid lightslategray;">
+          <div class=" form-group row text-left">
+              <div class="col mt-1">
+                {{ sort_by }}:
+              </div>
+          </div>
           <div class="row">
             <div class="col-6 col-md-4">
               <select class="form-control" id="sortTickListCriteria">
@@ -32,15 +46,13 @@
               </select>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row text-left">
-        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 pl-4 mt-1">
-          {{ show }}:
-        </div>
-        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 pl-4">
+          <div class="row text-left">
+            <div class="col mt-1">
+              {{ show }}:
+            </div>
+          </div>
           <div class="row">
-            <div class="col-6 col-md-4">
+            <div class="col">
               <select class="form-control" id="hideDone">
                 <option value="all">{{ all }}</option>
                 <option value="todo" selected>{{ to_do }}</option>
@@ -49,7 +61,7 @@
             </div>
           </div>
         </div>
-      </div>
+     </div>
       {% if not boulder_list %}
       <br />
       <br />
@@ -227,7 +239,7 @@
       }
     } else if (this.value === "rating") {
       function sortBoulders(a, b) {
-        return b["rating"] - a["rating"];
+        return a["rating"] - b["rating"];
       }
     }
     boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
@@ -235,10 +247,11 @@
     if ($("#sortAscending").val() == "increasing") {
       boulders_data["boulders"].reverse();
     }
+
     boulders_data["boulders"].forEach((boulder) => {
       // Reorder divs according to criteria
       $("#tickList")
-        .find("#" + boulder["safe_name"])
+        .find("#id_" + boulder["safe_name"])
         .each(function () {
           $(this).parent().append(this);
         });
