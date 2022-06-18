@@ -48,15 +48,19 @@
             <div style="text-align: center;">
               <h6>{{ hold_type }}</h6>
               <div class="row">
-                <div class="col-4">
+                <div class="col" style="display: flex; align-items:center; justify-content:center;">
                   <input type="radio" name="hold_type" value="#00ff00" checked />
                   {{ start }}<br />
                 </div>
-                <div class="col-4">
+                <div class="col" style="display: flex; align-items:center; justify-content:center;">
                   <input type="radio" name="hold_type" value="#0000ff" />
                   {{ normal }}<br />
                 </div>
-                <div class="col-4">
+                <div class="col" style="display: flex; align-items:center; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#ffa321" />
+                  {{ feet_only }}<br />
+                </div>
+                <div class="col" style="display: flex; align-items:center; justify-content:center;">
                   <input type="radio" name="hold_type" value="#ff0000" />
                   {{ top }}<br />
                 </div>
@@ -120,8 +124,8 @@
       margin-right: auto;
     }
     
-    h5 {
-      margin-top: 0.5rem;
+    h6 {
+      margin-top: 1rem;
     }
   }
 
