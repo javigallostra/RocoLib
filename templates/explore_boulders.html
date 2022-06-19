@@ -27,36 +27,38 @@
       <div class="collapse" id="collapseExample" style="margin-bottom: 0.5rem;">
         <div class="card card-body" style="padding-top: 1.5rem; padding-bottom:1.5rem; border: 0.1em solid lightslategray;">
           <div class="row text-left">
-            <div class="col-2 mt-1 mb-1">
+            <div class="col mt-1 mb-1">
               {{ select_gym }}:
             </div>
-            <div class="col-4">
+            <div class="col">
               <div class="gym-selector">
-                <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
+                <div class="form-group" style="margin-bottom: 0.5rem;">
                   <form action="/change_gym" method="POST">
-                    <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
+                    <select class="form-control row" onchange="this.form.submit()" name="gym" id="gym">
                       {% for gym in gyms %}
                       <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
                         endif %}>{{ gym['name'] }}</option>
-                      {% endfor %}
-                    </select>
-                  </form>
+                        {% endfor %}
+                      </select>
+                    </form>
+                  </div>
                 </div>
-              </div>
             </div>
-            <div class="col-1 mt-1 mb-1">
+          </div>
+          <div class="row text-left">
+            <div class="col mt-1 mb-1">
               {{ sort_by }}:
             </div>
-            <div class="col-5">
-              <div class="form-group row" style="margin: inherit;">
-                <select class="form-control col-6 col-md-6 mr-3" id="sortCriteria">
+            <div class="col">
+              <div class="form-group" style="margin: inherit;">
+                <select class="form-control row" id="sortCriteria" style="margin-bottom: 0.25rem;">
                   <option value="date-recent" selected>{{ creation_date }}</option>
                   <option value="rating">{{ rating }}</option>
                   <option value="difficulty">{{ difficulty }}</option>
                   <option value="section">{{ wall_section }}</option>
                   <option value="repetitions">{{ repetitions }}</option>
                 </select>
-                <select class="form-control col-5" id="sortAscending">
+                <select class="form-control row" id="sortAscending">
                   <option value="increasing">{{ increasing }}</option>
                   <option value="decreasing" selected>{{ decreasing }}</option>
                 </select>
@@ -64,7 +66,7 @@
             </div>
           </div>  
           {% if is_authenticated %}
-          <div class="row text-left mb-3 mt-3" style="padding-left: 2.2rem;">
+          <div class="row text-left mt-3" style="padding-left: 2.2rem;">
             <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
             <label class="form-check-label" for="hideDoneCheck">{{ hide_done }}</label>
           </div>
@@ -311,7 +313,7 @@
       font-size: 1.1rem;
       margin-bottom: 0rem;
       align-self: center;
-      
+
     }
   }
 </style>
