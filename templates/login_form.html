@@ -4,6 +4,14 @@
 
 {% block content %}
 <div class="container" style="margin-top: 1rem;">
+    <div class="row text-center">
+        <div class="col" style="justify-content: flex-start; margin-bottom: 1rem;">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
+        </div>
+    </div>
+    <h4 style="margin-bottom:1rem;">{{ login }}</h4>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <div class="row">

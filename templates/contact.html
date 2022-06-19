@@ -1,6 +1,6 @@
 {% extends "base_template.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Contact us{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
@@ -10,7 +10,16 @@
 <div id="holder">
   <div id="body">
     <div class="container" style="text-align: center;">
+      <div class="row text-center">
+        <div class="col">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div>
         Get in touch and say hi by writing an email to juangallostra@gmail.com
+      </div>
     </div>
   </div>
 </div>

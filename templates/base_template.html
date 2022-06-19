@@ -42,10 +42,10 @@
 
 <body>
     <div class="container nav-mob">
-        <ul class="nav user-info-s">
-            <li class="nav-item">
+        <ul class="nav user-info-s" style="justify-content: flex-start;">
+            <!-- <li class="nav-item">
                 <a class="nav-link active" href="{{ url_for('home') }}">{{ home }}</a>
-            </li>
+            </li> -->
             <!-- <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('add_gym') }}">{{ add_your_gym }}</a>
             </li> -->
@@ -58,10 +58,10 @@
             </li>
             {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tick_list') }}">{{ ticklist }}</a>
+                <a class="nav-link" href="#">{{ current_user.name }}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">{{ current_user.name }}</a>
+                <a class="nav-link" href="{{ url_for('tick_list') }}">{{ ticklist }}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('logout') }}">{{ logout }}</a>
