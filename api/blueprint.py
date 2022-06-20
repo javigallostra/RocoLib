@@ -11,6 +11,7 @@ from utils.utils import get_db_connection
 from models import User
 import ticklist_handler
 from utils.utils import load_data
+from bson import ObjectId
 
 API_VERSION = 'v1'
 
@@ -683,16 +684,38 @@ def mark_boulder_as_done() -> Response:
     """
     if request.method == 'POST':
       data, _ = load_data(request)
-      b_data = {'iden': data.get('boulder_id', ''), 'is_done': True}
-      if b_data.get('iden', ''):
-        db_controller.put_boulder_in_ticklist(
-            b_data,
+      if data.get('boulder_id', '') and data.get('gym', ''):
+
+        db_boulder = db_controller.get_boulder_by_id(data.get('gym'), data.get('boulder_id'), g.db)
+
+        if not db_boulder:
+          return jsonify(dict(errors=dict(boulder_id=f'Boulder {data.get("boulder_id")} for gym {data.get("gym")} not found'), marked_as_done=False)), 404
+   
+        db_boulder['iden'] = db_boulder.pop('_id')
+        db_boulder['is_done'] = True
+
+        # adds the boulder, it doesn't check if it exists
+        updated_ticklist = db_controller.put_boulder_in_ticklist(
+            db_boulder,
             g.user.id,
             g.db,
             mark_as_done_clicked=True
         )
-        return jsonify(dict(boulder_id=b_data.get('iden'), marked_as_done=True)), 200
-      return jsonify(dict(errors=dict(boulder_id='Invalid boulder id'), marked_as_done=False)), 400
+        
+        updated_boulder = [b for b in updated_ticklist if b['iden'] == db_boulder['iden']]
+
+        if updated_boulder and updated_boulder[0]['is_done']:
+          return jsonify(dict(boulder_id=db_boulder.get('iden'), marked_as_done=True)), 200
+        else:
+          return jsonify(dict(errors=dict(boulder_id='Boulder not found'), marked_as_done=False)), 404
+
+      # detect missing fields and add as errors
+      errors = dict()
+      if not data.get('boulder_id', ''):
+        errors['boulder_id'] = 'Boulder id is required'
+      if not data.get('gym', ''):
+        errors['gym'] = 'Gym is required'
+      return jsonify(dict(dict(errors=errors), marked_as_done=False)), 400
 
 
 @api_blueprint.route('/user/ticklist', methods=['GET'])

@@ -141,6 +141,7 @@ class MarkDoneBoulderRequestBody(Schema):
     Data Schema to rate a boulder
     """
     boulder_id = fields.Str(required=True)
+    gym = fields.Str(required=True)
 
 class MarkDoneBoulderResponseBody(Schema):
     """
