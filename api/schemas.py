@@ -136,6 +136,26 @@ class RateBoulderErrorResponse(Schema):
     errors = fields.Dict()
     rated = fields.Bool()
 
+class MarkDoneBoulderRequestBody(Schema):
+    """
+    Data Schema to rate a boulder
+    """
+    boulder_id = fields.Str(required=True)
+    gym = fields.Str(required=True)
+
+class MarkDoneBoulderResponseBody(Schema):
+    """
+    Data schema of the response to a successful boulder rating request
+    """
+    boulder_id = fields.Str()
+    marked_as_done = fields.Bool()
+
+class MarkDoneBoulderErrorResponse(Schema):
+    """
+    Data schema of the response to a unsuccessful boulder rating request
+    """
+    errors = fields.Dict()
+    marked_as_done = fields.Bool()
 
 class AuthenticationRequestBody(Schema):
     """

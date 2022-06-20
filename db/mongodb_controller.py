@@ -23,8 +23,8 @@ def postprocess_boulder_data(func):
     def wrapper(*args, **kwargs):
         boulder_data = func(*args, **kwargs)
         # Add/delete required boulder fields
-        # handle 3 possible types: 
-        #   1. list 
+        # handle 3 possible types:
+        #   1. list
         #   2. dict containing multiple objects
         #   3. single object as dict
         fields_to_check = {
@@ -36,7 +36,7 @@ def postprocess_boulder_data(func):
                     if field in boulder:
                         continue
                     boulder[field] = fields_to_check[field]
-        elif isinstance(boulder_data, dict):
+        elif isinstance(boulder_data, dict) and boulder_data:
             # check if Items is key
             if 'Items' in boulder_data:
                 for boulder in boulder_data['Items']:
@@ -51,6 +51,7 @@ def postprocess_boulder_data(func):
                     boulder_data[field] = fields_to_check[field]
         return boulder_data
     return wrapper
+
 
 def serializable(func):
     """
@@ -80,6 +81,7 @@ def serializable(func):
                 return str(value)
             return value
     return wrapper
+
 
 def make_object_serializable(element: Data) -> Data:
     """
@@ -113,7 +115,7 @@ def get_gyms(database: Database) -> list[Data]:
 
 
 @serializable
-def get_gym_walls(gym: str, database: Database, latest: bool=False) -> list[Data]:
+def get_gym_walls(gym: str, database: Database, latest: bool = False) -> list[Data]:
     """
     Return the list of available walls for a specific
     Gym
@@ -122,6 +124,7 @@ def get_gym_walls(gym: str, database: Database, latest: bool=False) -> list[Data
     if latest:
         walls = [wall for wall in walls if wall['latest'] == True]
     return walls
+
 
 def get_gym_pretty_name(gym: str, database: Database) -> str:
     """
@@ -334,9 +337,11 @@ def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
 
     Return a boulder data with 'gym', 'is_done', and 'date_climbed' fields
     """
-    boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(boulder.iden)
+    boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
+        boulder.iden)
     if boulder_data is None:
-        boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(ObjectId(boulder.iden))
+        boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
+            ObjectId(boulder.iden))
     boulder_data['gym'] = boulder.gym
     boulder_data['is_done'] = boulder.is_done
     # backwards compatibility
@@ -359,6 +364,7 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     boulder = database[f'{gym}_boulders'].find_one({'name': name})
     return boulder if boulder else {}
 
+
 @serializable
 @postprocess_boulder_data
 def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
@@ -367,7 +373,7 @@ def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
 
     Return an empty dictionary if the boulder is not found
     """
-    boulder = database[f'{gym}_boulders'].find_one({"_id" : ObjectId(id)})
+    boulder = database[f'{gym}_boulders'].find_one({"_id": ObjectId(id)})
     return boulder if boulder else {}
 
 
@@ -385,7 +391,8 @@ def get_random_boulder(gym: str, database: Database) -> Data:
     """
     boulder = None
     try:
-        boulder = database[f'{gym}_boulders'].aggregate([{ "$sample": { "size": 1 } }]).next()
+        boulder = database[f'{gym}_boulders'].aggregate(
+            [{"$sample": {"size": 1}}]).next()
     except StopIteration:
         boulder = None
     return boulder if boulder else {}
@@ -446,6 +453,8 @@ def get_boulders_filtered(
     return {'Items': [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
 
 # User related functions
+
+
 @serializable
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
@@ -476,6 +485,7 @@ def get_user_data_by_email(email: str, database: Database) -> Data:
     """
     user = database['users'].find_one({'email': email})
     return user if user else {}
+
 
 @serializable
 def get_user_data_by_username(name: str, database: Database) -> Data:
