@@ -345,6 +345,28 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(len(resp.json.get('boulders')), 1)
         self.assertEqual(resp.json.get('boulders')[0].get('name'), TEST_NAME)
 
+    def test_mark_boulder_as_done(self):
+        """
+        Mark a boulder as done.
+        """
+        # Given
+        route = f'/api/{API_VERSION}/user/ticklist/boulder/done'
+        ticklist_route = f'/api/{API_VERSION}/user/ticklist'
+        user_data = {
+            'username': TEST_USERNAME,
+            'password': TEST_PASSWORD
+        }
+        auth_resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
+        token = auth_resp.json.get('token')
+        # get ticklist
+        ticklist_resp = self.client.get(ticklist_route, headers={'Authorization': f'Bearer {token}'})
+        boulder_id = ticklist_resp.json.get('boulders')[0].get('_id')
+        # When
+        resp = self.client.post(route, headers={'Authorization': f'Bearer {token}'}, json={'boulder_id': boulder_id})
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json.get('boulder_id'), boulder_id)
+        self.assertTrue(resp.json.get('marked_as_done'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -683,7 +683,7 @@ def mark_boulder_as_done() -> Response:
     """
     if request.method == 'POST':
       data, _ = load_data(request)
-      b_data = {'iden': data.get('boulder_id', '')}
+      b_data = {'iden': data.get('boulder_id', ''), 'is_done': True}
       if b_data.get('iden', ''):
         db_controller.put_boulder_in_ticklist(
             b_data,
