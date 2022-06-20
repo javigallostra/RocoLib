@@ -356,6 +356,7 @@ class APITests(BaseIntegrationTestClass):
             'username': TEST_USERNAME,
             'password': TEST_PASSWORD
         }
+        # authenticate user and get token
         auth_resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
         token = auth_resp.json.get('token')
         # get ticklist
