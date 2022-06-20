@@ -2,7 +2,7 @@ import json
 from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
 from api.blueprint import get_gyms, get_gym_walls, boulder_create, get_resource, new_user
-from api.blueprint import get_user_ticklist, rate_boulder
+from api.blueprint import get_user_ticklist, rate_boulder, mark_boulder_as_done
 
 
 def generate_api_docs(app) -> None:
@@ -37,6 +37,9 @@ def generate_api_docs(app) -> None:
     from api.schemas import RateBoulderRequestBody
     from api.schemas import RateBoulderResponseBody
     from api.schemas import RateBoulderErrorResponse
+    from api.schemas import MarkDoneBoulderRequestBody
+    from api.schemas import MarkDoneBoulderResponseBody
+    from api.schemas import MarkDoneBoulderErrorResponse
 
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
@@ -78,6 +81,12 @@ def generate_api_docs(app) -> None:
                            schema=RateBoulderResponseBody)
     spec.components.schema("RateBoulderErrorResponse",
                            schema=RateBoulderErrorResponse)
+    spec.components.schema("MarkDoneBoulderRequestBody",
+                           schema=MarkDoneBoulderRequestBody)
+    spec.components.schema("MarkDoneBoulderResponseBody",
+                           schema=MarkDoneBoulderResponseBody)
+    spec.components.schema("MarkDoneBoulderErrorResponse",
+                           schema=MarkDoneBoulderErrorResponse)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)
@@ -92,5 +101,6 @@ def generate_api_docs(app) -> None:
         spec.path(view=get_resource)
         spec.path(view=get_user_ticklist)
         spec.path(view=rate_boulder)
+        spec.path(view=mark_boulder_as_done)
     with open('./static/swagger/swagger.json', 'w') as f:
         json.dump(spec.to_dict(), f)

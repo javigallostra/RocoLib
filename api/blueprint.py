@@ -41,6 +41,7 @@ def verify_token(token: str) -> bool:
   g.user = user
   return True
 
+
 @api_blueprint.before_request
 def open_database_connection():
     """
@@ -49,6 +50,7 @@ def open_database_connection():
     the request
     """
     g.db = get_db_connection()
+
 
 @api_blueprint.route('/docs/swagger.json')
 def api_docs() -> Response:
@@ -389,6 +391,7 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         except ValidationError as err:
           return jsonify(dict(created=False, errors=err.messages)), 400
 
+
 @api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>/rate', methods=['POST'])
 def rate_boulder(gym_id: str, boulder_id: str) -> Response:
     """Rate a boulder problem
@@ -446,21 +449,21 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
       # validate gym
       db = g.db
       if not is_gym_valid(gym_id, db):
-        return jsonify(dict(rated=False, errors={'gym_id' : 'Gym not found'})), 404
+        return jsonify(dict(rated=False, errors={'gym_id': 'Gym not found'})), 404
       # validate rating
       if not is_rating_valid(data.get('rating', -1)):
         return jsonify(dict(rated=False, errors={'rating': 'Rating not valid, should be an int between 0 and 5'})), 400
       if not is_bson_id_valid(boulder_id):
         return jsonify(dict(rated=False, errors={'boulder_id': 'Boulder ID not valid'})), 400
-      
+
       boulder = db_controller.get_boulder_by_id(gym_id, boulder_id, db)
-      
-      if not bool(boulder): # boulder is empty -> it wasn't found
+
+      if not bool(boulder):  # boulder is empty -> it wasn't found
         return jsonify(dict(rated=False, errors={'boulder_id': 'Boulder not found'})), 404
 
       # rate boulder, update stats
       boulder['rating'] = (boulder['rating'] * boulder['raters'] +
-                            int(data.get('rating'))) / (boulder['raters'] + 1)
+                           int(data.get('rating'))) / (boulder['raters'] + 1)
       boulder['raters'] += 1
 
       db_controller.update_boulder_by_id(
@@ -472,6 +475,7 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
 
       return jsonify(dict(rated=True, _id=boulder_id)), 200
     return jsonify(dict(rated=False, errors={'method': 'Invalid HTTP method. This endpoint only accepts POST requests'})), 400
+
 
 @api_blueprint.route('/user/signup', methods=['POST'])
 def new_user() -> Response:
@@ -625,6 +629,70 @@ def get_auth_token() -> Response:
         token = user.generate_auth_token(current_app)
         return jsonify(dict(token=token.decode('ascii'))), 200
     return jsonify(dict(error='Invalid credentials')), 401
+
+
+@api_blueprint.route('/user/ticklist/boulder/done', methods=['POST'])
+@auth.login_required
+def mark_boulder_as_done() -> Response:
+    """Mark a boulder problem as done
+    ---
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      requestBody:
+        description: Boulder to mark as done
+        required: true
+        content:
+          application/json:
+            schema: MarkDoneBoulderRequestBody
+          application/x-www-form-urlencoded:
+            schema: MarkDoneBoulderRequestBody
+          text/json:
+            schema: MarkDoneBoulderRequestBody
+          text/plain:
+            schema: MarkDoneBoulderRequestBody
+      responses:
+        200:
+          description:
+            Mark boulder as done successful
+          content:
+            text/plain:
+              schema: MarkDoneBoulderResponseBody
+            text/json:
+              schema: MarkDoneBoulderResponseBody
+            application/json:
+              schema: MarkDoneBoulderResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: MarkDoneBoulderErrorResponse
+            text/json:
+              schema: MarkDoneBoulderErrorResponse
+            application/json:
+              schema: MarkDoneBoulderErrorResponse
+        404:
+          description:
+            Not found
+        500:
+          description:
+            Server Error
+    """
+    if request.method == 'POST':
+      data, _ = load_data(request)
+      b_data = {'iden': data.get('boulder_id', '')}
+      if b_data.get('iden', ''):
+        db_controller.put_boulder_in_ticklist(
+            b_data,
+            g.user.id,
+            g.db,
+            mark_as_done_clicked=True
+        )
+        return jsonify(dict(boulder_id=b_data.get('iden'), marked_as_done=True)), 200
+      return jsonify(dict(errors=dict(boulder_id='Invalid boulder id'), marked_as_done=False)), 400
 
 
 @api_blueprint.route('/user/ticklist', methods=['GET'])
