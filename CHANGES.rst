@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #146 Add endpoint to public API to mark a boulder as done
 - #138 Enable changing gym from problems list page & UI improvements
 - #134 #140 #142 #144 UI improvements
 - #133 Include repetitions as part of the data of a problem. Enable sorting by repetitions.
