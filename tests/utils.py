@@ -132,4 +132,3 @@ def add_user_with_ticklist(db, username, password, email):
         db, 
         mark_as_done=True
     )
-
