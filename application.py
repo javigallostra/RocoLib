@@ -242,6 +242,7 @@ def change_gym_problem_list() -> str:
     Load the list of problems for the selected gym
     """
     gym = request.form.get('gym', get_gym())
+    session['gym'] = gym
     filters = session.get('filters', None)
 
     boulders = utils.get_boulders_list(gym, filters, g.db, session)
