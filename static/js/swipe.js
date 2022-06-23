@@ -1,22 +1,28 @@
 var touchstartX = 0
 var touchendX = 0
 
-function checkDirection() {
-    // if (touchendX < touchstartX) alert('swiped left!')
-    // if (touchendX > touchstartX) alert('swiped right!')
-}
+function changeProblem(swipe_left, swipe_right) {
+    if (touchendX < touchstartX) {
+        // Here we should load previous problem from list
+        swipe_right();
+    }
+    if (touchendX > touchstartX) {
+        // Here we should load next problem from list
+        swipe_left();
+    }
+};
 
-function swipeInit() {
+function swipeInit(swipe_left, swipe_right) {
 
     document.addEventListener('touchstart', e => {
-        touchstartX = e.changedTouches[0].screenX
-    })
+        touchstartX = e.changedTouches[0].screenX;
+    });
 
     document.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX
-        checkDirection()
-    })
-}
+        changeProblem(swipe_left, swipe_right);
+    });
+};
 
 window.touchstartX = touchstartX;
 window.touchendX = touchendX;
