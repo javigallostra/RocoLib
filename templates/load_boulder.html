@@ -176,7 +176,7 @@
     window.onresize = loadBoulder;
     window.onload = () => { 
       loadBoulder();
-      swipeInit();
+      swipeInit(() => console.log("SWIPE LEFT"), () => console.log("SWIPE RIGHT"));
     }
 
     SetRatingStar();
