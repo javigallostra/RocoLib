@@ -6,6 +6,7 @@
 <link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
 <script src="{{ url_for('static', filename='js/turf.js') }} "></script>
 <script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/swipe.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -173,8 +174,38 @@
     });
 
     window.onresize = loadBoulder;
-    window.onload = loadBoulder;
+    window.onload = () => { 
+      loadBoulder();
+      swipeInit(
+        loadPrevious, 
+        loadNext, 
+        "{{ boulder_data['_id'] }}"
+      );
+    }
+
     SetRatingStar();
+
+    function loadNext(problem_id) {
+      fetch("load_next?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
+      .then(resp => resp.text())
+      .then(body => {
+          // Hacky Whacky
+          document.open();
+          document.write(body);
+          document.close();
+      }); 
+    }
+
+    function loadPrevious(problem_id) {
+      fetch("load_previous?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
+      .then(resp => resp.text())
+      .then(body => {
+          // Hacky Whacky
+          document.open();
+          document.write(body);
+          document.close();
+      }); 
+    }
   </script>
   {% endblock %}
 
