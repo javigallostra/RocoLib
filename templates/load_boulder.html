@@ -176,10 +176,37 @@
     window.onresize = loadBoulder;
     window.onload = () => { 
       loadBoulder();
-      swipeInit(() => console.log("SWIPE LEFT"), () => console.log("SWIPE RIGHT"));
+      swipeInit(
+        testProblemLoad, 
+        testProblemLoad, 
+        "6147508f22c31fa0464f7c84", 
+        "6147508f22c31fa0464f7c84"
+      );
     }
 
     SetRatingStar();
+
+    function testProblemLoad(problem_id) {
+      
+      //fetch("/api/v1/boulders/{{ boulder_data['gym'] }}/{{ boulder_data['_id']  }}", {})
+      fetch("/api/v1/boulders/{{ boulder_data['gym'] }}/" + problem_id, {})
+        .then(response => response.json())
+        .then(body => {
+          console.log(body);
+          boulderData = body.boulder;
+          holds = boulderData.holds;
+
+          // radius and wall image might change
+
+          boulderLoadInit(
+            'holdDetectionSwitch',
+            "wall-image",
+            "wall-canvas",
+            radius,
+            '{{ hold_data | tojson | safe}}'
+          );
+        });
+    }
   </script>
   {% endblock %}
 
