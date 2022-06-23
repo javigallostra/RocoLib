@@ -367,13 +367,14 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
 
 @serializable
 @postprocess_boulder_data
-def get_boulder_by_id(gym: str, id: str, database: Database) -> Data:
+def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     """
     Given a boulder name and a Gym, return the boulder data
 
     Return an empty dictionary if the boulder is not found
     """
-    boulder = database[f'{gym}_boulders'].find_one({"_id": ObjectId(id)})
+    boulder = database[f'{gym}_boulders'].find_one(
+        {"_id": ObjectId(boulder_id)})
     return boulder if boulder else {}
 
 
@@ -396,6 +397,42 @@ def get_random_boulder(gym: str, database: Database) -> Data:
     except StopIteration:
         boulder = None
     return boulder if boulder else {}
+
+
+@serializable
+def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
+    """Given a boulder id, get the next boulder based on insertion date
+
+    :param boulder_id: boulder ID for which to get next boulder
+    :type boulder_id: str
+    :param gym: gym code of the boulders through which to iterate
+    :type gym: str
+    :param database: database connection
+    :type database: Database
+    :return: next boulder if there is any, empty dict otherwise
+    :rtype: Data
+    """
+    boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }))
+
+    return boulders[-1] if (boulders and len(boulders)>0) else {}
+
+
+@serializable
+def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
+    """Given a boulder id, get the previous boulder based on insertion date
+
+    :param boulder_id: boulder ID for which to get next boulder
+    :type boulder_id: str
+    :param gym: gym code of the boulders through which to iterate
+    :type gym: str
+    :param database: database connection
+    :type database: Database
+    :return: next boulder if there is any, empty dict otherwise
+    :rtype: Data
+    """
+    boulders = list(database[f'{gym}_boulders'].find({"_id": {"$gt": ObjectId(boulder_id)}}).limit(1))
+
+    return boulders[0] if (boulders and len(boulders)>0) else {}
 
 
 @serializable

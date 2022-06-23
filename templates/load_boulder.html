@@ -177,18 +177,16 @@
     window.onload = () => { 
       loadBoulder();
       swipeInit(
-        testProblemLoad, 
-        testProblemLoad, 
-        "Prova", 
-        "Prova"
+        loadPrevious, 
+        loadNext, 
+        "{{ boulder_data['_id'] }}"
       );
     }
 
     SetRatingStar();
 
-    function testProblemLoad(problem_name) {
-      
-      fetch("load_boulder?gym=" + "{{ boulder_data['gym'] }}" + "&name=" + problem_name, {})
+    function loadNext(problem_id) {
+      fetch("load_next?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
       .then(resp => resp.text())
       .then(body => {
           // Hacky Whacky
@@ -196,25 +194,17 @@
           document.write(body);
           document.close();
       }); 
+    }
 
-      //fetch("/api/v1/boulders/{{ boulder_data['gym'] }}/{{ boulder_data['_id']  }}", {})
-      //fetch("/api/v1/boulders/{{ boulder_data['gym'] }}/" + problem_id, {})
-      //  .then(response => response.json())
-      //  .then(body => {
-      //    console.log(body);
-      //    boulderData = body.boulder;
-      //    holds = boulderData.holds;
-      //
-      //    // radius and wall image might change
-      //
-      //    boulderLoadInit(
-      //      'holdDetectionSwitch',
-      //      "wall-image",
-      //      "wall-canvas",
-      //      radius,
-      //      '{{ hold_data | tojson | safe}}'
-      //    );
-      //  });
+    function loadPrevious(problem_id) {
+      fetch("load_previous?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
+      .then(resp => resp.text())
+      .then(body => {
+          // Hacky Whacky
+          document.open();
+          document.write(body);
+          document.close();
+      }); 
     }
   </script>
   {% endblock %}
