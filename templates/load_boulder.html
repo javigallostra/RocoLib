@@ -179,18 +179,19 @@
       swipeInit(
         testProblemLoad, 
         testProblemLoad, 
-        "6147508f22c31fa0464f7c84", 
-        "6147508f22c31fa0464f7c84"
+        "Prova", 
+        "Prova"
       );
     }
 
     SetRatingStar();
 
-    function testProblemLoad(problem_id) {
+    function testProblemLoad(problem_name) {
       
-      fetch("load_boulder?gym=" + "{{ boulder_data['gym'] }}" + "&name=" + "Prova", {})
+      fetch("load_boulder?gym=" + "{{ boulder_data['gym'] }}" + "&name=" + problem_name, {})
       .then(resp => resp.text())
       .then(body => {
+          // Hacky Whacky
           document.open();
           document.write(body);
           document.close();
