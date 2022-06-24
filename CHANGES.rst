@@ -12,7 +12,7 @@ Features
 - #149 #150 When viewing a problem, swipe left or right to go to next or previous problem  
 - #146 Add endpoint to public API to mark a boulder as done
 - #138 Enable changing gym from problems list page & UI improvements
-- #134 #140 #142 #144 UI improvements
+- #134 #140 #142 #144 #151 UI improvements
 - #133 Include repetitions as part of the data of a problem. Enable sorting by repetitions.
 - #129 Refactor DDBB connection handling
 - #127 Show problems as collapsible cards in problem lists
