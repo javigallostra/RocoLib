@@ -365,7 +365,41 @@ def load_next_problem():
 
 @app.route('/load_previous')
 def load_previous_problem():
-    pass
+    previous_boulder = db_controller.get_previous_boulder(request.args.get('id'), request.args.get('gym'), g.db)
+
+    if previous_boulder:
+        # load boulder
+        boulder, wall_image = utils.load_full_boulder_data(
+            previous_boulder,
+            request.args.get('gym'),
+            g.db,
+            session
+        )
+    else:
+        # load current boulder
+        current_boulder = db_controller.get_boulder_by_id(request.args.get('gym'), request.args.get('id'), g.db)
+        boulder, wall_image = utils.load_full_boulder_data(
+            current_boulder,
+            request.args.get('gym'),
+            g.db,
+            session
+        )
+
+    # get hold data
+    hold_data = utils.get_hold_data(
+        get_gym(),
+        boulder['section'],
+        app.static_folder
+    )
+
+    return render_template(
+        'load_boulder.html',
+        boulder_name=boulder.get('name', ''),
+        wall_image=wall_image,
+        boulder_data=boulder,
+        origin=request.form.get('origin', 'explore_boulders'),
+        hold_data=hold_data
+    )
 
 @app.route('/explore_routes')
 def explore_routes() -> str:
