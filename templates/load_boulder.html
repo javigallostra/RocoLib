@@ -179,33 +179,13 @@
       swipeInit(
         loadPrevious, 
         loadNext, 
-        "{{ boulder_data['_id'] }}"
+        "{{ boulder_data['_id'] }}",
+        "{{ boulder_data['gym'] }}"
       );
     }
 
     SetRatingStar();
 
-    function loadNext(problem_id) {
-      fetch("load_next?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
-      .then(resp => resp.text())
-      .then(body => {
-          // Hacky Whacky
-          document.open();
-          document.write(body);
-          document.close();
-      }); 
-    }
-
-    function loadPrevious(problem_id) {
-      fetch("load_previous?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
-      .then(resp => resp.text())
-      .then(body => {
-          // Hacky Whacky
-          document.open();
-          document.write(body);
-          document.close();
-      }); 
-    }
   </script>
   {% endblock %}
 
