@@ -41,6 +41,7 @@ Features
 Fixes
 -----
 
+- #153 Add heursitics to filter non horizontal swipes on problem view
 - #136 Fix visualization of action buttons on problem view footer
 - #132 Fix malformed HTML element IDs in problem lists
 - #128 Fix fields rendering in user's ticklist problem cards
