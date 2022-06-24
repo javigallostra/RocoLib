@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #149 #150 When viewing a problem, swipe left or right to go to next or previous problem  
 - #146 Add endpoint to public API to mark a boulder as done
 - #138 Enable changing gym from problems list page & UI improvements
 - #134 #140 #142 #144 UI improvements
