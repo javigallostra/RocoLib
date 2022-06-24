@@ -46,8 +46,8 @@
       <br />
       <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
       <canvas id="wall-canvas"></canvas>
-      <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
       {% if boulder_data.get('notes', '') %}
+      <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
       <div class="container">
         <div class="row d-flex justify-content-center">
           <p style="margin-top: 0; margin-bottom: 0.5rem;">
@@ -59,10 +59,12 @@
         </div>
       </div>
       <hr width=50% style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
+      {% else %}
+        <div style="margin-bottom: 0.75rem;"></div>
       {% endif %}
       <div class="container">
         <div class="row d-flex justify-content-center">
-          <div class="col-12 d-flex justify-content-center" style="align-items: center;">
+          <div class="col d-flex justify-content-center" style="align-items: center;">
             <p style="margin-top: 5px; margin-right: 10px; margin-bottom:6px;">
               Rate this boulder:
             </p>
@@ -179,33 +181,13 @@
       swipeInit(
         loadPrevious, 
         loadNext, 
-        "{{ boulder_data['_id'] }}"
+        "{{ boulder_data['_id'] }}",
+        "{{ boulder_data['gym'] }}"
       );
     }
 
     SetRatingStar();
 
-    function loadNext(problem_id) {
-      fetch("load_next?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
-      .then(resp => resp.text())
-      .then(body => {
-          // Hacky Whacky
-          document.open();
-          document.write(body);
-          document.close();
-      }); 
-    }
-
-    function loadPrevious(problem_id) {
-      fetch("load_previous?gym=" + "{{ boulder_data['gym'] }}" + "&id=" + problem_id, {})
-      .then(resp => resp.text())
-      .then(body => {
-          // Hacky Whacky
-          document.open();
-          document.write(body);
-          document.close();
-      }); 
-    }
   </script>
   {% endblock %}
 
@@ -213,11 +195,8 @@
   <style>
     .custom-switch {
       display: flex;
-      /* text-align: center; */
       justify-content: center;
       margin-left: auto;
-      /* margin-top: 1rem; */
-      /* margin-bottom: 1rem; */
     }
 
     img {
@@ -238,6 +217,7 @@
     .star-rating {
       line-height: 32px;
       font-size: 1.25em;
+      min-width: 6rem;
     }
 
     .star-rating .fas {
