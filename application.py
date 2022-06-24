@@ -323,28 +323,16 @@ def load_boulder() -> Union[str, NoReturn]:
     except Exception:
         return abort(404)
 
+
 @app.route('/load_next')
 def load_next_problem():
     
-    next_boulder = db_controller.get_next_boulder(request.args.get('id'), request.args.get('gym'), g.db)
-
-    if next_boulder:
-        # load boulder
-        boulder, wall_image = utils.load_full_boulder_data(
-            next_boulder,
-            request.args.get('gym'),
-            g.db,
-            session
-        )
-    else:
-        # load current boulder
-        current_boulder = db_controller.get_boulder_by_id(request.args.get('gym'), request.args.get('id'), g.db)
-        boulder, wall_image = utils.load_full_boulder_data(
-            current_boulder,
-            request.args.get('gym'),
-            g.db,
-            session
-        )
+    boulder, wall_image = utils.load_next_or_current(
+        request.args.get('id'),
+        request.args.get('gym'),
+        g.db,
+        session
+    )
 
     # get hold data
     hold_data = utils.get_hold_data(
@@ -365,25 +353,13 @@ def load_next_problem():
 
 @app.route('/load_previous')
 def load_previous_problem():
-    previous_boulder = db_controller.get_previous_boulder(request.args.get('id'), request.args.get('gym'), g.db)
 
-    if previous_boulder:
-        # load boulder
-        boulder, wall_image = utils.load_full_boulder_data(
-            previous_boulder,
-            request.args.get('gym'),
-            g.db,
-            session
-        )
-    else:
-        # load current boulder
-        current_boulder = db_controller.get_boulder_by_id(request.args.get('gym'), request.args.get('id'), g.db)
-        boulder, wall_image = utils.load_full_boulder_data(
-            current_boulder,
-            request.args.get('gym'),
-            g.db,
-            session
-        )
+    boulder, wall_image = utils.load_previous_or_current(
+        request.args.get('id'),
+        request.args.get('gym'),
+        g.db,
+        session
+    )
 
     # get hold data
     hold_data = utils.get_hold_data(

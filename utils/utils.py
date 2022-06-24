@@ -396,3 +396,53 @@ def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: 
     wall_image = get_wall_image(
         gym_code, boulder['section'], WALLS_PATH)
     return boulder, wall_image
+
+
+def load_next_or_current(
+    boulder_id: str,
+    gym_code: str,
+    database: Database,
+    session: LocalProxy
+    ) -> Tuple[dict, str]:
+    next_boulder = db_controller.get_next_boulder(
+        boulder_id, gym_code, database)
+    return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
+
+
+def load_previous_or_current(
+        boulder_id: str,
+        gym_code: str,
+        database: Database,
+        session: LocalProxy
+    ) -> Tuple[dict, str]:
+    previous_boulder = db_controller.get_previous_boulder(
+        boulder_id, gym_code, database)
+    return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
+
+
+def load_boulder_to_show(
+        candidate_boulder: dict,
+        gym_code: str,
+        current_boulder_id: str,
+        database: Database,
+        session: LocalProxy
+    ) -> Tuple[dict, str]:
+    if candidate_boulder:
+        # load boulder
+        boulder, wall_image = load_full_boulder_data(
+            candidate_boulder,
+            gym_code,
+            database,
+            session
+        )
+    else:
+        # load current boulder
+        current_boulder = db_controller.get_boulder_by_id(
+            gym_code, current_boulder_id, database)
+        boulder, wall_image = load_full_boulder_data(
+            current_boulder,
+            gym_code,
+            database,
+            session
+        )
+    return boulder, wall_image
