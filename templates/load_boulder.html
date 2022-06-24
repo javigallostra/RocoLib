@@ -59,10 +59,12 @@
         </div>
       </div>
       <hr width=50% style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
+      {% else %}
+        <div style="margin-bottom: 0.75rem;"></div>
       {% endif %}
       <div class="container">
         <div class="row d-flex justify-content-center">
-          <div class="col-12 d-flex justify-content-center" style="align-items: center;">
+          <div class="col d-flex justify-content-center" style="align-items: center;">
             <p style="margin-top: 5px; margin-right: 10px; margin-bottom:6px;">
               Rate this boulder:
             </p>
@@ -215,6 +217,7 @@
     .star-rating {
       line-height: 32px;
       font-size: 1.25em;
+      min-width: 6rem;
     }
 
     .star-rating .fas {
