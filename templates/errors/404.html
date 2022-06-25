@@ -29,12 +29,6 @@
   <div class="container">
     <div class="container nav-mob">
       <ul class="nav user-info-s">
-          <li class="nav-item">
-              <a class="nav-link active" href="{{ url_for('home') }}">{{ home }}</a>
-          </li>
-          <!-- <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('add_gym') }}">{{ add_your_gym }}</a>
-          </li> -->
           {% if current_user.is_anonymous %}
           <li class="nav-item">
               <a class="nav-link" href="{{ url_for('login') }}">{{ login }}</a>
@@ -58,8 +52,15 @@
           </li>
       </ul>
     </div>
+    <div class="row text-center">
+      <div class="col" style="display: flex; justify-content:center;">
+        <div>
+          <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
 
-    <div style="margin-top: 2rem;">
+    <div style="display:flex; justify-content:center; margin-top: 2rem;">
       Hello Stranger! - From 404 - which means the page you are looking from wasn't found
     </div>
   </div>

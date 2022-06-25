@@ -13,7 +13,41 @@
 </head>
 
 <body>
-  <div>
+  <div class="container">
+    <div class="container nav-mob">
+      <ul class="nav user-info-s">
+          {% if current_user.is_anonymous %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">{{ login }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('show_signup_form') }}">{{ sign_up }}</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('tick_list') }}">{{ ticklist }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="#">{{ current_user.name }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">{{ logout }}</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('show_contact') }}">{{ contact }}</a>
+          </li>
+      </ul>
+    </div>
+    <div class="row text-center">
+      <div class="col" style="display: flex; justify-content:center;">
+        <div>
+          <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
+
+  <div style="display:flex; justify-content:center; margin-top: 2rem;">
     Hello Stranger! - From 400 - which means there was a bad request
   </div>
 </body>
