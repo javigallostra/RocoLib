@@ -40,6 +40,8 @@ Features
 
 Fixes
 -----
+
+- #161 Fix page header on error templates
 - #159 Keep scroll status after problem load due to swipe
 - #153 Add heursitics to filter non horizontal swipes on problem view
 - #136 Fix visualization of action buttons on problem view footer
