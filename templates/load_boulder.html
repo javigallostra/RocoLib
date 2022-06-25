@@ -129,6 +129,7 @@
     var boulderData = JSON.parse(rawData);
     holds = boulderData.holds;
     radius = boulderData.radius;
+    window.scrollTo(0, '{{ scroll }}')
 
     function loadBoulder() {
       boulderLoadInit(

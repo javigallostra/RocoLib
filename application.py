@@ -317,6 +317,7 @@ def load_boulder() -> Union[str, NoReturn]:
             boulder_name=boulder.get('name', ''),
             wall_image=wall_image,
             boulder_data=boulder,
+            scroll=request.args.get('scroll', 0),
             origin=request.form.get('origin', 'explore_boulders'),
             hold_data=hold_data
         )
@@ -346,6 +347,7 @@ def load_next_problem():
         boulder_name=boulder.get('name', ''),
         wall_image=wall_image,
         boulder_data=boulder,
+        scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
         hold_data=hold_data
     )
@@ -373,6 +375,7 @@ def load_previous_problem():
         boulder_name=boulder.get('name', ''),
         wall_image=wall_image,
         boulder_data=boulder,
+        scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
         hold_data=hold_data
     )
