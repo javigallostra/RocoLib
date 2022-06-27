@@ -412,9 +412,8 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }))
-
-    return boulders[-1] if (boulders and len(boulders)>0) else {}
+    boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }).sort('_id', -1).limit(1))
+    return boulders[0] if boulders else {}
 
 
 @serializable
@@ -431,8 +430,7 @@ def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :rtype: Data
     """
     boulders = list(database[f'{gym}_boulders'].find({"_id": {"$gt": ObjectId(boulder_id)}}).limit(1))
-
-    return boulders[0] if (boulders and len(boulders)>0) else {}
+    return boulders[0] if boulders else {}
 
 
 @serializable
