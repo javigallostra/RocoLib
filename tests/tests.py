@@ -50,7 +50,7 @@ class UtilsTests(unittest.TestCase):
         # Given
         from os.path import exists
         from utils.utils import get_creds_file
-        with open('.env', 'r') as f:
+        with open('.ddbb.env', 'r') as f:
             creds_file_before = f.read()
         # When
         if exists(creds_file_before):
@@ -59,7 +59,7 @@ class UtilsTests(unittest.TestCase):
             self.assertIsNotNone(creds)
             self.assertTrue(isinstance(creds, str))
             self.assertTrue(isfile(creds))
-            with open('.env', 'r') as f:
+            with open('.ddbb.env', 'r') as f:
                 creds_file_after = f.read()
             self.assertEqual(creds_file_before, creds_file_after)
 

@@ -18,7 +18,7 @@ from config import *
 from utils.typing import Data
 
 
-def get_creds_file(env: str = '.env') -> str:
+def get_creds_file(env: str = '.ddbb.env') -> str:
     """
     Get the name of the file where the credentials
     to connect to the DDBB are stored.
@@ -34,7 +34,7 @@ def set_creds_file(creds: str = 'creds.txt') -> None:
     """
     Set the file from which to get the credentials
     """
-    with open('.env', 'w') as f:
+    with open('.ddbb.env', 'w') as f:
         f.write(creds)
 
 
