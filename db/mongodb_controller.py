@@ -410,7 +410,8 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 @serializable
 @postprocess_boulder_data
 def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
-    """Given a boulder id, get the next boulder based on insertion date
+    """
+    Given a boulder id, get the next boulder based on insertion date
 
     :param boulder_id: boulder ID for which to get next boulder
     :type boulder_id: str
@@ -428,7 +429,8 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
 @serializable
 @postprocess_boulder_data
 def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
-    """Given a boulder id, get the previous boulder based on insertion date
+    """
+    Given a boulder id, get the previous boulder based on insertion date
 
     :param boulder_id: boulder ID for which to get next boulder
     :type boulder_id: str
