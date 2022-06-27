@@ -32,6 +32,9 @@ def postprocess_boulder_data(func):
         }
         if isinstance(boulder_data, list):
             for boulder in boulder_data:
+                # skip if boulder data is empty for some reason
+                if not boulder: 
+                    continue
                 for field in fields_to_check:
                     if field in boulder:
                         continue
@@ -40,15 +43,20 @@ def postprocess_boulder_data(func):
             # check if Items is key
             if 'Items' in boulder_data:
                 for boulder in boulder_data['Items']:
+                    # skip if boulder data is empty for some reason
+                    if not boulder:
+                        continue
                     for field in fields_to_check:
                         if field in boulder:
                             continue
                         boulder[field] = fields_to_check[field]
             else:
-                for field in fields_to_check:
-                    if field in boulder_data:
-                        continue
-                    boulder_data[field] = fields_to_check[field]
+                # skip if boulder data is empty for some reason
+                if boulder_data:
+                    for field in fields_to_check:
+                        if field in boulder_data:
+                            continue
+                        boulder_data[field] = fields_to_check[field]
         return boulder_data
     return wrapper
 
@@ -400,6 +408,7 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 
 
 @serializable
+@postprocess_boulder_data
 def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     """Given a boulder id, get the next boulder based on insertion date
 
@@ -417,6 +426,7 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
 
 
 @serializable
+@postprocess_boulder_data
 def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     """Given a boulder id, get the previous boulder based on insertion date
 
