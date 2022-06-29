@@ -26,7 +26,7 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 
 ###### Some of the features on our TODO list are
 
-* Public API
+* Public API **WIP**
 * ~~Localize app~~ Thanks to [Pan6ora](https://github.com/Pan6ora)
 * Include a map to locate registered gyms
 * ~~Show the number of repetitions of each problem~~ PR #133
@@ -34,7 +34,7 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 * Enable setting routes as well as problems
 * Enable setting routes that span multiple images
 * Enable to configure each gym independently (difficulties, colors, problem styles, etc.)
-* Enable logging a climb more than once
+* ~~Enable logging a climb more than once~~ PR #75
 * Add a comments section for each problem
 * Enable users to suggest a difficulty after climbing a problem
 
