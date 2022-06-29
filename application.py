@@ -652,10 +652,6 @@ def show_contact() -> Union[Response, NoReturn]:
     return render_template('contact.html')
 
 
-@app.route('/loaderio-154f623e6aaf5309173032e4c39c8118.txt')
-def return_token():
-    return send_from_directory('static', 'loaderio-154f623e6aaf5309173032e4c39c8118.txt')
-
 @app.errorhandler(404)
 def page_not_found(error) -> tuple[str, int]:
     # pylint: disable=no-member
