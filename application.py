@@ -27,14 +27,6 @@ import ticklist_handler
 # create the application object
 app = Flask(__name__)
 
-DEBUG = True
-API_VERSION = 'v1'
-SWAGGER_URL = f'/api/{API_VERSION}/docs'
-API_URL = f'/api/{API_VERSION}/docs/swagger.json'
-GENERATE_API_DOCS = True
-RUN_SERVER = True
-DEFAULT_LANG = 'en_US'
-
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,

@@ -11,7 +11,7 @@ from utils.utils import get_db_connection
 from models import User
 import ticklist_handler
 from utils.utils import load_data
-from bson import ObjectId
+from config import *
 
 API_VERSION = 'v1'
 
@@ -233,7 +233,7 @@ def get_gym_boulders(gym_id: str) -> Response:
           description:
             Server Error
     """
-    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, g.db).get('Items', []))), 200
+    return jsonify(dict(boulders=db_controller.get_boulders(gym_id, g.db).get(ITEMS, []))), 200
 
 
 @api_blueprint.route('/boulders/<string:gym_id>/<string:boulder_id>', methods=['GET'])

@@ -7,6 +7,7 @@ from application import app
 from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 from bson.objectid import ObjectId
+from config import ITEMS
 
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
@@ -168,7 +169,7 @@ class UtilsTests(unittest.TestCase):
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], 0)
 
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], 0)
 
@@ -216,7 +217,7 @@ class UtilsTests(unittest.TestCase):
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], repetitions)
 
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], repetitions)
 
@@ -261,12 +262,12 @@ class UtilsTests(unittest.TestCase):
         for b in boulder_list:
             self.assertEqual(TEST_ID, b[id_key])
             self.assertTrue(isinstance(b[id_key], str))
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertEqual(TEST_ID, b[id_key])
             self.assertTrue(isinstance(b[id_key], str))
-        self.assertEqual(TEST_ID, boulder_dict_single['Items'][id_key])
+        self.assertEqual(TEST_ID, boulder_dict_single[ITEMS][id_key])
         self.assertTrue(
-            isinstance(boulder_dict_single['Items'][id_key], str)
+            isinstance(boulder_dict_single[ITEMS][id_key], str)
         )
 
 class BoulderCreationTests(unittest.TestCase):
