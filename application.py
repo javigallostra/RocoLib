@@ -24,6 +24,8 @@ import utils.utils as utils
 import db.mongodb_controller as db_controller
 import ticklist_handler
 
+import request_processor
+
 # create the application object
 app = Flask(__name__)
 
@@ -98,23 +100,9 @@ for lang in language_list:
     with open(lang, 'r', encoding='utf8') as file:
         LANG[lang_code] = json.loads(file.read())
 
-
-def choose_language(request) -> str:
-    """
-    Choose the first known user language else DEFAULT_LANG
-    """
-    user_lang = request.headers.get('Accept_Language').replace(
-        '-', '_').split(';')[0].split(',')
-
-    lang_matches = set(user_lang).intersection(LANG.keys())
-    if lang_matches:
-        return lang_matches.pop()
-    return DEFAULT_LANG
-
-
 @app.context_processor
 def inject_langauge() -> dict:
-    lang = choose_language(request)
+    lang = utils.choose_language(request, LANG)
     return {**LANG[DEFAULT_LANG], **LANG[lang]}
 
 
@@ -122,10 +110,7 @@ def get_gym() -> str:
     """
     Get the current session's selected gym.
     """
-    if session.get('gym', ''):
-        return session['gym']
-    gyms = db_controller.get_gyms(g.db)
-    return gyms[0]['id']
+    return request_processor.get_current_gym(session, g.db)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -133,16 +118,7 @@ def home() -> str:
     """
     Homepage handler.
     """
-    gyms = db_controller.get_gyms(g.db)
-    if request.method == 'POST':
-        session['gym'] = request.form.get('gym')
-    return render_template(
-        'home.html',
-        gyms=gyms,
-        selected=get_gym(),
-        current_gym=[gym['name'] for gym in gyms if gym['id'] == get_gym()][0],
-        stats=utils.get_stats(g.db)
-    )
+    return request_processor.handle_home_request(request, session, g.db)
 
 
 @app.route('/create')
@@ -151,16 +127,7 @@ def create() -> str:
     """
     Create page handler.
     """
-    latest = request.args.get('latest', False)
-    walls = db_controller.get_gym_walls(get_gym(), g.db, latest=latest)
-    for wall in walls:
-        wall['image_path'] = utils.get_wall_image(
-            get_gym(), wall['image'], WALLS_PATH)
-    return render_template(
-        'create.html',
-        walls=walls,
-        options=request.args.get('options', '')
-    )
+    return request_processor.handle_create_request(request, session, g.db)
 
 
 @app.route('/create_boulder')
@@ -192,69 +159,16 @@ def explore_boulders() -> str:
     """
     Explore boulders page handler.
     """
-    if request.method == 'POST':
-        gym = get_gym()
-        filters = {
-            key: val for (
-                key,
-                val
-            ) in json.loads(
-                request.form.get('filters')
-            ).items() if val not in ['all', '']
-        }
+    return request_processor.handle_explore_boulders(request, session, g.db, current_user)
 
-    elif request.method == 'GET':
-        gym = request.args.get('gym', get_gym())
-        filters = None
-
-    session['filters'] = filters
-
-    boulders = utils.get_boulders_list(gym, filters, g.db, session)
-    gym_walls = db_controller.get_gym_walls(gym, g.db)
-
-    if current_user.is_authenticated:
-        done_boulders = [
-            boulder.iden for boulder in current_user.ticklist if boulder.is_done]
-        for boulder in boulders:
-            boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
-
-    return render_template(
-        'explore_boulders.html',
-        gyms=db_controller.get_gyms(g.db),
-        selected=gym,
-        boulder_list=boulders,
-        walls_list=gym_walls,
-        origin='explore_boulders',
-        is_authenticated=current_user.is_authenticated
-    )
 
 @app.route('/change_gym', methods=['POST'])
 def change_gym_problem_list() -> str:
     """
     Load the list of problems for the selected gym
     """
-    gym = request.form.get('gym', get_gym())
-    session['gym'] = gym
-    filters = session.get('filters', None)
+    return request_processor.handle_change_gym_problem_list_request(request, session, g.db, current_user)
 
-    boulders = utils.get_boulders_list(gym, filters, g.db, session)
-    gym_walls = db_controller.get_gym_walls(gym, g.db)
-
-    if current_user.is_authenticated:
-        done_boulders = [
-            boulder.iden for boulder in current_user.ticklist if boulder.is_done]
-        for boulder in boulders:
-            boulder['is_done'] = 1 if boulder['_id'] in done_boulders else 0
-
-    return render_template(
-        'explore_boulders.html',
-        gyms=db_controller.get_gyms(g.db),
-        selected=gym,
-        boulder_list=boulders,
-        walls_list=gym_walls,
-        origin='explore_boulders',
-        is_authenticated=current_user.is_authenticated
-    )
 
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder() -> Union[Response, NoReturn]:
@@ -319,7 +233,7 @@ def load_boulder() -> Union[str, NoReturn]:
 
 @app.route('/load_next')
 def load_next_problem():
-    
+
     boulder, wall_image = utils.load_next_or_current(
         request.args.get('id'),
         request.args.get('gym'),
@@ -371,6 +285,7 @@ def load_previous_problem():
         origin=request.form.get('origin', 'explore_boulders'),
         hold_data=hold_data
     )
+
 
 @app.route('/explore_routes')
 def explore_routes() -> str:
