@@ -1,0 +1,1 @@
+python .\scripts\py\delete.py -c %1
