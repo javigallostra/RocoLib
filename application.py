@@ -211,8 +211,6 @@ def logout() -> Response:
     return request_processor.process_logout_request(logout_user)
 
 # User related endpoints
-
-
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list() -> Union[str, Response]:
