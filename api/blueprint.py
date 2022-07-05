@@ -7,11 +7,11 @@ from werkzeug.wrappers.response import Response
 import db.mongodb_controller as db_controller
 from api.validation import is_bson_id_valid, is_gym_valid, is_rating_valid, validate_gym_and_section
 from api.schemas import BoulderFields
-from utils.utils import get_db_connection
-from models import User
-import ticklist_handler
-from utils.utils import load_data
-from config import *
+from src.utils import get_db_connection
+from src.models import User
+import src.ticklist_handler as ticklist_handler
+from src.utils import load_data
+from src.config import *
 
 API_VERSION = 'v1'
 

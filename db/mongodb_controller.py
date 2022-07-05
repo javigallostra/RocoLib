@@ -1,5 +1,5 @@
 from typing import Optional
-from utils.typing import Data
+from src.typing import Data
 
 import functools
 from datetime import datetime
@@ -8,9 +8,9 @@ from bson.objectid import ObjectId
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
 
-from models import TickListProblem
+from src.models import TickListProblem
 
-from config import *
+from src.config import *
 
 
 def postprocess_boulder_data(func):

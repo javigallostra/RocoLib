@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, Dict, Union
 import uuid
 
-from utils.typing import Data
+from src.typing import Data
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import mongodb_controller

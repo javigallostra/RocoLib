@@ -1,4 +1,4 @@
-from config import PORT, DOCKER_ENV
+from src.config import PORT, DOCKER_ENV
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin

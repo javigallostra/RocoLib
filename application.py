@@ -12,13 +12,13 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from werkzeug.wrappers.response import Response
 
 from api.blueprint import api_blueprint
-from models import User
-from config import *
-from utils.generate_open_api_spec import generate_api_docs
-import utils.utils as utils
+from src.models import User
+from src.config import *
+from src.generate_open_api_spec import generate_api_docs
+import src.utils as utils
 import db.mongodb_controller as db_controller
 
-import request_processor
+import src.request_processor as request_processor
 
 # create the application object
 app = Flask(__name__)

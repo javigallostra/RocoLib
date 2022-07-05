@@ -14,8 +14,8 @@ from werkzeug.local import LocalProxy
 from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
-from config import *
-from utils.typing import Data
+from src.config import *
+from src.typing import Data
 
 
 def get_creds_file(env: str = '.ddbb.env') -> str:

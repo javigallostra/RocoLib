@@ -1,15 +1,15 @@
 import ast
 import datetime
 import json
-from models import User
-import ticklist_handler
+from src.models import User
+import src.ticklist_handler as ticklist_handler
 import db.mongodb_controller as db_controller
-import utils.utils as utils
-from forms import LoginForm, SignupForm
+import src.utils as utils
+from src.forms import LoginForm, SignupForm
 from werkzeug.urls import url_parse
-from utils.typing import Data
+from src.typing import Data
 from flask import render_template, redirect, url_for, abort
-from config import *
+from src.config import *
 
 
 def handle_home_request(request, session, db):
