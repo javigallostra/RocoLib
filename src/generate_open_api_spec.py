@@ -1,7 +1,7 @@
 import json
 from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
-from api.blueprint import get_gyms, get_gym_walls, boulder_create, get_resource, new_user
+from api.blueprint import get_gyms, get_gym_walls, boulder_create, test_auth, new_user
 from api.blueprint import get_user_ticklist, rate_boulder, mark_boulder_as_done
 
 
@@ -98,7 +98,7 @@ def generate_api_docs(app) -> None:
         spec.path(view=boulder_create)
         spec.path(view=new_user)
         spec.path(view=get_auth_token)
-        spec.path(view=get_resource)
+        spec.path(view=test_auth)
         spec.path(view=get_user_ticklist)
         spec.path(view=rate_boulder)
         spec.path(view=mark_boulder_as_done)
