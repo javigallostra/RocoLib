@@ -385,7 +385,7 @@ def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one(
-        {"_id": ObjectId(boulder_id)})
+        {'_id': ObjectId(boulder_id)})
     return boulder if boulder else {}
 
 
@@ -404,7 +404,7 @@ def get_random_boulder(gym: str, database: Database) -> Data:
     boulder = None
     try:
         boulder = database[f'{gym}_boulders'].aggregate(
-            [{"$sample": {"size": 1}}]).next()
+            [{'$sample': {'size': 1}}]).next()
     except StopIteration:
         boulder = None
     return boulder if boulder else {}
@@ -444,7 +444,7 @@ def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    boulders = list(database[f'{gym}_boulders'].find({"_id": {"$gt": ObjectId(boulder_id)}}).limit(1))
+    boulders = list(database[f'{gym}_boulders'].find({'_id': {'$gt': ObjectId(boulder_id)}}).limit(1))
     return boulders[0] if boulders else {}
 
 
