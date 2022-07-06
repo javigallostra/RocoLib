@@ -1,5 +1,6 @@
 import ast
 import datetime
+from distutils.log import error
 import db.mongodb_controller as db_controller
 
 from flask import jsonify
@@ -16,6 +17,9 @@ def process_get_gyms_request(db):
     return jsonify(dict(gyms=db_controller.get_gyms(db))), 200
 
 def process_get_gym_walls_request(request, db, gym_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
     latest = request.args.get('latest', False)
     return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, db, latest=latest))), 200
 
@@ -23,24 +27,36 @@ def process_get_gym_pretty_name(db, gym_id):
     return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, db))), 200
 
 def process_get_gym_wall_name(db, gym_id, wall_section):
+    valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+    if not valid:
+          return jsonify(dict(errors=errors)), 404
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, db))), 200
 
 def process_get_gym_boulders_request(db, gym_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
     return jsonify(dict(boulders=db_controller.get_boulders(gym_id, db).get(ITEMS, []))), 200
 
 def process_get_boulder_by_id_request(db, gym_id, boulder_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
     return jsonify(dict(boulder=db_controller.get_boulder_by_id(gym_id, boulder_id, db))), 200
 
 def process_get_boulder_by_name_request(db, gym_id, boulder_name):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
     return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, db))), 200
 
 def process_boulder_create_request(request, db, gym_id, wall_section):
-    if request.method == 'POST':
-        # Validate gym and wall section
-        boulder_fields = BoulderFields()
-        valid, errors = validate_gym_and_section(gym_id, wall_section, db)
-        if not valid:
+    valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+    if not valid:
           return jsonify(dict(created=False, errors=errors)), 404
+
+    if request.method == 'POST':
+        boulder_fields = BoulderFields()
         # Get boulder data from request
         base_data = {
             boulder_fields.rating: 0,
@@ -67,6 +83,10 @@ def process_boulder_create_request(request, db, gym_id, wall_section):
           return jsonify(dict(created=False, errors=err.messages)), 400
 
 def process_rate_boulder_request(request, db, gym_id, boulder_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
+    
     if request.method == 'POST':
       data, _ = load_data(request)
       # validate gym
@@ -139,6 +159,12 @@ def process_get_auth_token_request(request, db, current_app):
 def process_mark_boulder_as_done_request(request, db, user):
     if request.method == 'POST':
       data, _ = load_data(request)
+
+      valid, errors = is_gym_valid(data.get('gym', ''), db)
+      if not valid:
+        return jsonify(errors=errors), 404
+
+
       if data.get('boulder_id', '') and data.get('gym', ''):
 
         db_boulder = db_controller.get_boulder_by_id(data.get('gym'), data.get('boulder_id'), db)
