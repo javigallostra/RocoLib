@@ -6,7 +6,7 @@ import db.mongodb_controller as db_controller
 from flask import jsonify
 from marshmallow import ValidationError
 from api.schemas import BoulderFields
-from api.validation import is_bson_id_valid, is_gym_valid, is_rating_valid, validate_gym_and_section
+from api.validation import is_bson_id_valid, is_gym_valid, is_rating_valid, are_gym_and_section_valid
 
 from src.config import *
 from src import ticklist_handler
@@ -24,10 +24,13 @@ def process_get_gym_walls_request(request, db, gym_id):
     return jsonify(dict(walls=db_controller.get_gym_walls(gym_id, db, latest=latest))), 200
 
 def process_get_gym_pretty_name(db, gym_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
     return jsonify(dict(name=db_controller.get_gym_pretty_name(gym_id, db))), 200
 
 def process_get_gym_wall_name(db, gym_id, wall_section):
-    valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+    valid, errors = are_gym_and_section_valid(gym_id, wall_section, db)
     if not valid:
           return jsonify(dict(errors=errors)), 404
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, db))), 200
@@ -51,7 +54,7 @@ def process_get_boulder_by_name_request(db, gym_id, boulder_name):
     return jsonify(dict(boulder=db_controller.get_boulder_by_name(gym_id, boulder_name, db))), 200
 
 def process_boulder_create_request(request, db, gym_id, wall_section):
-    valid, errors = validate_gym_and_section(gym_id, wall_section, db)
+    valid, errors = are_gym_and_section_valid(gym_id, wall_section, db)
     if not valid:
           return jsonify(dict(created=False, errors=errors)), 404
 

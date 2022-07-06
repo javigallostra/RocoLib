@@ -26,7 +26,7 @@ def is_section_valid(gym_id: str, wall_section: str, db: Database) -> Tuple[bool
     # return False
 
 
-def validate_gym_and_section(gym_id: str, wall_section: str, db: Database) -> Tuple[bool, List[dict]]:
+def are_gym_and_section_valid(gym_id: str, wall_section: str, db: Database) -> Tuple[bool, List[dict]]:
     """
     Validate that the provided gym and wall section pair are valid. 
     If the gym is contained in the database and the wall section is
