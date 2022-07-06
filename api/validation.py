@@ -11,7 +11,7 @@ def is_gym_valid(gym_id: str, db: Database) -> Tuple[bool, List[dict]]:
     If contained in the database, it is valid.
     """
     if not gym_id in [gym.get('id', '') for gym in get_gyms(db)]:
-        return False, [dict(gym_id='Gym not found')]
+        return False, [dict(gym_id=f'Gym {gym_id} not found')]
     return True, []
 
 
@@ -21,9 +21,8 @@ def is_section_valid(gym_id: str, wall_section: str, db: Database) -> Tuple[bool
     If contained in the database, it is valid.
     """
     if not wall_section in [wall.get('image', '') for wall in get_gym_walls(gym_id, db)]:
-        return False, [dict(wall_section='Wall section not found')]
+        return False, [dict(wall_section=f'Wall section {wall_section} not found')]
     return True, []
-    # return False
 
 
 def are_gym_and_section_valid(gym_id: str, wall_section: str, db: Database) -> Tuple[bool, List[dict]]:
@@ -44,6 +43,7 @@ def are_gym_and_section_valid(gym_id: str, wall_section: str, db: Database) -> T
         ) if not valid_section else None
     return valid_gym and valid_section, errors
 
+
 def is_rating_valid(rating: int) -> Tuple[bool, List[dict]]:
     """
     Validate that the provided rating is valid,
@@ -56,7 +56,8 @@ def is_rating_valid(rating: int) -> Tuple[bool, List[dict]]:
     """
     if rating in range(0, 6) and type(rating) == int:
         return True, []
-    return False, [dict(rating='Invalid rating. Rating should be an int in the range [0, 5]')]
+    return False, [dict(rating=f'Invalid rating {rating}. Rating should be an int in the range [0, 5]')]
+
 
 def is_bson_id_valid(id: str) -> Tuple[bool, List[dict]]:
     """
@@ -68,5 +69,5 @@ def is_bson_id_valid(id: str) -> Tuple[bool, List[dict]]:
     :rtype: bool
     """
     if not bson.objectid.ObjectId.is_valid(id):
-        return False, [dict(bson_id='Invalid BSON Id format')]
+        return False, [dict(bson_id=f'Invalid BSON Id format: {id}')]
     return True, []
