@@ -451,7 +451,7 @@ def new_user() -> Response:
               schema: SignUpErrorResponse
             application/json:
               schema: SignUpErrorResponse
-        400:
+        401:
           description:
             Invalid credentials
           content:
@@ -513,7 +513,7 @@ def get_auth_token() -> Response:
               schema: AuthenticationErrorResponse
             application/json:
               schema: AuthenticationErrorResponse
-        400:
+        401:
           description:
             Invalid credentials
           content:
@@ -618,7 +618,7 @@ def get_user_ticklist() -> Response:
               schema: TicklistErrorResponse
             application/json:
               schema: TicklistErrorResponse
-        400:
+        401:
           description:
             Invalid credentials
           content:
@@ -670,7 +670,7 @@ def test_auth() -> Response:
               schema: TestTokenErrorResponse
             application/json:
               schema: TestTokenErrorResponse
-        400:
+        401:
           description:
             Invalid credentials
           content:
