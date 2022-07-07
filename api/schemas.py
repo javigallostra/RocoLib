@@ -112,7 +112,6 @@ class CreateBoulderErrorResponse(Schema):
     """
     Data schema of the response to a unsuccessful create boulder request
     """
-    created = fields.Bool()
     errors = fields.Dict()
 
 class RateBoulderRequestBody(Schema):
@@ -134,7 +133,6 @@ class RateBoulderErrorResponse(Schema):
     Data schema of the response to a unsuccessful boulder rating request
     """
     errors = fields.Dict()
-    rated = fields.Bool()
 
 class MarkDoneBoulderRequestBody(Schema):
     """
@@ -155,7 +153,6 @@ class MarkDoneBoulderErrorResponse(Schema):
     Data schema of the response to a unsuccessful boulder rating request
     """
     errors = fields.Dict()
-    marked_as_done = fields.Bool()
 
 class AuthenticationRequestBody(Schema):
     """

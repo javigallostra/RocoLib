@@ -89,10 +89,10 @@ def process_boulder_create_request(request, db, gym_id, wall_section):
           _ = CreateBoulderRequestValidator().load(base_data)
           resp = db_controller.put_boulder(base_data, gym=gym_id, database=db)
           if resp is None:
-              return jsonify(dict(created=False, errors=dict(message='Something went wrong creating the boulder'))), 500
+              return jsonify(dict(errors=dict(message='Something went wrong creating the boulder'))), 500
           return jsonify(dict(created=True, _id=resp)), 201
         except ValidationError as err:
-          return jsonify(dict(created=False, errors=err.normalized_messages())), 400
+          return jsonify(dict(errors=err.normalized_messages())), 400
 
 def process_rate_boulder_request(request, db, gym_id, boulder_id):
     valid, errors = is_gym_valid(gym_id, db)
@@ -187,7 +187,7 @@ def process_mark_boulder_as_done_request(request, db, user):
       if not data.get('gym', ''):
         errors['gym'] = 'Gym is required'
       if bool(errors):
-          return jsonify(dict(dict(errors=errors), marked_as_done=False)), 400
+          return jsonify(dict(errors=errors)), 400
 
 
       db_boulder = db_controller.get_boulder_by_id(data.get('gym'), data.get('boulder_id'), db)
