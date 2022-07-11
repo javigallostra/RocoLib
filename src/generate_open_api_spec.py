@@ -40,6 +40,7 @@ def generate_api_docs(app) -> None:
     from api.schemas import MarkDoneBoulderRequestBody
     from api.schemas import MarkDoneBoulderResponseBody
     from api.schemas import MarkDoneBoulderErrorResponse
+    from api.schemas import NotFoundError
 
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
@@ -87,6 +88,8 @@ def generate_api_docs(app) -> None:
                            schema=MarkDoneBoulderResponseBody)
     spec.components.schema("MarkDoneBoulderErrorResponse",
                            schema=MarkDoneBoulderErrorResponse)
+    spec.components.schema("NotFoundError",
+                           schema=NotFoundError)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)

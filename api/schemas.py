@@ -20,7 +20,9 @@ class GymSchema(Schema):
     id = fields.Str()
     name = fields.Str()
     coordinates = fields.List(
-        fields.Float(), validate=fields.Length(min=2, max=2))
+        fields.Float(), 
+        validate=fields.Length(min=2, max=2)
+    )
 
 
 class WallSchema(Schema):
@@ -284,6 +286,12 @@ class TicklistErrorResponse(Schema):
     """
     errors = fields.List(fields.Str())
 
+
+class BaseErrorSchema(Schema):
+    errors = fields.List(fields.Dict())
+
+class NotFoundError(BaseErrorSchema):
+    pass
 
 class BoulderFields:
     raters = 'raters'

@@ -79,6 +79,13 @@ def get_gyms() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -118,6 +125,13 @@ def get_gym_walls(gym_id: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -152,6 +166,13 @@ def get_gym_pretty_name(gym_id: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -188,6 +209,13 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -222,6 +250,13 @@ def get_gym_boulders(gym_id: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -258,6 +293,13 @@ def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -294,6 +336,13 @@ def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -349,6 +398,13 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -404,6 +460,13 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -464,6 +527,13 @@ def new_user() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -526,6 +596,13 @@ def get_auth_token() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -579,6 +656,13 @@ def mark_boulder_as_done() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -631,6 +715,13 @@ def get_user_ticklist() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
@@ -683,6 +774,13 @@ def test_auth() -> Response:
         404:
           description:
             Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
         500:
           description:
             Server Error
