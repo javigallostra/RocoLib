@@ -697,21 +697,21 @@ def get_user_ticklist() -> Response:
             Bad request
           content:
             text/plain:
-              schema: TicklistErrorResponse
+              schema: TicklistError
             text/json:
-              schema: TicklistErrorResponse
+              schema: TicklistError
             application/json:
-              schema: TicklistErrorResponse
+              schema: TicklistError
         401:
           description:
             Invalid credentials
           content:
             text/plain:
-              schema: TicklistErrorResponse
+              schema: TicklistError
             text/json:
-              schema: TicklistErrorResponse
+              schema: TicklistError
             application/json:
-              schema: TicklistErrorResponse
+              schema: TicklistError
         404:
           description:
             Not found

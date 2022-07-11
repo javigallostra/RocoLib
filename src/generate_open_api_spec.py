@@ -31,9 +31,9 @@ def generate_api_docs(app) -> None:
     from api.schemas import SignUpResponseBody
     from api.schemas import TestTokenErrorResponse
     from api.schemas import TestTokenResponseBody
-    from api.schemas import TicklistBoulder
+    from api.schemas import TicklistBoulderSchema
     from api.schemas import TicklistResponseBody
-    from api.schemas import TicklistErrorResponse
+    from api.schemas import TicklistError
     from api.schemas import RateBoulderRequestBody
     from api.schemas import RateBoulderResponseBody
     from api.schemas import RateBoulderErrorResponse
@@ -71,9 +71,9 @@ def generate_api_docs(app) -> None:
     spec.components.schema("TestTokenErrorResponse",
                            schema=TestTokenErrorResponse)
     spec.components.schema("TicklistBoulder",
-                           schema=TicklistBoulder)
-    spec.components.schema("TicklistErrorResponse",
-                           schema=TicklistErrorResponse)
+                           schema=TicklistBoulderSchema)
+    spec.components.schema("TicklistError",
+                           schema=TicklistError)
     spec.components.schema("TicklistResponseBody",
                            schema=TicklistResponseBody)
     spec.components.schema("RateBoulderRequestBody",

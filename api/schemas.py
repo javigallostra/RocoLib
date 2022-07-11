@@ -265,7 +265,7 @@ class GymBoulderListSchema(Schema):
     boulders = fields.List(fields.Nested(BoulderSchema))
 
 
-class TicklistBoulder(BoulderSchema):
+class TicklistBoulderSchema(BoulderSchema):
     """
     Ticklist Boulder Data Schema
     """
@@ -277,18 +277,16 @@ class TicklistResponseBody(Schema):
     """
     Ticklist response data schema
     """
-    boulders = fields.List(fields.Nested(TicklistBoulder))
+    boulders = fields.List(fields.Nested(TicklistBoulderSchema))
 
+class BaseErrorSchema(Schema):
+    errors = fields.Dict()
 
-class TicklistErrorResponse(Schema):
+class TicklistError(BaseErrorSchema):
     """
     Ticklist error response data schema
     """
-    errors = fields.List(fields.Str())
-
-
-class BaseErrorSchema(Schema):
-    errors = fields.List(fields.Dict())
+    pass
 
 class NotFoundError(BaseErrorSchema):
     pass
