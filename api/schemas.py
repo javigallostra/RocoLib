@@ -280,6 +280,9 @@ class TicklistResponseBody(Schema):
     boulders = fields.List(fields.Nested(TicklistBoulderSchema))
 
 class BaseErrorSchema(Schema):
+    """
+    Base error response data schema
+    """
     errors = fields.Dict()
 
 class TicklistError(BaseErrorSchema):
@@ -289,6 +292,9 @@ class TicklistError(BaseErrorSchema):
     pass
 
 class NotFoundError(BaseErrorSchema):
+    """
+    Resource not found error response data schema
+    """
     pass
 
 class BoulderFields:
