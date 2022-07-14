@@ -204,7 +204,7 @@ def process_mark_boulder_as_done_request(request, db, user):
       db_boulder = db_controller.get_boulder_by_id(
           data.get('gym'), data.get('boulder_id'), db)
 
-      if not db_boulder:
+      if not bool(db_boulder):
           return jsonify(
               dict(
                   errors=dict(
@@ -228,7 +228,7 @@ def process_mark_boulder_as_done_request(request, db, user):
       if updated_boulder and updated_boulder[0]['is_done']:
           return jsonify(dict(boulder_id=db_boulder.get('iden'), marked_as_done=True)), 200
       else:
-          return jsonify(dict(errors=dict(boulder_id='Boulder not found'))), 404
+          return jsonify(dict(errors=dict(boulder_id=f'Could not update boulder with id {data.get("boulder_id")}'))), 500
 
 
 def process_get_user_ticklist_request(db, user):
