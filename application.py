@@ -99,7 +99,7 @@ def inject_langauge() -> dict:
 
 def get_gym() -> str:
     """Get the current session's selected gym."""
-    return request_processor.get_current_gym(session, g.db)
+    return utils.get_current_gym(session, g.db)
 
 
 @app.route('/', methods=['GET', 'POST'])
