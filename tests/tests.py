@@ -7,6 +7,7 @@ from application import app
 from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from marshmallow import ValidationError
 from bson.objectid import ObjectId
+from src.config import ITEMS
 
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
@@ -49,7 +50,7 @@ class UtilsTests(unittest.TestCase):
     def test_get_credentials(self):
         # Given
         from os.path import exists
-        from utils.utils import get_creds_file
+        from src.utils import get_creds_file
         with open('.ddbb.env', 'r') as f:
             creds_file_before = f.read()
         # When
@@ -65,7 +66,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_get_credentials_not_found(self):
         # Given
-        from utils.utils import get_creds_file
+        from src.utils import get_creds_file
         # When
         def not_a_file(): return ''.join(
             [chr(random.randint(97, 122)) for i in range(5)]) + '.txt'
@@ -81,7 +82,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_make_boulder_data_valid_js(self):
         # Given
-        from utils.utils import make_boulder_data_valid_js
+        from src.utils import make_boulder_data_valid_js
         data = ['{\'a\': \'True\'}', '{\'a\': \'False\'}']
         expected_data = [{'a': 'true'}, {'a': 'false'}]
         # When
@@ -94,7 +95,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_make_boulder_data_valid_js_wrong_data_type(self):
         # Given
-        from utils.utils import make_boulder_data_valid_js
+        from src.utils import make_boulder_data_valid_js
         invalid_data = [{'a': 'b'}, ['aaa'], (1, 2), 4, 17.23]
         expected_data = [dict() for _ in range(len(invalid_data))]
         # When
@@ -107,7 +108,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_get_wall_image(self):
         # Given
-        from utils.utils import get_wall_image
+        from src.utils import get_wall_image
         gym = 'sancu'
         section = 's1'
         path = 'images/walls/'
@@ -121,7 +122,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_get_time_since_creation(self):
         # Given
-        from utils.utils import get_time_since_creation
+        from src.utils import get_time_since_creation
         import datetime
         test_year = 2021
         test_time = f'{test_year}-01-01T00:00:00.0000'
@@ -168,7 +169,7 @@ class UtilsTests(unittest.TestCase):
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], 0)
 
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], 0)
 
@@ -216,7 +217,7 @@ class UtilsTests(unittest.TestCase):
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], repetitions)
 
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertIn(rep_key, b)
             self.assertEqual(b[rep_key], repetitions)
 
@@ -261,12 +262,12 @@ class UtilsTests(unittest.TestCase):
         for b in boulder_list:
             self.assertEqual(TEST_ID, b[id_key])
             self.assertTrue(isinstance(b[id_key], str))
-        for b in boulder_dict['Items']:
+        for b in boulder_dict[ITEMS]:
             self.assertEqual(TEST_ID, b[id_key])
             self.assertTrue(isinstance(b[id_key], str))
-        self.assertEqual(TEST_ID, boulder_dict_single['Items'][id_key])
+        self.assertEqual(TEST_ID, boulder_dict_single[ITEMS][id_key])
         self.assertTrue(
-            isinstance(boulder_dict_single['Items'][id_key], str)
+            isinstance(boulder_dict_single[ITEMS][id_key], str)
         )
 
 class BoulderCreationTests(unittest.TestCase):

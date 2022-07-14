@@ -1,8 +1,8 @@
-from utils.utils import load_data
-from config import BOULDER_COLOR_MAP, FEET_MAPPINGS
+from src.utils import load_data
+from src.config import BOULDER_COLOR_MAP, FEET_MAPPINGS
 from db import mongodb_controller
-from utils.utils import make_boulder_data_valid_js
-from models import TickListProblem
+from src.utils import make_boulder_data_valid_js
+from src.models import TickListProblem
 from werkzeug.utils import secure_filename
 
 from pymongo.database import Database

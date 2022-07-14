@@ -1,4 +1,5 @@
 from typing import Optional
+from src.typing import Data
 
 import functools
 from datetime import datetime
@@ -6,8 +7,10 @@ from bson.objectid import ObjectId
 
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
-from models import TickListProblem
-from utils.typing import Data
+
+from src.models import TickListProblem
+
+from src.config import *
 
 
 def postprocess_boulder_data(func):
@@ -41,8 +44,8 @@ def postprocess_boulder_data(func):
                     boulder[field] = fields_to_check[field]
         elif isinstance(boulder_data, dict) and boulder_data:
             # check if Items is key
-            if 'Items' in boulder_data:
-                for boulder in boulder_data['Items']:
+            if ITEMS in boulder_data:
+                for boulder in boulder_data[ITEMS]:
                     # skip if boulder data is empty for some reason
                     if not boulder:
                         continue
@@ -196,7 +199,7 @@ def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     The key is 'Items' and the value is a list of raw boulder data.
     """
     raw_boulder_data = list(database[f'{gym}_boulders'].find())
-    return {'Items': raw_boulder_data}
+    return {ITEMS: raw_boulder_data}
 
 
 @serializable
@@ -208,7 +211,7 @@ def get_routes(gym: str, database: Database) -> dict[str, list[Data]]:
     The key is 'Items' and the value is a list of raw route data.
     """
     raw_route_data = list(database[f'{gym}_routes'].find())
-    return {'Items': raw_route_data}
+    return {ITEMS: raw_route_data}
 
 
 @serializable
@@ -382,7 +385,7 @@ def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one(
-        {"_id": ObjectId(boulder_id)})
+        {'_id': ObjectId(boulder_id)})
     return boulder if boulder else {}
 
 
@@ -401,7 +404,7 @@ def get_random_boulder(gym: str, database: Database) -> Data:
     boulder = None
     try:
         boulder = database[f'{gym}_boulders'].aggregate(
-            [{"$sample": {"size": 1}}]).next()
+            [{'$sample': {'size': 1}}]).next()
     except StopIteration:
         boulder = None
     return boulder if boulder else {}
@@ -441,7 +444,7 @@ def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    boulders = list(database[f'{gym}_boulders'].find({"_id": {"$gt": ObjectId(boulder_id)}}).limit(1))
+    boulders = list(database[f'{gym}_boulders'].find({'_id': {'$gt': ObjectId(boulder_id)}}).limit(1))
     return boulders[0] if boulders else {}
 
 
@@ -474,7 +477,7 @@ def get_boulders_filtered(
     """
     # if there are no conditions, return everything
     if not conditions:
-        return {'Items': list(database[f'{gym}_boulders'].find())}
+        return {ITEMS: list(database[f'{gym}_boulders'].find())}
 
     # if there are conditions, apply filters
     query = {}
@@ -497,7 +500,7 @@ def get_boulders_filtered(
             elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
                 to_be_removed.append(str(boulder['_id']))
 
-    return {'Items': [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
+    return {ITEMS: [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
 
 # User related functions
 

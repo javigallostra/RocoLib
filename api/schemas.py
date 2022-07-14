@@ -1,4 +1,4 @@
-from config import PORT, DOCKER_ENV
+from src.config import PORT, DOCKER_ENV
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
@@ -20,7 +20,9 @@ class GymSchema(Schema):
     id = fields.Str()
     name = fields.Str()
     coordinates = fields.List(
-        fields.Float(), validate=fields.Length(min=2, max=2))
+        fields.Float(), 
+        validate=fields.Length(min=2, max=2)
+    )
 
 
 class WallSchema(Schema):
@@ -112,7 +114,6 @@ class CreateBoulderErrorResponse(Schema):
     """
     Data schema of the response to a unsuccessful create boulder request
     """
-    created = fields.Bool()
     errors = fields.Dict()
 
 class RateBoulderRequestBody(Schema):
@@ -134,7 +135,6 @@ class RateBoulderErrorResponse(Schema):
     Data schema of the response to a unsuccessful boulder rating request
     """
     errors = fields.Dict()
-    rated = fields.Bool()
 
 class MarkDoneBoulderRequestBody(Schema):
     """
@@ -155,7 +155,6 @@ class MarkDoneBoulderErrorResponse(Schema):
     Data schema of the response to a unsuccessful boulder rating request
     """
     errors = fields.Dict()
-    marked_as_done = fields.Bool()
 
 class AuthenticationRequestBody(Schema):
     """
@@ -266,7 +265,7 @@ class GymBoulderListSchema(Schema):
     boulders = fields.List(fields.Nested(BoulderSchema))
 
 
-class TicklistBoulder(BoulderSchema):
+class TicklistBoulderSchema(BoulderSchema):
     """
     Ticklist Boulder Data Schema
     """
@@ -278,15 +277,25 @@ class TicklistResponseBody(Schema):
     """
     Ticklist response data schema
     """
-    boulders = fields.List(fields.Nested(TicklistBoulder))
+    boulders = fields.List(fields.Nested(TicklistBoulderSchema))
 
+class BaseErrorSchema(Schema):
+    """
+    Base error response data schema
+    """
+    errors = fields.Dict()
 
-class TicklistErrorResponse(Schema):
+class TicklistError(BaseErrorSchema):
     """
     Ticklist error response data schema
     """
-    errors = fields.List(fields.Str())
+    pass
 
+class NotFoundError(BaseErrorSchema):
+    """
+    Resource not found error response data schema
+    """
+    pass
 
 class BoulderFields:
     raters = 'raters'

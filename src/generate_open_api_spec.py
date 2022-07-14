@@ -1,7 +1,7 @@
 import json
 from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
-from api.blueprint import get_gyms, get_gym_walls, boulder_create, get_resource, new_user
+from api.blueprint import get_gyms, get_gym_walls, boulder_create, test_auth, new_user
 from api.blueprint import get_user_ticklist, rate_boulder, mark_boulder_as_done
 
 
@@ -31,15 +31,16 @@ def generate_api_docs(app) -> None:
     from api.schemas import SignUpResponseBody
     from api.schemas import TestTokenErrorResponse
     from api.schemas import TestTokenResponseBody
-    from api.schemas import TicklistBoulder
+    from api.schemas import TicklistBoulderSchema
     from api.schemas import TicklistResponseBody
-    from api.schemas import TicklistErrorResponse
+    from api.schemas import TicklistError
     from api.schemas import RateBoulderRequestBody
     from api.schemas import RateBoulderResponseBody
     from api.schemas import RateBoulderErrorResponse
     from api.schemas import MarkDoneBoulderRequestBody
     from api.schemas import MarkDoneBoulderResponseBody
     from api.schemas import MarkDoneBoulderErrorResponse
+    from api.schemas import NotFoundError
 
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
@@ -70,9 +71,9 @@ def generate_api_docs(app) -> None:
     spec.components.schema("TestTokenErrorResponse",
                            schema=TestTokenErrorResponse)
     spec.components.schema("TicklistBoulder",
-                           schema=TicklistBoulder)
-    spec.components.schema("TicklistErrorResponse",
-                           schema=TicklistErrorResponse)
+                           schema=TicklistBoulderSchema)
+    spec.components.schema("TicklistError",
+                           schema=TicklistError)
     spec.components.schema("TicklistResponseBody",
                            schema=TicklistResponseBody)
     spec.components.schema("RateBoulderRequestBody",
@@ -87,6 +88,8 @@ def generate_api_docs(app) -> None:
                            schema=MarkDoneBoulderResponseBody)
     spec.components.schema("MarkDoneBoulderErrorResponse",
                            schema=MarkDoneBoulderErrorResponse)
+    spec.components.schema("NotFoundError",
+                           schema=NotFoundError)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)
@@ -98,7 +101,7 @@ def generate_api_docs(app) -> None:
         spec.path(view=boulder_create)
         spec.path(view=new_user)
         spec.path(view=get_auth_token)
-        spec.path(view=get_resource)
+        spec.path(view=test_auth)
         spec.path(view=get_user_ticklist)
         spec.path(view=rate_boulder)
         spec.path(view=mark_boulder_as_done)

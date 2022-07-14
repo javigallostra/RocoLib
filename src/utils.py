@@ -14,8 +14,8 @@ from werkzeug.local import LocalProxy
 from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
-from config import *
-from utils.typing import Data
+from src.config import *
+from src.typing import Data
 
 
 def get_creds_file(env: str = '.ddbb.env') -> str:
@@ -90,6 +90,13 @@ def make_boulder_data_valid_js(data: str) -> Data:
         .replace('False', 'false'))
 
 
+def get_current_gym(session, db):
+    if session.get('gym', ''):
+        return session['gym']
+    gyms = db_controller.get_gyms(db)
+    return gyms[0]['id']
+
+
 def get_wall_image(gym: str, section: str, walls_path: str, static_assets_path: str = 'static') -> str:
     """
     Given a gym section, return its image url
@@ -105,10 +112,6 @@ def get_wall_json(gym: str, section: str, walls_path: str, static_assets_path: s
     Given a gym section, return its image url
     """
     return os.path.join(static_assets_path, '{}{}/{}.json'.format(walls_path, gym, section))
-    # return url_for(
-    #     static_assets_path,
-    #     filename='{}{}/{}.json'.format(walls_path, gym, section)
-    # )
 
 
 def get_stats(database: Database) -> dict[str, int]:
@@ -446,3 +449,16 @@ def load_boulder_to_show(
             session
         )
     return boulder, wall_image
+
+
+def choose_language(request, langs) -> str:
+    """
+    Choose the first known user language else DEFAULT_LANG
+    """
+    user_lang = request.headers.get('Accept_Language').replace(
+        '-', '_').split(';')[0].split(',')
+
+    lang_matches = set(user_lang).intersection(langs.keys())
+    if lang_matches:
+        return lang_matches.pop()
+    return DEFAULT_LANG
