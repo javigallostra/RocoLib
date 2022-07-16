@@ -255,7 +255,7 @@ def process_wall_section_request(request, session, db, static_folder, wall_secti
         wall_image=utils.get_wall_image(utils.get_current_gym(
             session, db), wall_section, WALLS_PATH),
         wall_name=db_controller.get_gym_section_name(
-            utils.get_current_gym(session, db), wall_section, g.db),
+            utils.get_current_gym(session, db), wall_section, db),
         section=wall_section,
         radius=utils.get_wall_radius(
             session, db, utils.get_current_gym(session, db) + '/' + wall_section),
