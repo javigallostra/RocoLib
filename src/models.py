@@ -38,9 +38,9 @@ class User(UserMixin):
         self.ticklist: list[Union[TickListProblem, Data]] = []
 
         # initial_data is a tuple of args. Here we are
-        # assuming that when building a user object a dictionary
-        # with all the required data will come as a positional (and the only?)
-        # argument
+        # assuming that when building a user object a 
+        # dictionary with all the required data will come
+        # as a positional (and the only?) argument
         for arg in initial_data:
             for key in arg:
                 if key == TICKLIST:
@@ -77,6 +77,7 @@ class User(UserMixin):
         self.ticklist = [problem.serialize() for problem in self.ticklist]
         to_save = self.__dict__
         user_preferences = to_save.pop(USER_PREFERENCES, None)
+        # save user data and user prefs separately
         mongodb_controller.save_user(to_save, database)
         mongodb_controller.save_user_preferences(user_preferences.__dict__, database)
         # deserialize ticklist problems

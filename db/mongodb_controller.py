@@ -508,9 +508,7 @@ def get_boulders_filtered(
 @serializable
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
-    Persist user data
-
-    Insert user_data in the given database
+    Persist user data. Insert user_data in the given database
     """
     return database['users'].insert_one(user_data)
 
@@ -518,9 +516,7 @@ def save_user(user_data: Data, database: Database) -> InsertOneResult:
 @serializable
 def get_user_data_by_id(user_id: str, database: Database) -> Data:
     """
-    Given a user id get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user id get its data. Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'id': user_id})
     return user if user else {}
@@ -529,9 +525,7 @@ def get_user_data_by_id(user_id: str, database: Database) -> Data:
 @serializable
 def get_user_data_by_email(email: str, database: Database) -> Data:
     """
-    Given a user email get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user email get its data. Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'email': email})
     return user if user else {}
@@ -540,18 +534,22 @@ def get_user_data_by_email(email: str, database: Database) -> Data:
 @serializable
 def get_user_data_by_username(name: str, database: Database) -> Data:
     """
-    Given a user email get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user email get its data. Return an empty dictionary if the user is not found
     """
     user = database['users'].find_one({'name': name})
     return user if user else {}
 
 @serializable
 def get_user_preferences(user_id: str, database: Database) -> Data:
+    """
+    Given a user id, get its preferences. Return an empty dict if not found
+    """
     user_prefs = database['user_preferences'].find_one({'user_id': user_id})
     return user_prefs if user_prefs else {}
 
 @serializable
 def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResult:
+    """
+    Save a specific user preferences 
+    """
     return database['user_preferences'].insert_one(user_prefs)
