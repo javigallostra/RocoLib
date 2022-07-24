@@ -11,13 +11,19 @@ from pymongo.database import Database
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 
-TICKLIST = "ticklist"
+TICKLIST = 'ticklist'
+USER_PREFERENCES = 'user_preferences'
 
+class UserPreferences:
+    """User preferences model"""
+    def __init__(self, user_id: str, **kwargs) -> None:
+        self.user_id = user_id
+        self.default_gym = ""
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
 class User(UserMixin):
-    """
-    User model
-    """
+    """User model"""
 
     def __init__(self, *initial_data, **kwargs) -> None:
         """
@@ -28,14 +34,24 @@ class User(UserMixin):
         self.email: str = None
         self.password: str = None
         self.is_admin: bool = False
+        self.user_preferences: UserPreferences = None
         self.ticklist: list[Union[TickListProblem, Data]] = []
 
-        for dictionary in initial_data:
-            for key in dictionary:
+        # initial_data is a tuple of args. Here we are
+        # assuming that when building a user object a dictionary
+        # with all the required data will come as a positional (and the only?)
+        # argument
+        for arg in initial_data:
+            for key in arg:
                 if key == TICKLIST:
-                    self.load_ticklist(dictionary[key])
+                    self.load_ticklist(arg[key])
+                elif key == USER_PREFERENCES:
+                    if isinstance(arg[key], UserPreferences):
+                        self.user_preferences = arg[key]
+                    else:
+                        self.user_preferences = UserPreferences(**arg[key])
                 else:
-                    setattr(self, key, dictionary[key])
+                    setattr(self, key, arg[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
@@ -59,7 +75,10 @@ class User(UserMixin):
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
         self.ticklist = [problem.serialize() for problem in self.ticklist]
-        mongodb_controller.save_user(self.__dict__, database)
+        to_save = self.__dict__
+        user_preferences = to_save.pop(USER_PREFERENCES, None)
+        mongodb_controller.save_user(to_save, database)
+        mongodb_controller.save_user_preferences(user_preferences.__dict__, database)
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 
@@ -71,6 +90,16 @@ class User(UserMixin):
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
+    def get_user_preferences(user_id: str, database: Database) -> Union[UserPreferences, None]:
+        """
+        Get the preferences of a user
+        """ 
+        _user_prefs = mongodb_controller.get_user_preferences(user_id, database)
+        if not bool(_user_prefs):
+            return UserPreferences(user_id=user_id)
+        return UserPreferences(**_user_prefs)
+
+    @staticmethod
     def get_by_id(user_id: str, database: Database) -> Union[User, None]:
         """
         Return a User object if the user id is found in the database.
@@ -78,32 +107,54 @@ class User(UserMixin):
         Otherwise, return None.
         """
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
-        if not user_data:
+        if not bool(user_data):
             return None
+        
+        user_prefs = UserPreferences(user_id)
+        _user_prefs = mongodb_controller.get_user_preferences(user_id, database)        
+        if bool(_user_prefs):
+            user_prefs = UserPreferences(**_user_prefs)
+
+        user_data[USER_PREFERENCES] = user_prefs
+
         return User(user_data)
 
     @staticmethod
     def get_user_by_email(email: str, database: Database) -> Union[User, None]:
         """
         Return a User object if the user email is found in the database.
-
         Otherwise, return None.
         """
         user_data = mongodb_controller.get_user_data_by_email(email, database)
         if not user_data:
             return None
+
+        user_prefs = UserPreferences(user_data['id'])
+        _user_prefs = mongodb_controller.get_user_preferences(user_data['id'], database)        
+        if bool(_user_prefs):
+            user_prefs = UserPreferences(**_user_prefs)
+
+        user_data[USER_PREFERENCES] = user_prefs
+
         return User(user_data)
 
     @staticmethod
     def get_user_by_username(name: str, database: Database) -> Union[User, None]:
         """
         Return a User object if the user email is found in the database.
-
         Otherwise, return None.
         """
         user_data = mongodb_controller.get_user_data_by_username(name, database)
         if not user_data:
             return None
+
+        user_prefs = UserPreferences(user_data['id'])
+        _user_prefs = mongodb_controller.get_user_preferences(user_data['id'], database)        
+        if bool(_user_prefs):
+            user_prefs = UserPreferences(**_user_prefs)
+
+        user_data[USER_PREFERENCES] = user_prefs
+
         return User(user_data)
 
     def generate_auth_token(self, app: Any, expiration: int = 600):

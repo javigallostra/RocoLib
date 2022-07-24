@@ -15,6 +15,9 @@ from src.config import *
 def handle_home_request(request, session, db):
     if request.method == 'POST':
         session['gym'] = request.form.get('gym')
+    elif session.get('user_default_gym', '') and session.get('first_load', False):
+        session['gym'] = session.get('user_default_gym')
+        session['first_load'] = False
     gyms = db_controller.get_gyms(db)
     return render_template(
         'home.html',
@@ -346,7 +349,7 @@ def process_delete_ticklist_problem_request(request, db, current_user):
     return abort(400)
 
 
-def process_login_request(request, db, current_user, login_user):
+def process_login_request(request, session, db, current_user, login_user):
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = LoginForm()
@@ -357,6 +360,9 @@ def process_login_request(request, db, current_user, login_user):
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('home')
+            # set user prefs
+            session['user_default_gym'] = user.user_preferences.default_gym
+            session['first_load'] = True
             return redirect(next_page)
     return render_template('login_form.html', form=form)
 

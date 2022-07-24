@@ -199,7 +199,7 @@ def add_gym() -> str:
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> Union[str, Response]:
-    return request_processor.process_login_request(request, g.db, current_user, login_user)
+    return request_processor.process_login_request(request, session, g.db, current_user, login_user)
 
 
 @app.route('/signup/', methods=['GET', 'POST'])

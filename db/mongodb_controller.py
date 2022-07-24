@@ -546,3 +546,12 @@ def get_user_data_by_username(name: str, database: Database) -> Data:
     """
     user = database['users'].find_one({'name': name})
     return user if user else {}
+
+@serializable
+def get_user_preferences(user_id: str, database: Database) -> Data:
+    user_prefs = database['user_preferences'].find_one({'user_id': user_id})
+    return user_prefs if user_prefs else {}
+
+@serializable
+def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResult:
+    return database['user_preferences'].insert_one(user_prefs)
