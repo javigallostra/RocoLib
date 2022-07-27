@@ -10,11 +10,18 @@ from datetime import datetime
 from pymongo.database import Database
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
+from abc import ABC, abstractmethod
 
 TICKLIST = 'ticklist'
 USER_PREFERENCES = 'user_preferences'
 
-class UserPreferences:
+ 
+class BaseModel(ABC):
+    @abstractmethod
+    def serialize(self):
+        pass
+
+class UserPreferences(BaseModel):
     """User preferences model"""
     def __init__(self, user_id: str, **kwargs) -> None:
         self.user_id = user_id
@@ -25,13 +32,11 @@ class UserPreferences:
     def serialize(self):
         return self.__dict__
 
-class User(UserMixin):
+class User(UserMixin, BaseModel):
     """User model"""
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        """
-        Initialise attributes
-        """
+        """Initialise mandatory attributes"""
         self.id: str = None
         self.name: str = None
         self.email: str = None
@@ -188,15 +193,11 @@ class User(UserMixin):
         return '<User {} ({})>'.format(self.email, self.name)
 
 
-class TickListProblem():
-    """
-    Tick List problem model
-    """
+class TickListProblem(BaseModel):
+    """Tick List problem model"""
 
     def __init__(self, *initial_data, **kwargs) -> None:
-        """
-        Initialise attributes
-        """
+        """Initialise attributes"""
         self.iden: str = None
         self.gym: str = None
         self.section: str = None

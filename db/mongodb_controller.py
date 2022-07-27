@@ -511,13 +511,14 @@ def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
     Persist user data. Insert user_data in the given database
     """
-    try:
+    found_user = database['users'].find_one({'id': user_data.get('id', None)})
+    if not found_user:
         return database['users'].insert_one(user_data)
-    except DuplicateKeyError:
-        id_query = { '_id': ObjectId(user_data['_id']) }
-        user_data = {key: val for key,val in user_data.items() if key != '_id'}
-        updated_data = { "$set": user_data }
-        database['users'].update_one(id_query, updated_data)
+
+    id_query = { '_id': ObjectId(user_data['_id']) }
+    user_data = {key: val for key,val in user_data.items() if key != '_id'}
+    updated_data = { "$set": user_data }
+    database['users'].update_one(id_query, updated_data)
 
 
 @serializable
@@ -559,10 +560,12 @@ def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResu
     """
     Save a specific user preferences 
     """
-    try:
+    found_user_prefs = database['user_preferences'].find_one({'user_id': user_prefs.get('user_id', None)})
+
+    if not found_user_prefs:
         return database['user_preferences'].insert_one(user_prefs)
-    except DuplicateKeyError:
-        id_query = { '_id': ObjectId(user_prefs['_id']) }
-        new_prefs = {key: val for key,val in user_prefs.items() if key != '_id'}
-        updated_prefs = { "$set": new_prefs }
-        database['user_preferences'].update_one(id_query, updated_prefs)
+    
+    id_query = { '_id': ObjectId(user_prefs['_id']) }
+    new_prefs = {key: val for key,val in user_prefs.items() if key != '_id'}
+    updated_prefs = { "$set": new_prefs }
+    database['user_preferences'].update_one(id_query, updated_prefs)

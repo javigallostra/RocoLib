@@ -1,13 +1,15 @@
 import datetime
-from genericpath import isfile
 import unittest
 import random
-from application import app
+from genericpath import isfile
 
-from api.schemas import CreateBoulderRequestValidator, BoulderFields
+from application import app
 from marshmallow import ValidationError
 from bson.objectid import ObjectId
+
+from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from src.config import ITEMS
+from src.models import User, UserPreferences
 
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
@@ -304,6 +306,16 @@ class BoulderCreationTests(unittest.TestCase):
         self.assertIn('notes', context.exception.messages)
         self.assertIn('holds', context.exception.messages)
 
+
+class UserModelTests(unittest.TestCase):
+    def test_user_creation(self):
+        # Given
+        user_id='1234'
+        # When
+        user = User(user_id=user_id)
+        # Then
+        self.assertNotEqual(user.user_preferences, None)
+        self.assertEqual(user.user_preferences.user_id, user_id)
 
 if __name__ == '__main__':
     unittest.main()
