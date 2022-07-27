@@ -63,6 +63,12 @@ class User(UserMixin, BaseModel):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+        if not self.id:
+            self.id = str(uuid.uuid1())
+        if not self.user_preferences:
+            self.user_preferences = UserPreferences(user_id=self.id)
+
+
     def set_password(self, password: str) -> None:
         """
         Set the password for the current user
@@ -83,8 +89,6 @@ class User(UserMixin, BaseModel):
         """
         Save the current user data to the database
         """
-        if not self.id:
-            self.id = str(uuid.uuid1())
         # Serialize ticklist problems
         self.ticklist = [problem.serialize() for problem in self.ticklist]
         user_preferences = self.user_preferences

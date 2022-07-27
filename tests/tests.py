@@ -312,7 +312,7 @@ class UserModelTests(unittest.TestCase):
         # Given
         user_id='1234'
         # When
-        user = User(user_id=user_id)
+        user = User(id=user_id)
         # Then
         self.assertNotEqual(user.user_preferences, None)
         self.assertEqual(user.user_preferences.user_id, user_id)
