@@ -21,6 +21,9 @@ class UserPreferences:
         self.default_gym = ""
         for key in kwargs:
             setattr(self, key, kwargs[key])
+    
+    def serialize(self):
+        return self.__dict__
 
 class User(UserMixin):
     """User model"""
@@ -67,6 +70,10 @@ class User(UserMixin):
         """
         return check_password_hash(self.password, password)
 
+    def serialize(self):
+        excluded_keys = [USER_PREFERENCES]
+        return {key: val for  key,val in self.__dict__.items() if key not in excluded_keys}
+
     def save(self, database: Database) -> None:
         """
         Save the current user data to the database
@@ -75,11 +82,12 @@ class User(UserMixin):
             self.id = str(uuid.uuid1())
         # Serialize ticklist problems
         self.ticklist = [problem.serialize() for problem in self.ticklist]
-        to_save = self.__dict__
-        user_preferences = to_save.pop(USER_PREFERENCES, None)
+        user_preferences = self.user_preferences
+        if not user_preferences:
+            user_preferences = UserPreferences(user_id=self.id)
         # save user data and user prefs separately
-        mongodb_controller.save_user(to_save, database)
-        mongodb_controller.save_user_preferences(user_preferences.__dict__, database)
+        mongodb_controller.save_user(self.serialize(), database)
+        mongodb_controller.save_user_preferences(user_preferences.serialize(), database)
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 

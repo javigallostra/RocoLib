@@ -217,6 +217,10 @@ def logout() -> Response:
 def tick_list() -> Union[str, Response]:
     return request_processor.process_ticklist_request(request, session, g.db, current_user)
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile() -> Union[str, Response]:
+    return request_processor.process_profile_request(request, g.db, session, current_user)
 
 @app.route('/delete_ticklist_problem', methods=['POST'])
 @login_required

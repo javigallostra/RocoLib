@@ -66,6 +66,8 @@
     "yellow": "Amarillo",
     "add_your_gym": "Añade tu rocódromo",
     "current_gym_": "Rocódromo actual",
+    "default_gym": "Rocódromo por defecto",
+    "change_default_gym": "Cambiar rocódromo por defecto",
     "locate_nearest_gym": "Búscar rocódromo más cercano",
     "create_boulder": "Crear Problema",
     "random_problem": "Problema Aleatorio",

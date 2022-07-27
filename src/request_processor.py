@@ -412,3 +412,19 @@ def process_get_nearest_gym_request(request, session, db):
     # Set closest gym as actual gym
     session['gym'] = closest_gym
     return redirect(url_for('home'))
+
+def process_profile_request(request, db, session, current_user):
+    if request.method == 'POST':
+        default_gym = request.form.get('gym')
+        if default_gym != current_user.user_preferences.default_gym:
+            current_user.user_preferences.default_gym = default_gym
+            current_user.save(db)
+    gyms = db_controller.get_gyms(db)
+
+    return render_template(
+        'profile.html',
+        gyms=gyms,
+        selected=current_user.user_preferences.default_gym,
+        current_gym=[gym['name'] for gym in gyms if gym['id']
+                     == current_user.user_preferences.default_gym][0]
+    )

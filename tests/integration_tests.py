@@ -326,6 +326,14 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.json.get('username'), 'fake_username')
 
+    def test_get_user_preferences(self):
+        # TODO: implement test
+        pass
+
+    def test_set_user_preferences(self):
+        # TODO: implement test
+        pass
+
     def test_get_user_ticklist(self):
         """
         Get the test user's ticklist

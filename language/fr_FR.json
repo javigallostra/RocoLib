@@ -65,6 +65,8 @@
     "yellow": "Jaune",
     "add_your_gym": "Ajouter une salle",
     "current_gym_": "Salle sélectionnée",
+    "default_gym": "Salle par défaut",
+    "change_default_gym": "changer la salle par défaut",
     "locate_nearest_gym": "Trouver la salle la plus proche",
     "create_boulder": "Créer un Bloc",
     "random_problem": "Bloc au Hasard",

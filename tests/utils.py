@@ -99,7 +99,7 @@ def drop_users(db):
     """
     Remove users from the database
     """
-    users_collection = db[f'users']
+    users_collection = db['users']
     users_collection.drop()
 
 def add_boulder(db, gym, boulder_data):

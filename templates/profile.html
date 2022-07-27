@@ -1,0 +1,41 @@
+{% extends "base_template.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row">
+        <div class="container" style="display: flex; margin-bottom: 0.5rem; margin-top:0.5rem;">
+          <p style="margin-bottom:0; align-self:center;"><strong>{{ default_gym }}: </strong></p>
+          <div class="alert alert-info" role="alert" style="margin-left: 0.5rem; margin-bottom:0; padding: 0.7rem;">
+            <h5 style="font-size: 1.1rem; align-self: center; margin-bottom: 0;">{{ current_gym }}</h5>
+          </div>
+        </div>
+      </div>
+      <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;" />
+      <label>{{ change_default_gym }}: </label>
+      <div class="row gym-selector">
+        <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
+          <form action="/profile" method="POST">
+            <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
+              {% for gym in gyms %}
+              <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
+                endif %}>{{ gym['name'] }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{%block scripts%}
+{% endblock %}
