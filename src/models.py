@@ -26,6 +26,9 @@ class UserPreferences(BaseModel):
     def __init__(self, user_id: str, **kwargs) -> None:
         self.user_id = user_id
         self.default_gym = ""
+        self.show_latest_walls_only = False
+        self.hold_detection_disabled = False
+        
         for key in kwargs:
             setattr(self, key, kwargs[key])
     
