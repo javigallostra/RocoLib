@@ -30,12 +30,28 @@
       <div class="row gym-selector">
         <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/profile" method="POST">
-            <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym">
+            <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym" style="margin-bottom: 0.5rem;">
               {% for gym in gyms %}
               <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
                 endif %}>{{ gym['name'] }}</option>
               {% endfor %}
             </select>
+            <div class="custom-control custom-switch" style="margin-bottom: 0.5rem;">
+              <input type="checkbox" 
+                     class="custom-control-input" 
+                     id="latestWallSwitch" 
+                     name="latestWallSwitch"
+                     {% if user_prefs.show_latest_walls_only==True %} checked {%endif %}>
+              <label class="custom-control-label" for="latestWallSwitch">Show only latest wall sets</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox"
+                     class="custom-control-input" 
+                     id="holdDetectionSwitch"
+                     name="holdDetectionSwitch"
+                     {% if user_prefs.hold_detection_disabled==True %} checked {%endif %}>
+              <label class="custom-control-label" for="holdDetectionSwitch">Hold detection disabled</label>
+            </div>
           </form>
         </div>
       </div>

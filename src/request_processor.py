@@ -424,6 +424,7 @@ def process_profile_request(request, db, session, current_user):
     return render_template(
         'profile.html',
         gyms=gyms,
+        user_prefs=current_user.user_preferences,
         selected=current_user.user_preferences.default_gym,
         current_gym=[gym['name'] for gym in gyms if gym['id']
                      == current_user.user_preferences.default_gym][0]
