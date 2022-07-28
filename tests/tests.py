@@ -13,7 +13,7 @@ from src.models import User, UserPreferences
 
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
-from tests.tests_config import  TEST_NOTES, TEST_WALL_SECTION
+from tests.tests_config import TEST_NOTES, TEST_WALL_SECTION
 
 # class BaseAPITestClass(unittest.TestCase):
 #     """
@@ -32,6 +32,7 @@ from tests.tests_config import  TEST_NOTES, TEST_WALL_SECTION
 #         """
 #         pass
 
+
 def get_fake_boulder_data():
     return {
         '_id': ObjectId(TEST_ID),
@@ -47,6 +48,7 @@ def get_fake_boulder_data():
         'created_at': datetime.datetime.now(),
         'updated_at': datetime.datetime.now()
     }
+
 
 class UtilsTests(unittest.TestCase):
     def test_get_credentials(self):
@@ -132,13 +134,15 @@ class UtilsTests(unittest.TestCase):
         # When
         time_since = get_time_since_creation(test_time)
         # Then
-        self.assertEqual(time_since, f'{current.year - test_year} {"years" if current.year - test_year > 1 else "year"}')
+        self.assertEqual(
+            time_since, f'{current.year - test_year} {"years" if current.year - test_year > 1 else "year"}')
 
     def test_boulder_data_no_repetitions_postprocessing_decorator(self):
         # Given
         from db.mongodb_controller import postprocess_boulder_data
         rep_key = 'repetitions'
         # When
+
         @postprocess_boulder_data
         def get_single_fake_boulder_data():
             return get_fake_boulder_data()
@@ -146,7 +150,7 @@ class UtilsTests(unittest.TestCase):
         @postprocess_boulder_data
         def get_fake_boulders_list():
             return [
-                get_fake_boulder_data(), 
+                get_fake_boulder_data(),
                 get_fake_boulder_data()
             ]
 
@@ -154,7 +158,7 @@ class UtilsTests(unittest.TestCase):
         def get_fake_boulders_dict():
             return dict(
                 Items=[
-                    get_fake_boulder_data(), 
+                    get_fake_boulder_data(),
                     get_fake_boulder_data()
                 ]
             )
@@ -162,7 +166,7 @@ class UtilsTests(unittest.TestCase):
         single_boulder = get_single_fake_boulder_data()
         boulder_list = get_fake_boulders_list()
         boulder_dict = get_fake_boulders_dict()
-        
+
         # Then
         self.assertIn(rep_key, single_boulder)
         self.assertEqual(single_boulder[rep_key], 0)
@@ -181,6 +185,7 @@ class UtilsTests(unittest.TestCase):
         repetitions = 23
         rep_key = 'repetitions'
         # When
+
         @postprocess_boulder_data
         def get_single_fake_boulder_data():
             b = get_fake_boulder_data()
@@ -190,7 +195,7 @@ class UtilsTests(unittest.TestCase):
         @postprocess_boulder_data
         def get_fake_boulders_list():
             b_list = [
-                get_fake_boulder_data(), 
+                get_fake_boulder_data(),
                 get_fake_boulder_data()
             ]
             for b in b_list:
@@ -200,7 +205,7 @@ class UtilsTests(unittest.TestCase):
         @postprocess_boulder_data
         def get_fake_boulders_dict():
             b_list = [
-                get_fake_boulder_data(), 
+                get_fake_boulder_data(),
                 get_fake_boulder_data()
             ]
             for b in b_list:
@@ -210,7 +215,7 @@ class UtilsTests(unittest.TestCase):
         single_boulder = get_single_fake_boulder_data()
         boulder_list = get_fake_boulders_list()
         boulder_dict = get_fake_boulders_dict()
-        
+
         # Then
         self.assertIn(rep_key, single_boulder)
         self.assertEqual(single_boulder[rep_key], repetitions)
@@ -228,6 +233,7 @@ class UtilsTests(unittest.TestCase):
         from db.mongodb_controller import serializable
         id_key = '_id'
         # When
+
         @serializable
         def get_boulder_data():
             return get_fake_boulder_data()
@@ -252,7 +258,6 @@ class UtilsTests(unittest.TestCase):
         def get_boulder_data_dict_single_item():
             return dict(Items=get_fake_boulder_data())
 
-
         boulder = get_boulder_data()
         boulder_list = get_boulder_data_list()
         boulder_dict = get_boulder_data_dict()
@@ -271,6 +276,7 @@ class UtilsTests(unittest.TestCase):
         self.assertTrue(
             isinstance(boulder_dict_single[ITEMS][id_key], str)
         )
+
 
 class BoulderCreationTests(unittest.TestCase):
 
@@ -310,12 +316,15 @@ class BoulderCreationTests(unittest.TestCase):
 class UserModelTests(unittest.TestCase):
     def test_user_creation(self):
         # Given
-        user_id='1234'
+        user_id = '1234'
         # When
         user = User(id=user_id)
         # Then
         self.assertNotEqual(user.user_preferences, None)
         self.assertEqual(user.user_preferences.user_id, user_id)
+        self.assertEqual(user.user_preferences.hold_detection_disabled, False)
+        self.assertEqual(user.user_preferences.show_latest_walls_only, False)
+
 
 if __name__ == '__main__':
     unittest.main()
