@@ -239,7 +239,7 @@ def load_data(request: Request) -> Tuple[dict, bool]:
   elif request.form:
     return request.form, True
   elif request.data:
-        try:
+       try:
             return json.loads(request.data), False
         except json.JSONDecodeError:
             # try to load from query string
@@ -406,30 +406,30 @@ def load_next_or_current(
     gym_code: str,
     database: Database,
     session: LocalProxy
-    ) -> Tuple[dict, str]:
+) -> Tuple[dict, str]:
     next_boulder = db_controller.get_next_boulder(
         boulder_id, gym_code, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
-        boulder_id: str,
-        gym_code: str,
-        database: Database,
-        session: LocalProxy
-    ) -> Tuple[dict, str]:
+            boulder_id: str,
+            gym_code: str,
+            database: Database,
+            session: LocalProxy
+        ) -> Tuple[dict, str]:
     previous_boulder = db_controller.get_previous_boulder(
         boulder_id, gym_code, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
 def load_boulder_to_show(
-        candidate_boulder: dict,
-        gym_code: str,
-        current_boulder_id: str,
-        database: Database,
-        session: LocalProxy
-    ) -> Tuple[dict, str]:
+            candidate_boulder: dict,
+            gym_code: str,
+            current_boulder_id: str,
+            database: Database,
+            session: LocalProxy
+        ) -> Tuple[dict, str]:
     if candidate_boulder:
         # load boulder
         boulder, wall_image = load_full_boulder_data(

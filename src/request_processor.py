@@ -413,6 +413,7 @@ def process_get_nearest_gym_request(request, session, db):
     session['gym'] = closest_gym
     return redirect(url_for('home'))
 
+
 def process_profile_request(request, db, session, current_user):
     if request.method == 'POST':
         default_gym = request.form.get('gym')
