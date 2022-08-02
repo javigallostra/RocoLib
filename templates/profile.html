@@ -10,7 +10,7 @@
 <div id="holder">
   <div id="body">
     <div class="container">
-      <div class="row text-center">
+      <div class="row text-center mb-3">
         <div class="col">
           <div>
             <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
@@ -32,11 +32,11 @@
           <form action="/profile" method="POST">
             <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym" style="margin-bottom: 0.5rem;">
               {% for gym in gyms %}
-              <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
+              <option value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
                 endif %}>{{ gym['name'] }}</option>
               {% endfor %}
             </select>
-            <div class="custom-control custom-switch" style="margin-bottom: 0.5rem;">
+            <div class="custom-control custom-switch mt-3" style="margin-bottom: 0.5rem;">
               <input type="checkbox" 
                      class="custom-control-input" 
                      id="latestWallSwitch" 
@@ -44,13 +44,20 @@
                      {% if user_prefs.show_latest_walls_only==True %} checked {%endif %}>
               <label class="custom-control-label" for="latestWallSwitch">Show only latest wall sets</label>
             </div>
-            <div class="custom-control custom-switch">
+            <div class="custom-control custom-switch mt-3">
               <input type="checkbox"
                      class="custom-control-input" 
                      id="holdDetectionSwitch"
                      name="holdDetectionSwitch"
                      {% if user_prefs.hold_detection_disabled==True %} checked {%endif %}>
               <label class="custom-control-label" for="holdDetectionSwitch">Hold detection disabled</label>
+            </div>
+            <div class="row text-center mt-3">
+              <div class="col">
+                <div>
+                  <button class="btn btn-primary" onclick="this.form.submit()"> {{ save }}</button>
+                </div>
+              </div>
             </div>
           </form>
         </div>

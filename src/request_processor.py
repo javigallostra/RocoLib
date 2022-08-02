@@ -415,11 +415,18 @@ def process_get_nearest_gym_request(request, session, db):
 
 
 def process_profile_request(request, db, session, current_user):
+    # switches come as on or nothing
     if request.method == 'POST':
         default_gym = request.form.get('gym')
+        print(request.form)
         if default_gym != current_user.user_preferences.default_gym:
             current_user.user_preferences.default_gym = default_gym
-            current_user.save(db)
+        if request.form.get('latestWallSwitch', False) != current_user.user_preferences.show_latest_walls_only: 
+            current_user.user_preferences.show_latest_walls_only = bool(request.form.get('latestWallSwitch', False))
+        if request.form.get('holdDetectionSwitch', False) != current_user.user_preferences.hold_detection_disabled: 
+            current_user.user_preferences.hold_detection_disabled = bool(request.form.get('holdDetectionSwitch', False))
+        current_user.save(db)
+
     gyms = db_controller.get_gyms(db)
 
     return render_template(
