@@ -239,7 +239,7 @@ def load_data(request: Request) -> Tuple[dict, bool]:
   elif request.form:
     return request.form, True
   elif request.data:
-       try:
+        try:
             return json.loads(request.data), False
         except json.JSONDecodeError:
             # try to load from query string
