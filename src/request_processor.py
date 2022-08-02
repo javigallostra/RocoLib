@@ -18,6 +18,7 @@ def handle_home_request(request, session, db):
     elif session.get('user_default_gym', '') and session.get('first_load', False):
         session['gym'] = session.get('user_default_gym')
         session['first_load'] = False
+
     gyms = db_controller.get_gyms(db)
     return render_template(
         'home.html',
@@ -415,25 +416,17 @@ def process_get_nearest_gym_request(request, session, db):
 
 
 def process_profile_request(request, db, session, current_user):
-    # switches come as on or nothing
-    should_save_user = False
+    # switches come as "on" or nothing
     if request.method == 'POST':
-        default_gym = request.form.get('gym')
-        if default_gym != current_user.user_preferences.default_gym:
-            current_user.user_preferences.default_gym = default_gym
-            should_save_user = True
-        if request.form.get('latestWallSwitch', False) != current_user.user_preferences.show_latest_walls_only: 
-            current_user.user_preferences.show_latest_walls_only = bool(request.form.get('latestWallSwitch', False))
-            should_save_user = True
-        if request.form.get('holdDetectionSwitch', False) != current_user.user_preferences.hold_detection_disabled: 
-            current_user.user_preferences.hold_detection_disabled = bool(request.form.get('holdDetectionSwitch', False))
-            should_save_user = True
-
-    if should_save_user:
-        current_user.save(db)
+        should_save, current_user = utils.update_user_prefs(request, current_user)
+        if should_save:
+            current_user.save(db)
+            # update default gym
+            session['gym'] = current_user.user_preferences.default_gym
+            session['user_default_gym'] = current_user.user_preferences.default_gym
 
     gyms = db_controller.get_gyms(db)
-
+    
     return render_template(
         'profile.html',
         gyms=gyms,

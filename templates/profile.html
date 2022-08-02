@@ -30,7 +30,7 @@
       <div class="row gym-selector">
         <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
           <form action="/profile" method="POST">
-            <select class="form-control col-12" onchange="this.form.submit()" name="gym" id="gym" style="margin-bottom: 0.5rem;">
+            <select class="form-control col-12" name="gym" id="gym" style="margin-bottom: 0.5rem;">
               {% for gym in gyms %}
               <option value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
                 endif %}>{{ gym['name'] }}</option>
