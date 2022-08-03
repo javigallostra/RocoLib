@@ -2,7 +2,7 @@ var touchstartX = 0
 var touchendX = 0
 var touchstartY = 0
 var touchendY = 0
-var threshold = 15;
+var threshold = 50; // empirical value
 
 function isHorizontalSwipe() {
     return Math.abs(touchendX - touchstartX) > threshold && Math.abs(touchendX - touchstartX) > Math.abs(touchendY - touchstartY);
