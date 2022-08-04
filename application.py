@@ -42,8 +42,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-def make_cache_key_create() -> str:
-    return (request.path + get_gym()).encode('utf-8')
+# def make_cache_key_create() -> str:
+#     return (request.path + get_gym()).encode('utf-8')
 
 
 @app.before_request
@@ -109,14 +109,17 @@ def home() -> str:
 
 
 @app.route('/create')
-@cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
+# @cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
 def create() -> str:
-    return request_processor.handle_create_request(request, session, g.db)
+    return request_processor.handle_create_request(request, session, g.db, current_user)
 
 
 @app.route('/create_boulder')
 def create_boulder() -> str:
-    return render_template('create_boulder.html')
+    latest = True
+    if current_user.is_authenticated:
+        latest = current_user.user_preferences.show_latest_walls_only
+    return render_template('create_boulder.html', latest_set=latest)
 
 
 @app.route('/create_route')

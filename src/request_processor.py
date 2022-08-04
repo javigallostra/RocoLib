@@ -31,8 +31,11 @@ def handle_home_request(request, session, db):
     )
 
 
-def handle_create_request(request, session, db):
-    latest = request.args.get('latest', False)
+def handle_create_request(request, session, db, current_user):
+    latest = True
+    if current_user.is_authenticated:
+        latest = current_user.user_preferences.show_latest_walls_only
+       
     walls = db_controller.get_gym_walls(
         utils.get_current_gym(session, db), db, latest=latest)
     for wall in walls:
