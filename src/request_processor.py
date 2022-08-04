@@ -1,5 +1,4 @@
 import ast
-import atexit
 import datetime
 import json
 from src.models import User
@@ -140,7 +139,7 @@ def process_rate_boulder_request(request, session, db):
     return abort(400)
 
 
-def process_load_boulder_request(request, session, db, static_folder):
+def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
         boulder, wall_image = utils.get_boulder_from_request(
             request,
@@ -162,13 +161,14 @@ def process_load_boulder_request(request, session, db, static_folder):
             boulder_data=boulder,
             scroll=request.args.get('scroll', 0),
             origin=request.form.get('origin', 'explore_boulders'),
-            hold_data=hold_data
+            hold_data=hold_data,
+            hold_detection=utils.get_hold_detection_active(current_user)
         )
     except Exception:
         return abort(404)
 
 
-def process_load_next_problem_request(request, session, db, static_folder):
+def process_load_next_problem_request(request, session, db, current_user, static_folder):
     boulder, wall_image = utils.load_next_or_current(
         request.args.get('id'),
         request.args.get('gym'),
@@ -190,11 +190,12 @@ def process_load_next_problem_request(request, session, db, static_folder):
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_load_previous_problem_request(request, session, db, static_folder):
+def process_load_previous_problem_request(request, session, db, current_user, static_folder):
     boulder, wall_image = utils.load_previous_or_current(
         request.args.get('id'),
         request.args.get('gym'),
@@ -216,11 +217,12 @@ def process_load_previous_problem_request(request, session, db, static_folder):
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_random_problem_request(request, session, db, static_folder):
+def process_random_problem_request(request, session, db, current_user, static_folder):
     # get random boulder from gym
     boulder = db_controller.get_random_boulder(
         utils.get_current_gym(session, db), db)
@@ -247,12 +249,14 @@ def process_random_problem_request(request, session, db, static_folder):
         wall_image=wall_image,
         boulder_data=boulder,
         origin=request.form.get('origin', ''),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_wall_section_request(request, session, db, static_folder, wall_section):
+def process_wall_section_request(request, session, db, current_user, static_folder, wall_section):
     template = 'create_boulder.html'
+    # Not implemented atm
     if request.args.get('options', '') == 'route':
         template = 'create_route.html'
 
@@ -263,6 +267,11 @@ def process_wall_section_request(request, session, db, static_folder, wall_secti
     hold_data = utils.get_hold_data(utils.get_current_gym(
         session, db), wall_section, static_folder)
 
+    hold_detection = True
+    if current_user.is_authenticated:
+        hold_detection = not current_user.user_preferences.hold_detection_disabled
+
+
     return render_template(
         template,
         wall_image=utils.get_wall_image(utils.get_current_gym(
@@ -272,7 +281,8 @@ def process_wall_section_request(request, session, db, static_folder, wall_secti
         section=wall_section,
         radius=utils.get_wall_radius(
             session, db, utils.get_current_gym(session, db) + '/' + wall_section),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=hold_detection
     )
 
 

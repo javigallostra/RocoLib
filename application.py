@@ -153,7 +153,13 @@ def rate_boulder() -> Union[Response, NoReturn]:
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:
-    return request_processor.process_load_boulder_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_boulder_request(
+        request, 
+        session, 
+        g.db, 
+        current_user, 
+        app.static_folder
+    )
 
 
 @app.route('/load_next')
@@ -173,7 +179,7 @@ def explore_routes() -> str:
 
 @app.route('/random_problem')
 def random_problem() -> str:
-    return request_processor.process_random_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_random_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/about_us')
@@ -183,7 +189,14 @@ def render_about_us() -> str:
 
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section) -> str:
-    return request_processor.process_wall_section_request(request, session, g.db, app.static_folder, wall_section)
+    return request_processor.process_wall_section_request(
+        request, 
+        session, 
+        g.db, 
+        current_user, 
+        app.static_folder, 
+        wall_section
+    )
 
 
 @app.route('/save', methods=['POST'])

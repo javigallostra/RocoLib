@@ -41,7 +41,7 @@
                      class="custom-control-input" 
                      id="latestWallSwitch" 
                      name="latestWallSwitch"
-                     {% if user_prefs.show_latest_walls_only==True %} checked {%endif %}>
+                     {% if user_prefs.show_latest_walls_only %} checked {%endif %}>
               <label class="custom-control-label" for="latestWallSwitch">Show only latest wall sets</label>
             </div>
             <div class="custom-control custom-switch mt-3">
@@ -49,7 +49,7 @@
                      class="custom-control-input" 
                      id="holdDetectionSwitch"
                      name="holdDetectionSwitch"
-                     {% if user_prefs.hold_detection_disabled==True %} checked {%endif %}>
+                     {% if user_prefs.hold_detection_disabled %} checked {%endif %}>
               <label class="custom-control-label" for="holdDetectionSwitch">Hold detection disabled</label>
             </div>
             <div class="row text-center mt-3">
