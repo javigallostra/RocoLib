@@ -7,10 +7,9 @@ from bson.objectid import ObjectId
 
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
-from pymongo.errors import DuplicateKeyError
 
+from db.query_builder import QueryBuilder
 from src.models import TickListProblem
-
 from src.config import *
 
 
@@ -21,7 +20,7 @@ def postprocess_boulder_data(func):
     the data returned by the DB is consistent and contains
     the expected fields.
     It acts as an anti curruption layer to keep models up to
-    data if any changes have been made to the models.
+    date if any changes have been made to the models.
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -477,40 +476,48 @@ def get_boulders_filtered(
     The returned dictionary has one key-value pair.
     The key is 'Items' and the value is a list of boulder data.
     """
-    query = {}
+    query_builder = QueryBuilder()
     # if get only for latest wall, get latest wall name and add to filters
     # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
     if latest_walls_only:
         # get gym walls
         walls = get_gym_walls(gym, database, True)
-        query['section'] = {'$in' : [wall['image'] for wall in walls]}
+        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        # query['section'] = {'$in' : [wall['image'] for wall in walls]}
 
     # if there are no conditions, return everything
     if not conditions:
-        return {ITEMS: list(database[f'{gym}_boulders'].find(query))}
+        return {ITEMS: list(database[f'{gym}_boulders'].find(query_builder.query))}
 
     # if there are conditions, apply filters
     for key, value in conditions.items():
         if key in equals:
-            query[key] = value
+            query_builder.equal(key, value)
+        elif key in contains:
+            query_builder.contains_text(key, value)
+        elif key in ranged:
+            query_builder.lower(key, int(value) + 0.5)
+            query_builder.greater(key, int(value) - 0.5)
 
-    filtered_boulder_data = list(database[f'{gym}_boulders'].find(query))
+
+    filtered_boulder_data = list(database[f'{gym}_boulders'].find(query_builder.query))
 
     if not filtered_boulder_data:
         filtered_boulder_data = list(database[f'{gym}_boulders'].find())
 
     # TODO: move this to the query, do not filter afterwards
-    to_be_removed = []
-    for key, val in conditions.items():
-        for boulder in filtered_boulder_data:
-            if key in contains and val.lower() not in boulder[key].lower():
-                to_be_removed.append(str(boulder['_id']))
-            elif key in equals and val.lower() != boulder[key].lower():
-                to_be_removed.append(str(boulder['_id']))
-            elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
-                to_be_removed.append(str(boulder['_id']))
+    # to_be_removed = []
+    # for key, val in conditions.items():
+    #     for boulder in filtered_boulder_data:
+    #         if key in contains and val.lower() not in boulder[key].lower():
+    #             query_builder.contains_text(key, val)
+    #             to_be_removed.append(str(boulder['_id']))
+    #         elif key in equals and val.lower() != boulder[key].lower():
+    #             to_be_removed.append(str(boulder['_id']))
+    #         elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
+    #             to_be_removed.append(str(boulder['_id']))
 
-    return {ITEMS: [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
+    return {ITEMS: filtered_boulder_data}
 
 # User related functions
 
