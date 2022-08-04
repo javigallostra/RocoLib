@@ -504,23 +504,10 @@ def get_boulders_filtered(
 
     if not filtered_boulder_data:
         filtered_boulder_data = list(database[f'{gym}_boulders'].find())
-
-    # TODO: move this to the query, do not filter afterwards
-    # to_be_removed = []
-    # for key, val in conditions.items():
-    #     for boulder in filtered_boulder_data:
-    #         if key in contains and val.lower() not in boulder[key].lower():
-    #             query_builder.contains_text(key, val)
-    #             to_be_removed.append(str(boulder['_id']))
-    #         elif key in equals and val.lower() != boulder[key].lower():
-    #             to_be_removed.append(str(boulder['_id']))
-    #         elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
-    #             to_be_removed.append(str(boulder['_id']))
-
     return {ITEMS: filtered_boulder_data}
 
-# User related functions
 
+# User related functions
 
 @serializable
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
