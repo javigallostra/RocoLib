@@ -126,7 +126,10 @@ def create_route() -> str:
 
 @app.route('/explore')
 def explore() -> str:
-    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db))
+    latest = True
+    if current_user.is_authenticated:
+        latest = current_user.user_preferences.show_latest_walls_only
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db, latest))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])

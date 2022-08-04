@@ -42,6 +42,7 @@ function loadPrevious(problem_id, gym_code) {
 }
 
 function loadProblem(problem_id, gym_code, endpoint) {
+    // Add more params to query: list_id, and any filter options
     fetch(endpoint + "?gym=" + gym_code + "&id=" + problem_id + "&scroll=" + +window.scrollY.toFixed(2), {})
         .then(resp => resp.text())
         .then(body => {

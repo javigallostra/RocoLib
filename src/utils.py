@@ -152,14 +152,16 @@ def get_wall_radius(session: SessionMixin, database: Database, wall_path=None) -
     return db_controller.get_walls_radius_all(database)[wall_path]
 
 
-def get_boulders_list(gym: str, filters: Data, database: Database, session) -> list[Data]:
+def get_boulders_list(gym: str, filters: Data, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
     """
     Given a gym and a set of filters return the list of
     boulders that match the specified criteria.
     """
+    # if user is authenticated, check preferences to add query modifiers 
     data = db_controller.get_boulders_filtered(
         gym=gym,
         database=database,
+        latest_walls_only=latest_walls_only,
         conditions=filters,
         equals=EQUALS,
         ranged=RANGE,

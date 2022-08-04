@@ -1,4 +1,5 @@
 import ast
+import atexit
 import datetime
 import json
 from src.models import User
@@ -61,8 +62,13 @@ def handle_explore_boulders(request, session, db, current_user):
         filters = None
 
     session['filters'] = filters
+    # filter by latest walls if requested
 
-    boulders = utils.get_boulders_list(gym, filters, db, session)
+    latest_wall_versions = True
+    if current_user.is_authenticated:
+        latest_wall_versions = current_user.user_preferences.show_latest_walls_only
+
+    boulders = utils.get_boulders_list(gym, filters, db, session, latest_wall_versions)
     gym_walls = db_controller.get_gym_walls(gym, db)
 
     if current_user.is_authenticated:

@@ -464,6 +464,7 @@ def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Databa
 def get_boulders_filtered(
     gym: str,
     database: Database,
+    latest_walls_only: bool,
     conditions: Optional[dict] = None,
     equals: Optional[list] = None,
     ranged: Optional[list] = None,
@@ -476,12 +477,19 @@ def get_boulders_filtered(
     The returned dictionary has one key-value pair.
     The key is 'Items' and the value is a list of boulder data.
     """
+    query = {}
+    # if get only for latest wall, get latest wall name and add to filters
+    # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
+    if latest_walls_only:
+        # get gym walls
+        walls = get_gym_walls(gym, database, True)
+        query['section'] = {'$in' : [wall['image'] for wall in walls]}
+
     # if there are no conditions, return everything
     if not conditions:
-        return {ITEMS: list(database[f'{gym}_boulders'].find())}
+        return {ITEMS: list(database[f'{gym}_boulders'].find(query))}
 
     # if there are conditions, apply filters
-    query = {}
     for key, value in conditions.items():
         if key in equals:
             query[key] = value
@@ -491,6 +499,7 @@ def get_boulders_filtered(
     if not filtered_boulder_data:
         filtered_boulder_data = list(database[f'{gym}_boulders'].find())
 
+    # TODO: move this to the query, do not filter afterwards
     to_be_removed = []
     for key, val in conditions.items():
         for boulder in filtered_boulder_data:
