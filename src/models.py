@@ -48,7 +48,7 @@ class User(UserMixin, BaseModel):
         self.email: str = None
         self.password: str = None
         self.is_admin: bool = False
-        self.user_preferences: UserPreferences = None
+        self.preferences: UserPreferences = None
         self.ticklist: list[Union[TickListProblem, Data]] = []
 
         # initial_data is a tuple of args. Here we are
@@ -61,9 +61,9 @@ class User(UserMixin, BaseModel):
                     self.load_ticklist(arg[key])
                 elif key == USER_PREFERENCES:
                     if isinstance(arg[key], UserPreferences):
-                        self.user_preferences = arg[key]
+                        self.preferences = arg[key]
                     else:
-                        self.user_preferences = UserPreferences(**arg[key])
+                        self.preferences = UserPreferences(**arg[key])
                 else:
                     setattr(self, key, arg[key])
         for key in kwargs:
@@ -71,8 +71,8 @@ class User(UserMixin, BaseModel):
 
         if not self.id:
             self.id = str(uuid.uuid1())
-        if not self.user_preferences:
-            self.user_preferences = UserPreferences(user_id=self.id)
+        if not self.preferences:
+            self.preferences = UserPreferences(user_id=self.id)
 
     def set_password(self, password: str) -> None:
         """
@@ -96,7 +96,7 @@ class User(UserMixin, BaseModel):
         """
         # Serialize ticklist problems
         self.ticklist = [problem.serialize() for problem in self.ticklist]
-        user_preferences = self.user_preferences
+        user_preferences = self.preferences
         if not user_preferences:
             user_preferences = UserPreferences(user_id=self.id)
         # save user data and user prefs separately

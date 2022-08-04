@@ -320,10 +320,10 @@ class UserModelTests(unittest.TestCase):
         # When
         user = User(id=user_id)
         # Then
-        self.assertNotEqual(user.user_preferences, None)
-        self.assertEqual(user.user_preferences.user_id, user_id)
-        self.assertEqual(user.user_preferences.hold_detection_disabled, False)
-        self.assertEqual(user.user_preferences.show_latest_walls_only, False)
+        self.assertNotEqual(user.preferences, None)
+        self.assertEqual(user.preferences.user_id, user_id)
+        self.assertEqual(user.preferences.hold_detection_disabled, False)
+        self.assertEqual(user.preferences.show_latest_walls_only, False)
 
 
 if __name__ == '__main__':

@@ -21,13 +21,13 @@ from src.typing import Data
 def get_hold_detection_active(current_user):
     hold_detection = True
     if current_user.is_authenticated:
-        hold_detection = not current_user.user_preferences.hold_detection_disabled
+        hold_detection = not current_user.preferences.hold_detection_disabled
     return hold_detection
 
 def get_show_only_latest_wall_sets(current_user):
     latest = True
     if current_user.is_authenticated:
-        latest = current_user.user_preferences.show_latest_walls_only
+        latest = current_user.preferences.show_latest_walls_only
     return latest
 
 
@@ -482,15 +482,15 @@ def choose_language(request, langs) -> str:
 def update_user_prefs(request, current_user):
     should_save_user = False
     default_gym = request.form.get('gym')
-    if default_gym != current_user.user_preferences.default_gym:
-        current_user.user_preferences.default_gym = default_gym
+    if default_gym != current_user.preferences.default_gym:
+        current_user.preferences.default_gym = default_gym
         should_save_user = True
-    if request.form.get('latestWallSwitch', False) != current_user.user_preferences.show_latest_walls_only:
-        current_user.user_preferences.show_latest_walls_only = bool(
+    if request.form.get('latestWallSwitch', False) != current_user.preferences.show_latest_walls_only:
+        current_user.preferences.show_latest_walls_only = bool(
             request.form.get('latestWallSwitch', False))
         should_save_user = True
-    if request.form.get('holdDetectionSwitch', False) != current_user.user_preferences.hold_detection_disabled:
-        current_user.user_preferences.hold_detection_disabled = bool(
+    if request.form.get('holdDetectionSwitch', False) != current_user.preferences.hold_detection_disabled:
+        current_user.preferences.hold_detection_disabled = bool(
             request.form.get('holdDetectionSwitch', False))
         should_save_user = True
     return should_save_user, current_user

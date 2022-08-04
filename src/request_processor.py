@@ -270,7 +270,7 @@ def process_wall_section_request(request, session, db, current_user, static_fold
 
     hold_detection = True
     if current_user.is_authenticated:
-        hold_detection = not current_user.user_preferences.hold_detection_disabled
+        hold_detection = not current_user.preferences.hold_detection_disabled
 
 
     return render_template(
@@ -382,7 +382,7 @@ def process_login_request(request, session, db, current_user, login_user):
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('home')
             # set user prefs
-            session['user_default_gym'] = user.user_preferences.default_gym
+            session['user_default_gym'] = user.preferences.default_gym
             session['first_load'] = True
             return redirect(next_page)
     return render_template('login_form.html', form=form)
@@ -442,16 +442,16 @@ def process_profile_request(request, db, session, current_user):
         if should_save:
             current_user.save(db)
             # update default gym
-            session['gym'] = current_user.user_preferences.default_gym
-            session['user_default_gym'] = current_user.user_preferences.default_gym
+            session['gym'] = current_user.preferences.default_gym
+            session['user_default_gym'] = current_user.preferences.default_gym
 
     gyms = db_controller.get_gyms(db)
     
     return render_template(
         'profile.html',
         gyms=gyms,
-        user_prefs=current_user.user_preferences,
-        selected=current_user.user_preferences.default_gym,
+        user_prefs=current_user.preferences,
+        selected=current_user.preferences.default_gym,
         current_gym=[gym['name'] for gym in gyms if gym['id']
-                     == current_user.user_preferences.default_gym][0]
+                     == current_user.preferences.default_gym][0]
     )
