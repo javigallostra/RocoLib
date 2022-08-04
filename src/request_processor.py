@@ -31,12 +31,12 @@ def handle_home_request(request, session, db):
 
 
 def handle_create_request(request, session, db, current_user):
-    latest = True
-    if current_user.is_authenticated:
-        latest = current_user.user_preferences.show_latest_walls_only
        
     walls = db_controller.get_gym_walls(
-        utils.get_current_gym(session, db), db, latest=latest)
+        utils.get_current_gym(session, db),
+        db, 
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
     for wall in walls:
         wall['image_path'] = utils.get_wall_image(
             utils.get_current_gym(session, db), wall['image'], WALLS_PATH)
@@ -64,13 +64,14 @@ def handle_explore_boulders(request, session, db, current_user):
         filters = None
 
     session['filters'] = filters
-    # filter by latest walls if requested
 
-    latest_wall_versions = True
-    if current_user.is_authenticated:
-        latest_wall_versions = current_user.user_preferences.show_latest_walls_only
-
-    boulders = utils.get_boulders_list(gym, filters, db, session, latest_wall_versions)
+    boulders = utils.get_boulders_list(
+        gym,
+        filters,
+        db,
+        session,
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
     gym_walls = db_controller.get_gym_walls(gym, db)
 
     if current_user.is_authenticated:

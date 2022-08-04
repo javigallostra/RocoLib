@@ -24,6 +24,12 @@ def get_hold_detection_active(current_user):
         hold_detection = not current_user.user_preferences.hold_detection_disabled
     return hold_detection
 
+def get_show_only_latest_wall_sets(current_user):
+    latest = True
+    if current_user.is_authenticated:
+        latest = current_user.user_preferences.show_latest_walls_only
+    return latest
+
 
 def get_creds_file(env: str = '.ddbb.env') -> str:
     """

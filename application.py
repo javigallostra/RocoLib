@@ -116,10 +116,7 @@ def create() -> str:
 
 @app.route('/create_boulder')
 def create_boulder() -> str:
-    latest = True
-    if current_user.is_authenticated:
-        latest = current_user.user_preferences.show_latest_walls_only
-    return render_template('create_boulder.html', latest_set=latest)
+    return render_template('create_boulder.html', latest_set=utils.get_show_only_latest_wall_sets(current_user))
 
 
 @app.route('/create_route')
@@ -129,10 +126,7 @@ def create_route() -> str:
 
 @app.route('/explore')
 def explore() -> str:
-    latest = True
-    if current_user.is_authenticated:
-        latest = current_user.user_preferences.show_latest_walls_only
-    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db, latest))
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db, utils.get_show_only_latest_wall_sets(current_user)))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
