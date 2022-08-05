@@ -18,7 +18,7 @@ USER_PREFERENCES = 'user_preferences'
 
 class BaseModel(ABC):
     @abstractmethod
-    def serialize(self):
+    def serialize(self, ignore_keys=None):
         pass
 
 
@@ -34,7 +34,9 @@ class UserPreferences(BaseModel):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def serialize(self):
+    def serialize(self, ignore_keys=None):
+        if ignore_keys:
+            return { key: val for key, val in self.__dict__.items() if key not in ignore_keys }
         return self.__dict__
 
 
@@ -86,9 +88,10 @@ class User(UserMixin, BaseModel):
         """
         return check_password_hash(self.password, password)
 
-    def serialize(self):
-        excluded_keys = [USER_PREFERENCES]
-        return {key: val for key, val in self.__dict__.items() if key not in excluded_keys}
+    def serialize(self, ignore_keys=(USER_PREFERENCES)):
+        if ignore_keys:
+            return {key: val for key, val in self.__dict__.items() if key not in ignore_keys}
+        return self.__dict__
 
     def save(self, database: Database) -> None:
         """
@@ -135,11 +138,12 @@ class User(UserMixin, BaseModel):
         if not bool(user_data):
             return None
 
-        user_prefs = UserPreferences(user_id)
-        _user_prefs = mongodb_controller.get_user_preferences(
-            user_id, database)
-        if bool(_user_prefs):
-            user_prefs = UserPreferences(**_user_prefs)
+        # user_prefs = UserPreferences(user_id)
+        # _user_prefs = mongodb_controller.get_user_preferences(
+        #     user_id, database)
+        # if bool(_user_prefs):
+        #     user_prefs = UserPreferences(**_user_prefs)
+        user_prefs = User.get_user_preferences(user_id, database)
 
         user_data[USER_PREFERENCES] = user_prefs
 
@@ -155,12 +159,12 @@ class User(UserMixin, BaseModel):
         if not user_data:
             return None
 
-        user_prefs = UserPreferences(user_data['id'])
-        _user_prefs = mongodb_controller.get_user_preferences(
-            user_data['id'], database)
-        if bool(_user_prefs):
-            user_prefs = UserPreferences(**_user_prefs)
-
+        # user_prefs = UserPreferences(user_data['id'])
+        # _user_prefs = mongodb_controller.get_user_preferences(
+        #     user_data['id'], database)
+        # if bool(_user_prefs):
+        #     user_prefs = UserPreferences(**_user_prefs)
+        user_prefs = User.get_user_preferences(user_data['id'], database)
         user_data[USER_PREFERENCES] = user_prefs
 
         return User(user_data)
@@ -176,11 +180,12 @@ class User(UserMixin, BaseModel):
         if not user_data:
             return None
 
-        user_prefs = UserPreferences(user_data['id'])
-        _user_prefs = mongodb_controller.get_user_preferences(
-            user_data['id'], database)
-        if bool(_user_prefs):
-            user_prefs = UserPreferences(**_user_prefs)
+        # user_prefs = UserPreferences(user_data['id'])
+        # _user_prefs = mongodb_controller.get_user_preferences(
+        #     user_data['id'], database)
+        # if bool(_user_prefs):
+        #     user_prefs = UserPreferences(**_user_prefs)
+        user_prefs = User.get_user_preferences(user_data['id'], database)
 
         user_data[USER_PREFERENCES] = user_prefs
 
@@ -201,6 +206,8 @@ class User(UserMixin, BaseModel):
             return None  # invalid token
         user_data = mongodb_controller.get_user_data_by_id(
             data['id'], database)
+        preferences = User.get_user_preferences(data['id'], database)
+        user_data['user_preferences'] = preferences        
         if not user_data:
             return None
         return User(user_data)
@@ -233,8 +240,10 @@ class TickListProblem(BaseModel):
         self.is_done = True
         self.date_climbed = datetime.today().strftime('%Y-%m-%d')
 
-    def serialize(self) -> Dict[str, Any]:
+    def serialize(self, ignore_keys=None) -> Dict[str, Any]:
         """
         Return a serialized version of itself (a dictionary)
         """
+        if ignore_keys:
+            return { key:val for key, val in self.__dict__.items() if key not in ignore_keys }
         return self.__dict__

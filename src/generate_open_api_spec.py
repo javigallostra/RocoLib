@@ -3,6 +3,7 @@ from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
 from api.blueprint import get_gyms, get_gym_walls, boulder_create, test_auth, new_user
 from api.blueprint import get_user_ticklist, rate_boulder, mark_boulder_as_done
+from api.blueprint import get_user_preferences
 
 
 def generate_api_docs(app) -> None:
@@ -40,6 +41,8 @@ def generate_api_docs(app) -> None:
     from api.schemas import MarkDoneBoulderRequestBody
     from api.schemas import MarkDoneBoulderResponseBody
     from api.schemas import MarkDoneBoulderErrorResponse
+    from api.schemas import UserPreferencesResponseBody
+    from api.schemas import UserPreferencesErrorResponse
     from api.schemas import NotFoundError
 
     spec.components.schema("Gyms", schema=GymListSchema)
@@ -88,6 +91,11 @@ def generate_api_docs(app) -> None:
                            schema=MarkDoneBoulderResponseBody)
     spec.components.schema("MarkDoneBoulderErrorResponse",
                            schema=MarkDoneBoulderErrorResponse)
+    spec.components.schema("UserPreferencesResponseBody",
+                           schema=UserPreferencesResponseBody)
+    spec.components.schema("UserPreferencesErrorResponse",
+                           schema=UserPreferencesErrorResponse)
+
     spec.components.schema("NotFoundError",
                            schema=NotFoundError)
     with app.test_request_context():
@@ -105,5 +113,6 @@ def generate_api_docs(app) -> None:
         spec.path(view=get_user_ticklist)
         spec.path(view=rate_boulder)
         spec.path(view=mark_boulder_as_done)
+        spec.path(view=get_user_preferences)
     with open('./static/swagger/swagger.json', 'w') as f:
         json.dump(spec.to_dict(), f)

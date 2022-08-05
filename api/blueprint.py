@@ -786,3 +786,61 @@ def test_auth() -> Response:
             Server Error
     """
     return api_request_processor.process_test_auth_request(g.user)
+
+@api_blueprint.route('/user/preferences', methods=['GET'])
+@auth.login_required
+def get_user_preferences() -> Response:
+    """
+    Gwet user preferences
+    ---
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      responses:
+        200:
+          description:
+            Authentication successful
+          content:
+            text/plain:
+              schema: UserPreferencesResponseBody
+            text/json:
+              schema: UserPreferencesResponseBody
+            application/json:
+              schema: UserPreferencesResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            text/plain:
+              schema: UserPreferencesErrorResponse
+            text/json:
+              schema: UserPreferencesErrorResponse
+            application/json:
+              schema: UserPreferencesErrorResponse
+        401:
+          description:
+            Invalid credentials
+          content:
+            text/plain:
+              schema: UserPreferencesErrorResponse
+            text/json:
+              schema: UserPreferencesErrorResponse
+            application/json:
+              schema: UserPreferencesErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: NotFoundError
+            text/plain:
+              schema: NotFoundError
+            text/json:
+              schema: NotFoundError
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_user_preferences_request(g.user)
