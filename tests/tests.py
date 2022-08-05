@@ -11,9 +11,10 @@ from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from src.config import ITEMS
 from src.models import User, UserPreferences
 
-from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_ID
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_GYM_CODE, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
 from tests.tests_config import TEST_NOTES, TEST_WALL_SECTION
+from tests.utils import FakeRequest
 
 # class BaseAPITestClass(unittest.TestCase):
 #     """
@@ -184,8 +185,8 @@ class UtilsTests(unittest.TestCase):
         from db.mongodb_controller import postprocess_boulder_data
         repetitions = 23
         rep_key = 'repetitions'
-        # When
 
+        # When
         @postprocess_boulder_data
         def get_single_fake_boulder_data():
             b = get_fake_boulder_data()
@@ -232,8 +233,8 @@ class UtilsTests(unittest.TestCase):
         # Given
         from db.mongodb_controller import serializable
         id_key = '_id'
-        # When
 
+        # When
         @serializable
         def get_boulder_data():
             return get_fake_boulder_data()
@@ -323,7 +324,63 @@ class UserModelTests(unittest.TestCase):
         self.assertNotEqual(user.preferences, None)
         self.assertEqual(user.preferences.user_id, user_id)
         self.assertEqual(user.preferences.hold_detection_disabled, False)
-        self.assertEqual(user.preferences.show_latest_walls_only, False)
+        self.assertEqual(user.preferences.show_latest_walls_only, True)
+
+    def test_update_user_prefs(self):
+        # Given
+        from src.utils import update_user_prefs
+        user_id = '1234'
+        # When
+        current_user = User(id=user_id)
+        request = FakeRequest(
+            form=dict(gym=TEST_GYM_CODE, latestWallSwitch=False, holdDetectionSwitch=True))
+        modified, updated_user = update_user_prefs(request, current_user)
+        # Then
+        self.assertEqual(modified, True)
+        self.assertEqual(updated_user.preferences.default_gym, TEST_GYM_CODE)
+        self.assertEqual(
+            updated_user.preferences.hold_detection_disabled, True)
+        self.assertEqual(
+            updated_user.preferences.show_latest_walls_only, False)
+
+    def test_no_update_user_prefs(self):
+        # Given
+        from src.utils import update_user_prefs
+        user_id = '1234'
+        preferences = UserPreferences(
+            user_id=user_id, default_gym=TEST_GYM_CODE)
+        user_data = {'id': user_id, 'user_preferences': preferences}
+        # When
+        current_user = User(user_data)
+        request = FakeRequest(
+            form=dict(gym=TEST_GYM_CODE, latestWallSwitch=True, holdDetectionSwitch=False))
+        modified, updated_user = update_user_prefs(request, current_user)
+        # Then
+        self.assertEqual(modified, False)
+        self.assertEqual(updated_user.preferences.default_gym, TEST_GYM_CODE)
+        self.assertEqual(
+            updated_user.preferences.hold_detection_disabled, False)
+        self.assertEqual(updated_user.preferences.show_latest_walls_only, True)
+
+    def test_get_hold_detection_active(self):
+        # Given
+        from src.utils import get_hold_detection_active
+        user_id = '1234'
+        # When
+        current_user = User(id=user_id)
+        active = get_hold_detection_active(current_user)
+        # Then
+        self.assertEqual(active, True)
+
+    def test_get_show_only_latest_wall_sets(self):
+        # Given
+        from src.utils import get_show_only_latest_wall_sets
+        user_id = '1234'
+        # When
+        current_user = User(id=user_id)
+        only_latest = get_show_only_latest_wall_sets(current_user)
+        # Then
+        self.assertEqual(only_latest, True)
 
 
 if __name__ == '__main__':

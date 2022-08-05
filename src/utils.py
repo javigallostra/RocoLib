@@ -481,16 +481,19 @@ def choose_language(request, langs) -> str:
 
 def update_user_prefs(request, current_user):
     should_save_user = False
-    default_gym = request.form.get('gym')
-    if default_gym != current_user.preferences.default_gym:
-        current_user.preferences.default_gym = default_gym
+
+    if request.form.get('gym') != current_user.preferences.default_gym:
+        current_user.preferences.default_gym = request.form.get('gym')
         should_save_user = True
+
     if request.form.get('latestWallSwitch', False) != current_user.preferences.show_latest_walls_only:
         current_user.preferences.show_latest_walls_only = bool(
             request.form.get('latestWallSwitch', False))
         should_save_user = True
+
     if request.form.get('holdDetectionSwitch', False) != current_user.preferences.hold_detection_disabled:
         current_user.preferences.hold_detection_disabled = bool(
             request.form.get('holdDetectionSwitch', False))
         should_save_user = True
+
     return should_save_user, current_user

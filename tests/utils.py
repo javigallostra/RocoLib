@@ -11,22 +11,10 @@ from src.utils import load_data
 
 
 class FakeRequest:
-    def __init__(self, db):
-        self.data = None
-        self.form = None
-        self.json = {
-            'gym': TEST_GYM_CODE,
-            'name': TEST_NAME,
-            'iden':
-            mongodb_controller.get_boulder_by_name(
-                TEST_GYM_CODE,
-                TEST_NAME,
-                db
-            ).get('_id', ''),
-            'is_done': True,
-            'section': TEST_WALL_SECTION
-        }
-
+    def __init__(self, data=None, form=None, json=None):
+        self.data = data
+        self.form = form
+        self.json = json
     def get_data(self):
         return None
 
@@ -119,7 +107,20 @@ def add_user_with_ticklist(db, username, password, email):
     user.set_password(password)
     user.save(db)
     # Boulder comes in the Fake Request
-    data, _ = load_data(FakeRequest(db))
+    # json request data
+    json_data = {
+                'gym': TEST_GYM_CODE,
+                'name': TEST_NAME,
+                'iden':
+                mongodb_controller.get_boulder_by_name(
+                    TEST_GYM_CODE,
+                    TEST_NAME,
+                    db
+                ).get('_id', ''),
+                'is_done': True,
+                'section': TEST_WALL_SECTION
+            }
+    data, _ = load_data(FakeRequest(json=json_data))
     boulder = mongodb_controller.get_boulder_by_name(
         data.get('gym'),
         data.get('name'),
