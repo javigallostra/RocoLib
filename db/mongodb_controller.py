@@ -1,4 +1,5 @@
 from typing import Optional
+from db import query_builder
 from src.typing import Data
 
 import functools
@@ -8,10 +9,11 @@ from bson.objectid import ObjectId
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
 
-from src.models import TickListProblem
-
+from db.query_builder import QueryBuilder
+from src.models import TICKLIST, TickListProblem
 from src.config import *
 
+USERS_COLLECTION = 'users' 
 
 def postprocess_boulder_data(func):
     """
@@ -20,7 +22,7 @@ def postprocess_boulder_data(func):
     the data returned by the DB is consistent and contains
     the expected fields.
     It acts as an anti curruption layer to keep models up to
-    data if any changes have been made to the models.
+    date if any changes have been made to the models.
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -131,10 +133,10 @@ def get_gym_walls(gym: str, database: Database, latest: bool = False) -> list[Da
     Return the list of available walls for a specific
     Gym
     """
-    walls = list(database[f'{gym}_walls'].find())
+    query_builder = QueryBuilder()
     if latest:
-        walls = [wall for wall in walls if wall['latest'] == True]
-    return walls
+        query_builder.equal('latest', True)
+    return list(database[f'{gym}_walls'].find(query_builder.query))
 
 
 def get_gym_pretty_name(gym: str, database: Database) -> str:
@@ -143,7 +145,7 @@ def get_gym_pretty_name(gym: str, database: Database) -> str:
 
     IF the gym cannot be found, return an empty string
     """
-    data = database['walls'].find_one({'id': gym}, {'name': 1})
+    data = database['walls'].find_one({'id': gym}, {'name': 1}) # move this cases to query builder?
     return data.get('name', '') if data else ''
 
 
@@ -245,11 +247,12 @@ def put_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database
     IS_DONE = 'is_done'
     IDEN = 'iden'
     DATE_CLIMBED = 'date_climbed'
-    TICKLIST = 'ticklist'
-    USERS = 'users'
-    user: Data = database[USERS].find_one({'id': user_id})
+    # TICKLIST = 'ticklist'
+    # USERS = 'users'
+    # user = database[USERS].find_one({'id': user_id})
+    user = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query)
     # get ticklist
-    ticklist: list[Data] = user.get(TICKLIST, [])
+    ticklist = user.get(TICKLIST, [])
     # check if problem is already in the user's ticklist
     boulder = list(filter(lambda x: x[IDEN] == boulder_data[IDEN], ticklist))
     # Boulder is not in ticklist
@@ -276,8 +279,9 @@ def update_user_ticklist(database: Database, ticklist: list[Data], user: Data, u
     """
     Update a user's ticklist, both DDBB and in memory projections
     """
-    user['ticklist'] = ticklist
-    database['users'].update_one({'id': user_id}, {'$set': user})
+    user[TICKLIST] = ticklist
+    # database['users'].update_one({'id': user_id}, {'$set': user})
+    database[USERS_COLLECTION].update_one(QueryBuilder().equal('id', user_id).query, {'$set': user})
 
 
 def find_boulder_index(boulder_data: Data, boulders: list[Data]) -> int:
@@ -327,8 +331,10 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
 
     Return the filtered list of boulders with the given one removed
     """
-    user: Data = database['users'].find_one({'id': user_id})
-    filtered_list: list[Data] = []
+
+    # user = database['users'].find_one({'id': user_id})
+    user = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query)
+    filtered_list = []
     if user:
         # get ticklist
         ticklist = user.get('ticklist', [])
@@ -336,7 +342,8 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
         filtered_list = list(
             filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
         user['ticklist'] = filtered_list
-        database['users'].update_one({'id': user_id}, {'$set': user})
+        database[USERS_COLLECTION].update_one(QueryBuilder().equal('id', user_id).query, {'$set': user})
+        # database[USERS_COLLECTION].update_one({'id': user_id}, {'$set': user})
     return filtered_list
 
 
@@ -372,7 +379,8 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
 
     Return an empty dictionary if the boulder is not found
     """
-    boulder = database[f'{gym}_boulders'].find_one({'name': name})
+    boulder = database[f'{gym}_boulders'].find_one(QueryBuilder().equal('name', name).query)
+    # boulder = database[f'{gym}_boulders'].find_one({'name': name})
     return boulder if boulder else {}
 
 
@@ -385,7 +393,10 @@ def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one(
-        {'_id': ObjectId(boulder_id)})
+        QueryBuilder().equal('_id', ObjectId(boulder_id))
+    )
+    # boulder = database[f'{gym}_boulders'].find_one(
+    #     {'_id': ObjectId(boulder_id)})
     return boulder if boulder else {}
 
 
@@ -425,7 +436,9 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }).sort('_id', -1).limit(1))
+    query_builder = QueryBuilder().lower('_id', ObjectId(boulder_id))
+    boulders = list(database[f'{gym}_boulders'].find(query_builder.query).sort('_id', -1).limit(1))
+    # boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }).sort('_id', -1).limit(1))
     return boulders[0] if boulders else {}
 
 
@@ -444,7 +457,9 @@ def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    boulders = list(database[f'{gym}_boulders'].find({'_id': {'$gt': ObjectId(boulder_id)}}).limit(1))
+    query_builder = QueryBuilder().greater('_id', ObjectId(boulder_id))
+    boulders = list(database[f'{gym}_boulders'].find(query_builder.query).limit(1))
+    # boulders = list(database[f'{gym}_boulders'].find({'_id': {'$gt': ObjectId(boulder_id)}}).limit(1))
     return boulders[0] if boulders else {}
 
 
@@ -463,6 +478,7 @@ def update_boulder_by_id(gym: str, boulder_id: str, data: Data, database: Databa
 def get_boulders_filtered(
     gym: str,
     database: Database,
+    latest_walls_only: bool,
     conditions: Optional[dict] = None,
     equals: Optional[list] = None,
     ranged: Optional[list] = None,
@@ -475,74 +491,118 @@ def get_boulders_filtered(
     The returned dictionary has one key-value pair.
     The key is 'Items' and the value is a list of boulder data.
     """
+    query_builder = QueryBuilder()
+    # if get only for latest wall, get latest wall name and add to filters
+    # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
+    if latest_walls_only:
+        walls = get_gym_walls(gym, database, True)
+        query_builder.contained_in('section', [wall['image'] for wall in walls])
+
     # if there are no conditions, return everything
     if not conditions:
-        return {ITEMS: list(database[f'{gym}_boulders'].find())}
+        return {ITEMS: list(database[f'{gym}_boulders'].find(query_builder.query))}
 
     # if there are conditions, apply filters
-    query = {}
     for key, value in conditions.items():
         if key in equals:
-            query[key] = value
+            query_builder.equal(key, value)
+        elif key in contains:
+            query_builder.contains_text(key, value)
+        elif key in ranged:
+            query_builder.lower(key, int(value) + 0.5)
+            query_builder.greater(key, int(value) - 0.5)
 
-    filtered_boulder_data = list(database[f'{gym}_boulders'].find(query))
+
+    filtered_boulder_data = list(database[f'{gym}_boulders'].find(query_builder.query))
 
     if not filtered_boulder_data:
         filtered_boulder_data = list(database[f'{gym}_boulders'].find())
+    return {ITEMS: filtered_boulder_data}
 
-    to_be_removed = []
-    for key, val in conditions.items():
-        for boulder in filtered_boulder_data:
-            if key in contains and val.lower() not in boulder[key].lower():
-                to_be_removed.append(str(boulder['_id']))
-            elif key in equals and val.lower() != boulder[key].lower():
-                to_be_removed.append(str(boulder['_id']))
-            elif key in ranged and (int(boulder[key]) < int(val) - 0.5 or int(boulder[key]) > int(val) + 0.5):
-                to_be_removed.append(str(boulder['_id']))
-
-    return {ITEMS: [boulder for boulder in filtered_boulder_data if str(boulder['_id']) not in to_be_removed]}
 
 # User related functions
-
 
 @serializable
 def save_user(user_data: Data, database: Database) -> InsertOneResult:
     """
-    Persist user data
-
-    Insert user_data in the given database
+    Persist user data. Insert user_data in the given database
     """
-    return database['users'].insert_one(user_data)
+    query_builder = QueryBuilder().equal('id',  user_data.get('id', None))
+    found_user = database['users'].find_one(query_builder.query)
+    # found_user = database['users'].find_one({'id': user_data.get('id', None)})
+    if not found_user:
+        return database['users'].insert_one(user_data)
+
+    id_query = QueryBuilder().equal('_id', ObjectId(user_data['_id']))
+    # id_query = { '_id': ObjectId(user_data['_id']) }
+    user_data = {key: val for key,val in user_data.items() if key != '_id'}
+    updated_data = { "$set": user_data }
+    database['users'].update_one(id_query.query, updated_data)
+    # database['users'].update_one(id_query, updated_data)
 
 
 @serializable
 def get_user_data_by_id(user_id: str, database: Database) -> Data:
     """
-    Given a user id get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user id get its data. Return an empty dictionary if the user is not found
     """
-    user = database['users'].find_one({'id': user_id})
+    query_builder = QueryBuilder().equal('id', user_id)
+    user = database['users'].find_one(query_builder.query)
+    # user = database['users'].find_one({'id': user_id})
     return user if user else {}
 
 
 @serializable
 def get_user_data_by_email(email: str, database: Database) -> Data:
     """
-    Given a user email get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user email get its data. Return an empty dictionary if the user is not found
     """
-    user = database['users'].find_one({'email': email})
+    query_builder = QueryBuilder().equal('email', email)
+    user = database['users'].find_one(query_builder.query)
+    # user = database['users'].find_one({'email': email})
     return user if user else {}
 
 
 @serializable
 def get_user_data_by_username(name: str, database: Database) -> Data:
     """
-    Given a user email get its data
-
-    Return an empty dictionary if the user is not found
+    Given a user email get its data. Return an empty dictionary if the user is not found
     """
-    user = database['users'].find_one({'name': name})
+    query_builder = QueryBuilder().equal('name', name)
+    user = database['users'].find_one(query_builder.query)
+    # user = database['users'].find_one({'name': name})
     return user if user else {}
+
+@serializable
+def get_user_preferences(user_id: str, database: Database) -> Data:
+    """
+    Given a user id, get its preferences. Return an empty dict if not found
+    """
+    query_builder = QueryBuilder().equal('user_id', user_id)
+    # user_prefs = database['user_preferences'].find_one({'user_id': user_id})
+    user_prefs = database['user_preferences'].find_one(query_builder.query)
+    return user_prefs if user_prefs else {}
+
+@serializable
+def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResult:
+    """
+    Save a specific user preferences 
+    """
+    # found_user_prefs = database['user_preferences'].find_one(
+    #     {
+    #         'user_id': user_prefs.get('user_id', None)
+    #     }
+    # )
+    found_user_prefs = database['user_preferences'].find_one(
+        QueryBuilder().equal('user_id', user_prefs.get('user_id', None)).query
+    )
+
+    if not found_user_prefs:
+        return database['user_preferences'].insert_one(user_prefs)
+    
+    new_prefs = {key: val for key,val in user_prefs.items() if key != '_id'}
+    updated_prefs = { "$set": new_prefs }
+    # id_query = { '_id': ObjectId(user_prefs['_id']) }
+    id_query = QueryBuilder().equal('_id', ObjectId(user_prefs['_id']))
+    # database['user_preferences'].update_one(id_query, updated_prefs)
+    database['user_preferences'].update_one(id_query.query, updated_prefs)

@@ -42,8 +42,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-def make_cache_key_create() -> str:
-    return (request.path + get_gym()).encode('utf-8')
+# def make_cache_key_create() -> str:
+#     return (request.path + get_gym()).encode('utf-8')
 
 
 @app.before_request
@@ -109,14 +109,14 @@ def home() -> str:
 
 
 @app.route('/create')
-@cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
+# @cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
 def create() -> str:
-    return request_processor.handle_create_request(request, session, g.db)
+    return request_processor.handle_create_request(request, session, g.db, current_user)
 
 
 @app.route('/create_boulder')
 def create_boulder() -> str:
-    return render_template('create_boulder.html')
+    return render_template('create_boulder.html', latest_set=utils.get_show_only_latest_wall_sets(current_user))
 
 
 @app.route('/create_route')
@@ -126,7 +126,7 @@ def create_route() -> str:
 
 @app.route('/explore')
 def explore() -> str:
-    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db))
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db, utils.get_show_only_latest_wall_sets(current_user)))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
@@ -147,7 +147,13 @@ def rate_boulder() -> Union[Response, NoReturn]:
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:
-    return request_processor.process_load_boulder_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_boulder_request(
+        request, 
+        session, 
+        g.db, 
+        current_user, 
+        app.static_folder
+    )
 
 
 @app.route('/load_next')
@@ -167,7 +173,7 @@ def explore_routes() -> str:
 
 @app.route('/random_problem')
 def random_problem() -> str:
-    return request_processor.process_random_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_random_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/about_us')
@@ -177,7 +183,14 @@ def render_about_us() -> str:
 
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section) -> str:
-    return request_processor.process_wall_section_request(request, session, g.db, app.static_folder, wall_section)
+    return request_processor.process_wall_section_request(
+        request, 
+        session, 
+        g.db, 
+        current_user, 
+        app.static_folder, 
+        wall_section
+    )
 
 
 @app.route('/save', methods=['POST'])
@@ -199,7 +212,7 @@ def add_gym() -> str:
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> Union[str, Response]:
-    return request_processor.process_login_request(request, g.db, current_user, login_user)
+    return request_processor.process_login_request(request, session, g.db, current_user, login_user)
 
 
 @app.route('/signup/', methods=['GET', 'POST'])
@@ -212,10 +225,18 @@ def logout() -> Response:
     return request_processor.process_logout_request(logout_user)
 
 # User related endpoints
+
+
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list() -> Union[str, Response]:
     return request_processor.process_ticklist_request(request, session, g.db, current_user)
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile() -> Union[str, Response]:
+    return request_processor.process_profile_request(request, g.db, session, current_user)
 
 
 @app.route('/delete_ticklist_problem', methods=['POST'])

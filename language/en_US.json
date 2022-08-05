@@ -66,6 +66,8 @@
     "yellow": "Yellow",
     "add_your_gym": "Add your gym",
     "current_gym_": "Current gym",
+    "default_gym": "Default gym",
+    "change_default_gym": "Change default gym",
     "locate_nearest_gym": "Locate nearest gym",
     "create_boulder": "Create Boulder",
     "random_problem": "Random Problem",

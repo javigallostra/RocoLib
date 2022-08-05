@@ -18,6 +18,19 @@ from src.config import *
 from src.typing import Data
 
 
+def get_hold_detection_active(current_user):
+    hold_detection = True
+    if current_user.is_authenticated:
+        hold_detection = not current_user.preferences.hold_detection_disabled
+    return hold_detection
+
+def get_show_only_latest_wall_sets(current_user):
+    latest = True
+    if current_user.is_authenticated:
+        latest = current_user.preferences.show_latest_walls_only
+    return latest
+
+
 def get_creds_file(env: str = '.ddbb.env') -> str:
     """
     Get the name of the file where the credentials
@@ -152,14 +165,16 @@ def get_wall_radius(session: SessionMixin, database: Database, wall_path=None) -
     return db_controller.get_walls_radius_all(database)[wall_path]
 
 
-def get_boulders_list(gym: str, filters: Data, database: Database, session) -> list[Data]:
+def get_boulders_list(gym: str, filters: Data, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
     """
     Given a gym and a set of filters return the list of
     boulders that match the specified criteria.
     """
+    # if user is authenticated, check preferences to add query modifiers
     data = db_controller.get_boulders_filtered(
         gym=gym,
         database=database,
+        latest_walls_only=latest_walls_only,
         conditions=filters,
         equals=EQUALS,
         ranged=RANGE,
@@ -406,30 +421,30 @@ def load_next_or_current(
     gym_code: str,
     database: Database,
     session: LocalProxy
-    ) -> Tuple[dict, str]:
+) -> Tuple[dict, str]:
     next_boulder = db_controller.get_next_boulder(
         boulder_id, gym_code, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
-        boulder_id: str,
-        gym_code: str,
-        database: Database,
-        session: LocalProxy
-    ) -> Tuple[dict, str]:
+    boulder_id: str,
+    gym_code: str,
+    database: Database,
+    session: LocalProxy
+) -> Tuple[dict, str]:
     previous_boulder = db_controller.get_previous_boulder(
         boulder_id, gym_code, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
 def load_boulder_to_show(
-        candidate_boulder: dict,
-        gym_code: str,
-        current_boulder_id: str,
-        database: Database,
-        session: LocalProxy
-    ) -> Tuple[dict, str]:
+    candidate_boulder: dict,
+    gym_code: str,
+    current_boulder_id: str,
+    database: Database,
+    session: LocalProxy
+) -> Tuple[dict, str]:
     if candidate_boulder:
         # load boulder
         boulder, wall_image = load_full_boulder_data(
@@ -462,3 +477,23 @@ def choose_language(request, langs) -> str:
     if lang_matches:
         return lang_matches.pop()
     return DEFAULT_LANG
+
+
+def update_user_prefs(request, current_user):
+    should_save_user = False
+
+    if request.form.get('gym') != current_user.preferences.default_gym:
+        current_user.preferences.default_gym = request.form.get('gym')
+        should_save_user = True
+
+    if request.form.get('latestWallSwitch', False) != current_user.preferences.show_latest_walls_only:
+        current_user.preferences.show_latest_walls_only = bool(
+            request.form.get('latestWallSwitch', False))
+        should_save_user = True
+
+    if request.form.get('holdDetectionSwitch', False) != current_user.preferences.hold_detection_disabled:
+        current_user.preferences.hold_detection_disabled = bool(
+            request.form.get('holdDetectionSwitch', False))
+        should_save_user = True
+
+    return should_save_user, current_user

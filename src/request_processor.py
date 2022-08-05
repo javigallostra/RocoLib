@@ -15,6 +15,10 @@ from src.config import *
 def handle_home_request(request, session, db):
     if request.method == 'POST':
         session['gym'] = request.form.get('gym')
+    elif session.get('user_default_gym', '') and session.get('first_load', False):
+        session['gym'] = session.get('user_default_gym')
+        session['first_load'] = False
+
     gyms = db_controller.get_gyms(db)
     return render_template(
         'home.html',
@@ -26,10 +30,13 @@ def handle_home_request(request, session, db):
     )
 
 
-def handle_create_request(request, session, db):
-    latest = request.args.get('latest', False)
+def handle_create_request(request, session, db, current_user):
+       
     walls = db_controller.get_gym_walls(
-        utils.get_current_gym(session, db), db, latest=latest)
+        utils.get_current_gym(session, db),
+        db, 
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
     for wall in walls:
         wall['image_path'] = utils.get_wall_image(
             utils.get_current_gym(session, db), wall['image'], WALLS_PATH)
@@ -58,7 +65,13 @@ def handle_explore_boulders(request, session, db, current_user):
 
     session['filters'] = filters
 
-    boulders = utils.get_boulders_list(gym, filters, db, session)
+    boulders = utils.get_boulders_list(
+        gym,
+        filters,
+        db,
+        session,
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
     gym_walls = db_controller.get_gym_walls(gym, db)
 
     if current_user.is_authenticated:
@@ -127,7 +140,7 @@ def process_rate_boulder_request(request, session, db):
     return abort(400)
 
 
-def process_load_boulder_request(request, session, db, static_folder):
+def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
         boulder, wall_image = utils.get_boulder_from_request(
             request,
@@ -149,13 +162,14 @@ def process_load_boulder_request(request, session, db, static_folder):
             boulder_data=boulder,
             scroll=request.args.get('scroll', 0),
             origin=request.form.get('origin', 'explore_boulders'),
-            hold_data=hold_data
+            hold_data=hold_data,
+            hold_detection=utils.get_hold_detection_active(current_user)
         )
     except Exception:
         return abort(404)
 
 
-def process_load_next_problem_request(request, session, db, static_folder):
+def process_load_next_problem_request(request, session, db, current_user, static_folder):
     boulder, wall_image = utils.load_next_or_current(
         request.args.get('id'),
         request.args.get('gym'),
@@ -177,11 +191,12 @@ def process_load_next_problem_request(request, session, db, static_folder):
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_load_previous_problem_request(request, session, db, static_folder):
+def process_load_previous_problem_request(request, session, db, current_user, static_folder):
     boulder, wall_image = utils.load_previous_or_current(
         request.args.get('id'),
         request.args.get('gym'),
@@ -203,11 +218,12 @@ def process_load_previous_problem_request(request, session, db, static_folder):
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_random_problem_request(request, session, db, static_folder):
+def process_random_problem_request(request, session, db, current_user, static_folder):
     # get random boulder from gym
     boulder = db_controller.get_random_boulder(
         utils.get_current_gym(session, db), db)
@@ -234,12 +250,14 @@ def process_random_problem_request(request, session, db, static_folder):
         wall_image=wall_image,
         boulder_data=boulder,
         origin=request.form.get('origin', ''),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=utils.get_hold_detection_active(current_user)
     )
 
 
-def process_wall_section_request(request, session, db, static_folder, wall_section):
+def process_wall_section_request(request, session, db, current_user, static_folder, wall_section):
     template = 'create_boulder.html'
+    # Not implemented atm
     if request.args.get('options', '') == 'route':
         template = 'create_route.html'
 
@@ -250,6 +268,11 @@ def process_wall_section_request(request, session, db, static_folder, wall_secti
     hold_data = utils.get_hold_data(utils.get_current_gym(
         session, db), wall_section, static_folder)
 
+    hold_detection = True
+    if current_user.is_authenticated:
+        hold_detection = not current_user.preferences.hold_detection_disabled
+
+
     return render_template(
         template,
         wall_image=utils.get_wall_image(utils.get_current_gym(
@@ -259,7 +282,8 @@ def process_wall_section_request(request, session, db, static_folder, wall_secti
         section=wall_section,
         radius=utils.get_wall_radius(
             session, db, utils.get_current_gym(session, db) + '/' + wall_section),
-        hold_data=hold_data
+        hold_data=hold_data,
+        hold_detection=hold_detection
     )
 
 
@@ -346,7 +370,7 @@ def process_delete_ticklist_problem_request(request, db, current_user):
     return abort(400)
 
 
-def process_login_request(request, db, current_user, login_user):
+def process_login_request(request, session, db, current_user, login_user):
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = LoginForm()
@@ -357,6 +381,9 @@ def process_login_request(request, db, current_user, login_user):
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('home')
+            # set user prefs
+            session['user_default_gym'] = user.preferences.default_gym
+            session['first_load'] = True
             return redirect(next_page)
     return render_template('login_form.html', form=form)
 
@@ -406,3 +433,25 @@ def process_get_nearest_gym_request(request, session, db):
     # Set closest gym as actual gym
     session['gym'] = closest_gym
     return redirect(url_for('home'))
+
+
+def process_profile_request(request, db, session, current_user):
+    # switches come as "on" or nothing
+    if request.method == 'POST':
+        should_save, current_user = utils.update_user_prefs(request, current_user)
+        if should_save:
+            current_user.save(db)
+            # update default gym
+            session['gym'] = current_user.preferences.default_gym
+            session['user_default_gym'] = current_user.preferences.default_gym
+
+    gyms = db_controller.get_gyms(db)
+    
+    return render_template(
+        'profile.html',
+        gyms=gyms,
+        user_prefs=current_user.preferences,
+        selected=current_user.preferences.default_gym,
+        current_gym=[gym['name'] for gym in gyms if gym['id']
+                     == current_user.preferences.default_gym][0]
+    )

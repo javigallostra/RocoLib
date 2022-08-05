@@ -201,6 +201,18 @@ class SignUpErrorResponse(Schema):
     """
     errors = fields.List(fields.Str())
 
+class UserPreferencesResponseBody(Schema):
+    """
+    """
+    user_id = fields.Str() # not sure this should be returned
+    default_gym = fields.Str()
+    show_latest_walls_only = fields.Bool()
+    hold_detection_disabled = fields.Bool()
+
+class UserPreferencesErrorResponse(Schema):
+    """
+    """
+    errors = fields.Dict()
 
 class TestTokenResponseBody(Schema):
     """

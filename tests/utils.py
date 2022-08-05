@@ -9,23 +9,12 @@ from tests.tests_config import TEST_GYM_CODE, TEST_NAME, TEST_WALL_SECTION, TEST
 import db.mongodb_controller as mongodb_controller
 from src.utils import load_data
 
-class FakeRequest:
-    def __init__(self, db):
-        self.data = None
-        self.form = None
-        self.json = {
-        'gym': TEST_GYM_CODE,
-        'name': TEST_NAME,
-        'iden':
-            mongodb_controller.get_boulder_by_name(
-                TEST_GYM_CODE,
-                TEST_NAME,
-                db
-        ).get('_id', ''),
-        'is_done': True,
-        'section': TEST_WALL_SECTION
-        }
 
+class FakeRequest:
+    def __init__(self, data=None, form=None, json=None):
+        self.data = data
+        self.form = form
+        self.json = json
     def get_data(self):
         return None
 
@@ -80,7 +69,7 @@ def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
     gym_collection = db[f'{gym_code}_walls']
     wall_data = {
         'image': wall_section,
-        'name': wall_name, 
+        'name': wall_name,
         'radius': wall_radius,
         'latest': True
     }
@@ -99,8 +88,9 @@ def drop_users(db):
     """
     Remove users from the database
     """
-    users_collection = db[f'users']
+    users_collection = db['users']
     users_collection.drop()
+
 
 def add_boulder(db, gym, boulder_data):
     boulder_data['_id'] = str(bson.objectid.ObjectId())
@@ -117,7 +107,20 @@ def add_user_with_ticklist(db, username, password, email):
     user.set_password(password)
     user.save(db)
     # Boulder comes in the Fake Request
-    data, _ = load_data(FakeRequest(db))
+    # json request data
+    json_data = {
+                'gym': TEST_GYM_CODE,
+                'name': TEST_NAME,
+                'iden':
+                mongodb_controller.get_boulder_by_name(
+                    TEST_GYM_CODE,
+                    TEST_NAME,
+                    db
+                ).get('_id', ''),
+                'is_done': True,
+                'section': TEST_WALL_SECTION
+            }
+    data, _ = load_data(FakeRequest(json=json_data))
     boulder = mongodb_controller.get_boulder_by_name(
         data.get('gym'),
         data.get('name'),
@@ -126,9 +129,9 @@ def add_user_with_ticklist(db, username, password, email):
     boulder_id = boulder.get('_id', '')
 
     ticklist_handler.add_boulder_to_ticklist(
-        data, 
-        boulder_id, 
-        User().get_user_by_username(TEST_USERNAME, db), 
-        db, 
+        data,
+        boulder_id,
+        User().get_user_by_username(TEST_USERNAME, db),
+        db,
         mark_as_done=True
     )

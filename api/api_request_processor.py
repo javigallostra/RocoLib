@@ -1,5 +1,6 @@
 import ast
 import datetime
+import json
 import db.mongodb_controller as db_controller
 
 from flask import jsonify
@@ -242,3 +243,6 @@ def process_get_user_ticklist_request(db, user):
 
 def process_test_auth_request(user):
     return jsonify(dict(data=f'Hello {user.name}')), 200
+
+def process_get_user_preferences_request(user):
+    return jsonify(user.preferences.serialize(ignore_keys=('_id', 'user_id'))), 200

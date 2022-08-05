@@ -1,0 +1,71 @@
+{% extends "base_template.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row text-center mb-3">
+        <div class="col">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="container" style="display: flex; margin-bottom: 0.5rem; margin-top:0.5rem;">
+          <p style="margin-bottom:0; align-self:center;"><strong>{{ default_gym }}: </strong></p>
+          <div class="alert alert-info" role="alert" style="margin-left: 0.5rem; margin-bottom:0; padding: 0.7rem;">
+            <h5 style="font-size: 1.1rem; align-self: center; margin-bottom: 0;">{{ current_gym }}</h5>
+          </div>
+        </div>
+      </div>
+      <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;" />
+      <label>{{ change_default_gym }}: </label>
+      <div class="row gym-selector">
+        <div class="form-group col-md-8 col-xs-12" style="margin-bottom: 0.5rem;">
+          <form action="/profile" method="POST">
+            <select class="form-control col-12" name="gym" id="gym" style="margin-bottom: 0.5rem;">
+              {% for gym in gyms %}
+              <option value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
+                endif %}>{{ gym['name'] }}</option>
+              {% endfor %}
+            </select>
+            <div class="custom-control custom-switch mt-3" style="margin-bottom: 0.5rem;">
+              <input type="checkbox" 
+                     class="custom-control-input" 
+                     id="latestWallSwitch" 
+                     name="latestWallSwitch"
+                     {% if user_prefs.show_latest_walls_only %} checked {%endif %}>
+              <label class="custom-control-label" for="latestWallSwitch">Show only latest wall sets</label>
+            </div>
+            <div class="custom-control custom-switch mt-3">
+              <input type="checkbox"
+                     class="custom-control-input" 
+                     id="holdDetectionSwitch"
+                     name="holdDetectionSwitch"
+                     {% if user_prefs.hold_detection_disabled %} checked {%endif %}>
+              <label class="custom-control-label" for="holdDetectionSwitch">Hold detection disabled</label>
+            </div>
+            <div class="row text-center mt-3">
+              <div class="col">
+                <div>
+                  <button class="btn btn-primary" onclick="this.form.submit()"> {{ save }}</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{%block scripts%}
+{% endblock %}

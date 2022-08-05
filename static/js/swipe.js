@@ -2,7 +2,7 @@ var touchstartX = 0
 var touchendX = 0
 var touchstartY = 0
 var touchendY = 0
-var threshold = 15;
+var threshold = 75; // empirical value
 
 function isHorizontalSwipe() {
     return Math.abs(touchendX - touchstartX) > threshold && Math.abs(touchendX - touchstartX) > Math.abs(touchendY - touchstartY);
@@ -42,6 +42,7 @@ function loadPrevious(problem_id, gym_code) {
 }
 
 function loadProblem(problem_id, gym_code, endpoint) {
+    // Add more params to query: list_id, and any filter options
     fetch(endpoint + "?gym=" + gym_code + "&id=" + problem_id + "&scroll=" + +window.scrollY.toFixed(2), {})
         .then(resp => resp.text())
         .then(body => {

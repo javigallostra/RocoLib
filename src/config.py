@@ -10,9 +10,9 @@ DB_NAME = 'RocoLib'
 WALLS_PATH = 'images/walls/'
 ITEMS = 'Items'
 
-DOCKER_ENV="False"
+DOCKER_ENV = "False"
 if len(argv) > 1 and str(argv[1]) == "docker":
-    DOCKER_ENV="True"
+    DOCKER_ENV = "True"
 
 DEBUG = True
 API_VERSION = 'v1'
