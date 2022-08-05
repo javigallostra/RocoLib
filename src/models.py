@@ -138,14 +138,7 @@ class User(UserMixin, BaseModel):
         if not bool(user_data):
             return None
 
-        # user_prefs = UserPreferences(user_id)
-        # _user_prefs = mongodb_controller.get_user_preferences(
-        #     user_id, database)
-        # if bool(_user_prefs):
-        #     user_prefs = UserPreferences(**_user_prefs)
-        user_prefs = User.get_user_preferences(user_id, database)
-
-        user_data[USER_PREFERENCES] = user_prefs
+        user_data[USER_PREFERENCES] = User.get_user_preferences(user_id, database)
 
         return User(user_data)
 
@@ -159,13 +152,7 @@ class User(UserMixin, BaseModel):
         if not user_data:
             return None
 
-        # user_prefs = UserPreferences(user_data['id'])
-        # _user_prefs = mongodb_controller.get_user_preferences(
-        #     user_data['id'], database)
-        # if bool(_user_prefs):
-        #     user_prefs = UserPreferences(**_user_prefs)
-        user_prefs = User.get_user_preferences(user_data['id'], database)
-        user_data[USER_PREFERENCES] = user_prefs
+        user_data[USER_PREFERENCES] = User.get_user_preferences(user_data['id'], database)
 
         return User(user_data)
 
@@ -180,14 +167,7 @@ class User(UserMixin, BaseModel):
         if not user_data:
             return None
 
-        # user_prefs = UserPreferences(user_data['id'])
-        # _user_prefs = mongodb_controller.get_user_preferences(
-        #     user_data['id'], database)
-        # if bool(_user_prefs):
-        #     user_prefs = UserPreferences(**_user_prefs)
-        user_prefs = User.get_user_preferences(user_data['id'], database)
-
-        user_data[USER_PREFERENCES] = user_prefs
+        user_data[USER_PREFERENCES] = User.get_user_preferences(user_data['id'], database)
 
         return User(user_data)
 
@@ -206,8 +186,7 @@ class User(UserMixin, BaseModel):
             return None  # invalid token
         user_data = mongodb_controller.get_user_data_by_id(
             data['id'], database)
-        preferences = User.get_user_preferences(data['id'], database)
-        user_data['user_preferences'] = preferences        
+        user_data[USER_PREFERENCES] = User.get_user_preferences(data['id'], database)
         if not user_data:
             return None
         return User(user_data)
