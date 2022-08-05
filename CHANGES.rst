@@ -9,6 +9,9 @@ Changelog
 Features
 --------
 
+- #168 Add a query builder to ease the handling of MongoDB queries
+- #168 Add API endpoint to get logged in user preferences
+- #168 Add user preferences (default gym, hold detection, show only latest wall sets) and page to edit them
 - #149 #150 When viewing a problem, swipe left or right to go to next or previous problem  
 - #146 Add endpoint to public API to mark a boulder as done
 - #138 Enable changing gym from problems list page & UI improvements
