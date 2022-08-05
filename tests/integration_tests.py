@@ -3,13 +3,13 @@ import unittest
 from application import app
 
 from api.schemas import BoulderFields
-from config import CREDS, CREDS_LOCAL
+from src.config import CREDS, CREDS_LOCAL
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
 from tests.tests_config import TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
-from utils.utils import set_creds_file
+from src.utils import set_creds_file
 from tests.utils import add_user_with_ticklist, drop_users, get_db_connection
 from tests.utils import create_walls_collection, add_wall, drop_boulders, add_boulder
 

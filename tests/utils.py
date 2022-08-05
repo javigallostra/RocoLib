@@ -2,12 +2,12 @@ import os
 import bson
 from typing import Union
 from pymongo import database, MongoClient
-from models import User
+from src.models import User
 from tests.tests_config import DB_NAME, WALLS_COLLECTION
-import ticklist_handler
+import src.ticklist_handler as ticklist_handler
 from tests.tests_config import TEST_GYM_CODE, TEST_NAME, TEST_WALL_SECTION, TEST_USERNAME
 import db.mongodb_controller as mongodb_controller
-from utils.utils import load_data
+from src.utils import load_data
 
 class FakeRequest:
     def __init__(self, db):

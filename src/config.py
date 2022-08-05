@@ -14,6 +14,14 @@ DOCKER_ENV="False"
 if len(argv) > 1 and str(argv[1]) == "docker":
     DOCKER_ENV="True"
 
+DEBUG = True
+API_VERSION = 'v1'
+SWAGGER_URL = f'/api/{API_VERSION}/docs'
+API_URL = f'/api/{API_VERSION}/docs/swagger.json'
+GENERATE_API_DOCS = True
+RUN_SERVER = True
+DEFAULT_LANG = 'en_US'
+
 BOULDER_COLOR_MAP = {
     'green': '#2CC990',
     'blue': '#2C82C9',
