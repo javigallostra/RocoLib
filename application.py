@@ -158,12 +158,12 @@ def load_boulder() -> Union[str, NoReturn]:
 
 @app.route('/load_next')
 def load_next_problem():
-    return request_processor.process_load_next_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_next_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/load_previous')
 def load_previous_problem():
-    return request_processor.process_load_previous_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_previous_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/explore_routes')
