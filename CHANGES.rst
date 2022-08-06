@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #172 Add left/right arrow buttons on PC to indicate that the user can change the problem by clicking
 - #168 Add a query builder to ease the handling of MongoDB queries
 - #168 Add API endpoint to get logged in user preferences
 - #168 Add user preferences (default gym, hold detection, show only latest wall sets) and page to edit them
