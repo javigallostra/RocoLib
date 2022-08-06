@@ -21,7 +21,7 @@
           </div>
           <!-- <p><a href="/{{ origin }}">Back</a></p> -->
         </div>
-        <div class="col" style="display: flex;justify-content: center;align-self: center;">
+        <div class="col" style="display: flex; justify-content: center; align-self: center;">
           <div style="text-align: center;">
             <h5 style="margin-bottom: 0;">{{ boulder_name }}</h5>
           </div>        
@@ -50,12 +50,16 @@
       <br />
       <div class="row" style="padding-left: 15px; padding-right: 15px;">
           <div class="pc-arrow-left">
-            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+            <a class="btn btn-outline-primary" href="#" onclick="clicked_previous()" role="button">
+              <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
           </div>
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
           <canvas id="wall-canvas"></canvas>
           <div class="pc-arrow-right">
-            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <a class="btn btn-outline-primary" href="#" onclick="clicked_next()" role="button">
+              <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </a>
           </div>
       </div>
       {% if boulder_data.get('notes', '') %}
@@ -157,6 +161,20 @@
       downloadProblem("{{ boulder_data['name'] }}", '{{ wall_image }}');
     };
 
+    function clicked_previous() {
+      loadPrevious(
+        "{{ boulder_data['_id'] }}",
+        "{{ boulder_data['gym'] }}"
+      );
+    }
+    
+    function clicked_next() {
+      loadNext(
+        "{{ boulder_data['_id'] }}",
+        "{{ boulder_data['gym'] }}"
+      );
+    }
+
     var $star_rating = $(".star-rating .fa");
 
     var SetRatingStar = function () {
@@ -193,7 +211,7 @@
       loadBoulder();
       swipeInit(
         loadPrevious, 
-        loadNext, 
+        loadNext,
         "{{ boulder_data['_id'] }}",
         "{{ boulder_data['gym'] }}"
       );
