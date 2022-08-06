@@ -48,8 +48,23 @@
         <label class="custom-control-label" for="holdDetectionSwitch">Hold detection</label>
       </div>
       <br />
-      <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
-      <canvas id="wall-canvas"></canvas>
+      <div class="row" style="padding-left: 15px; padding-right: 15px;">
+        <!-- <div class="col" style="display: flex; justify-content:start;"> -->
+          <div class="pc-arrow-left">
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+          </div>
+        <!-- </div> -->
+        <!-- <div class="col"> -->
+          <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
+          <canvas id="wall-canvas"></canvas>
+        <!-- </div> -->
+        <!-- <div class="col" style="display: flex; justify-content:end;"> -->
+          <div class="pc-arrow-right">
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+          </div>
+          <!-- <p><a href="/">Home</a></p> -->
+        <!-- </div> -->
+      </div>
       {% if boulder_data.get('notes', '') %}
       <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
       <div class="container">
@@ -250,7 +265,23 @@
   margin-top: 3rem;
 }
 
+.pc-arrow-left {
+  display: flex; 
+  align-items: center; 
+  padding-left:15px;
+}
+.pc-arrow-right {
+  display: flex; 
+  align-items: center; 
+  padding-right:15px;
+}
+
     @media (max-width: 767px) {
+      .pc-arrow-left,
+      .pc-arrow-right {
+        display: none;
+      }
+
       .star-rating {
         /* line-height: 15px; */
         font-size: 0.8em;
