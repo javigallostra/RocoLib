@@ -393,7 +393,7 @@ def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one(
-        QueryBuilder().equal('_id', ObjectId(boulder_id))
+        QueryBuilder().equal('_id', ObjectId(boulder_id)).query
     )
     # boulder = database[f'{gym}_boulders'].find_one(
     #     {'_id': ObjectId(boulder_id)})
@@ -423,7 +423,7 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 
 @serializable
 @postprocess_boulder_data
-def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
+def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
     """
     Given a boulder id, get the next boulder based on insertion date
 
@@ -437,6 +437,10 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :rtype: Data
     """
     query_builder = QueryBuilder().lower('_id', ObjectId(boulder_id))
+    if latest_wall_set:
+        walls = get_gym_walls(gym, database, latest_wall_set)
+        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        
     boulders = list(database[f'{gym}_boulders'].find(query_builder.query).sort('_id', -1).limit(1))
     # boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }).sort('_id', -1).limit(1))
     return boulders[0] if boulders else {}
@@ -444,7 +448,7 @@ def get_next_boulder(boulder_id: str, gym: str, database: Database) -> Data:
 
 @serializable
 @postprocess_boulder_data
-def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
+def get_previous_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
     """
     Given a boulder id, get the previous boulder based on insertion date
 
@@ -458,6 +462,10 @@ def get_previous_boulder(boulder_id: str, gym: str, database: Database) -> Data:
     :rtype: Data
     """
     query_builder = QueryBuilder().greater('_id', ObjectId(boulder_id))
+    if latest_wall_set:
+        walls = get_gym_walls(gym, database, latest_wall_set)
+        query_builder.contained_in('section', [wall['image'] for wall in walls])
+
     boulders = list(database[f'{gym}_boulders'].find(query_builder.query).limit(1))
     # boulders = list(database[f'{gym}_boulders'].find({'_id': {'$gt': ObjectId(boulder_id)}}).limit(1))
     return boulders[0] if boulders else {}
