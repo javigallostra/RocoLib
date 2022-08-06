@@ -1,6 +1,5 @@
 import ast
 import datetime
-import json
 import db.mongodb_controller as db_controller
 
 from flask import jsonify
