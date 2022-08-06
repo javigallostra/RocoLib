@@ -44,6 +44,7 @@ Features
 Fixes
 -----
 
+- #170 Take into account latest wall set flag when swiping problems
 - #162 Optimize DDBB queries
 - #161 Fix page header on error templates
 - #159 Keep scroll status after problem load due to swipe
