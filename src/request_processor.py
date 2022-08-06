@@ -173,6 +173,7 @@ def process_load_next_problem_request(request, session, db, current_user, static
     boulder, wall_image = utils.load_next_or_current(
         request.args.get('id'),
         request.args.get('gym'),
+        utils.get_show_only_latest_wall_sets(current_user),
         db,
         session
     )
@@ -200,6 +201,7 @@ def process_load_previous_problem_request(request, session, db, current_user, st
     boulder, wall_image = utils.load_previous_or_current(
         request.args.get('id'),
         request.args.get('gym'),
+        utils.get_show_only_latest_wall_sets(current_user),
         db,
         session
     )

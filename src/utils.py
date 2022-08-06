@@ -419,22 +419,24 @@ def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: 
 def load_next_or_current(
     boulder_id: str,
     gym_code: str,
+    latest_wall_set: bool,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
     next_boulder = db_controller.get_next_boulder(
-        boulder_id, gym_code, database)
+        boulder_id, gym_code, latest_wall_set, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
     boulder_id: str,
     gym_code: str,
+    latest_wall_set: bool,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
     previous_boulder = db_controller.get_previous_boulder(
-        boulder_id, gym_code, database)
+        boulder_id, gym_code, latest_wall_set, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
