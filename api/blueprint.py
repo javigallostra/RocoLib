@@ -76,16 +76,23 @@ def get_gyms() -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -122,16 +129,23 @@ def get_gym_walls(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -163,16 +177,23 @@ def get_gym_pretty_name(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -206,16 +227,23 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -247,16 +275,23 @@ def get_gym_boulders(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -290,16 +325,23 @@ def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -333,16 +375,23 @@ def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -389,22 +438,22 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: CreateBoulderErrorResponse
-            text/json:
-              schema: CreateBoulderErrorResponse
             application/json:
-              schema: CreateBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -451,22 +500,22 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: RateBoulderErrorResponse
-            text/json:
-              schema: RateBoulderErrorResponse
             application/json:
-              schema: RateBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -508,32 +557,22 @@ def new_user() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: SignUpErrorResponse
-            text/json:
-              schema: SignUpErrorResponse
             application/json:
-              schema: SignUpErrorResponse
-        401:
-          description:
-            Invalid credentials
-          content:
+              schema: ErrorResponse
             text/plain:
-              schema: SignUpErrorResponse
+              schema: ErrorResponse
             text/json:
-              schema: SignUpErrorResponse
-            application/json:
-              schema: SignUpErrorResponse
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -577,32 +616,22 @@ def get_auth_token() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: AuthenticationErrorResponse
-            text/json:
-              schema: AuthenticationErrorResponse
             application/json:
-              schema: AuthenticationErrorResponse
-        401:
-          description:
-            Invalid credentials
-          content:
+              schema: ErrorResponse
             text/plain:
-              schema: AuthenticationErrorResponse
+              schema: ErrorResponse
             text/json:
-              schema: AuthenticationErrorResponse
-            application/json:
-              schema: AuthenticationErrorResponse
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -647,22 +676,22 @@ def mark_boulder_as_done() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: MarkDoneBoulderErrorResponse
-            text/json:
-              schema: MarkDoneBoulderErrorResponse
             application/json:
-              schema: MarkDoneBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -696,32 +725,25 @@ def get_user_ticklist() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: TicklistError
-            text/json:
-              schema: TicklistError
             application/json:
-              schema: TicklistError
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         401:
           description:
-            Invalid credentials
-          content:
-            text/plain:
-              schema: TicklistError
-            text/json:
-              schema: TicklistError
-            application/json:
-              schema: TicklistError
+            Unauthorized
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -755,32 +777,25 @@ def test_auth() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: TestTokenErrorResponse
-            text/json:
-              schema: TestTokenErrorResponse
             application/json:
-              schema: TestTokenErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         401:
           description:
-            Invalid credentials
-          content:
-            text/plain:
-              schema: TestTokenErrorResponse
-            text/json:
-              schema: TestTokenErrorResponse
-            application/json:
-              schema: TestTokenErrorResponse
+            Unauthorized
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -813,32 +828,25 @@ def get_user_preferences() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: UserPreferencesErrorResponse
-            text/json:
-              schema: UserPreferencesErrorResponse
             application/json:
-              schema: UserPreferencesErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         401:
           description:
-            Invalid credentials
-          content:
-            text/plain:
-              schema: UserPreferencesErrorResponse
-            text/json:
-              schema: UserPreferencesErrorResponse
-            application/json:
-              schema: UserPreferencesErrorResponse
+            Unauthorized
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error

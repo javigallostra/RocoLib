@@ -20,7 +20,7 @@ class GymSchema(Schema):
     id = fields.Str()
     name = fields.Str()
     coordinates = fields.List(
-        fields.Float(), 
+        fields.Float(),
         validate=fields.Length(min=2, max=2)
     )
 
@@ -110,17 +110,12 @@ class CreateBoulderResponseBody(Schema):
     _id = fields.Str()
 
 
-class CreateBoulderErrorResponse(Schema):
-    """
-    Data schema of the response to a unsuccessful create boulder request
-    """
-    errors = fields.Dict()
-
 class RateBoulderRequestBody(Schema):
     """
     Data Schema to rate a boulder
     """
     rating = fields.Int(required=True)
+
 
 class RateBoulderResponseBody(Schema):
     """
@@ -130,18 +125,13 @@ class RateBoulderResponseBody(Schema):
     rated = fields.Bool()
 
 
-class RateBoulderErrorResponse(Schema):
-    """
-    Data schema of the response to a unsuccessful boulder rating request
-    """
-    errors = fields.Dict()
-
 class MarkDoneBoulderRequestBody(Schema):
     """
     Data Schema to rate a boulder
     """
     boulder_id = fields.Str(required=True)
     gym = fields.Str(required=True)
+
 
 class MarkDoneBoulderResponseBody(Schema):
     """
@@ -150,11 +140,6 @@ class MarkDoneBoulderResponseBody(Schema):
     boulder_id = fields.Str()
     marked_as_done = fields.Bool()
 
-class MarkDoneBoulderErrorResponse(Schema):
-    """
-    Data schema of the response to a unsuccessful boulder rating request
-    """
-    errors = fields.Dict()
 
 class AuthenticationRequestBody(Schema):
     """
@@ -170,13 +155,6 @@ class AuthenticationResponseBody(Schema):
     Data Schema of the response to a successful authentication request
     """
     token = fields.Str()
-
-
-class AuthenticationErrorResponse(Schema):
-    """
-    Data Schema of the response to an unsuccessful authentication request
-    """
-    errors = fields.Str()
 
 
 class SignUpRequestBody(Schema):
@@ -195,37 +173,20 @@ class SignUpResponseBody(Schema):
     username = fields.Str()
 
 
-class SignUpErrorResponse(Schema):
-    """
-    Data Schema of the response to an unsuccessful authentication request
-    """
-    errors = fields.List(fields.Str())
-
 class UserPreferencesResponseBody(Schema):
     """
     """
-    user_id = fields.Str() # not sure this should be returned
+    user_id = fields.Str()  # not sure this should be returned
     default_gym = fields.Str()
     show_latest_walls_only = fields.Bool()
     hold_detection_disabled = fields.Bool()
 
-class UserPreferencesErrorResponse(Schema):
-    """
-    """
-    errors = fields.Dict()
 
 class TestTokenResponseBody(Schema):
     """
     Data schema of the response to a successful test token request
     """
     data = fields.Str()
-
-
-class TestTokenErrorResponse(Schema):
-    """
-    Data Schema of the response to an unsuccessful test token request
-    """
-    errors = fields.Str()
 
 
 class GymIDParameter(Schema):
@@ -291,23 +252,13 @@ class TicklistResponseBody(Schema):
     """
     boulders = fields.List(fields.Nested(TicklistBoulderSchema))
 
-class BaseErrorSchema(Schema):
+
+class ErrorResponse(Schema):
     """
     Base error response data schema
     """
     errors = fields.Dict()
 
-class TicklistError(BaseErrorSchema):
-    """
-    Ticklist error response data schema
-    """
-    pass
-
-class NotFoundError(BaseErrorSchema):
-    """
-    Resource not found error response data schema
-    """
-    pass
 
 class BoulderFields:
     raters = 'raters'

@@ -181,7 +181,7 @@ def process_get_auth_token_request(request, db, current_app):
     if user is not None and user.check_password(password):
         token = user.generate_auth_token(current_app)
         return jsonify(dict(token=token.decode('ascii'))), 200
-    return jsonify(dict(errors={'message': 'Invalid credentials'})), 401
+    return jsonify(dict(errors={'message': 'Authentication error. Invalid credentials'})), 400
 
 
 def process_mark_boulder_as_done_request(request, db, user):

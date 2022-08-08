@@ -23,27 +23,19 @@ def generate_api_docs(app) -> None:
     from api.schemas import GymIDParameter
     from api.schemas import CreateBoulderRequestBody
     from api.schemas import CreateBoulderResponseBody
-    from api.schemas import CreateBoulderErrorResponse
-    from api.schemas import AuthenticationErrorResponse
     from api.schemas import AuthenticationRequestBody
     from api.schemas import AuthenticationResponseBody
-    from api.schemas import SignUpErrorResponse
     from api.schemas import SignUpRequestBody
     from api.schemas import SignUpResponseBody
-    from api.schemas import TestTokenErrorResponse
     from api.schemas import TestTokenResponseBody
     from api.schemas import TicklistBoulderSchema
     from api.schemas import TicklistResponseBody
-    from api.schemas import TicklistError
     from api.schemas import RateBoulderRequestBody
     from api.schemas import RateBoulderResponseBody
-    from api.schemas import RateBoulderErrorResponse
     from api.schemas import MarkDoneBoulderRequestBody
     from api.schemas import MarkDoneBoulderResponseBody
-    from api.schemas import MarkDoneBoulderErrorResponse
     from api.schemas import UserPreferencesResponseBody
-    from api.schemas import UserPreferencesErrorResponse
-    from api.schemas import NotFoundError
+    from api.schemas import ErrorResponse
 
     spec.components.schema("Gyms", schema=GymListSchema)
     spec.components.schema("Walls", schema=WallListSchema)
@@ -55,8 +47,6 @@ def generate_api_docs(app) -> None:
         "CreateBoulder", schema=CreateBoulderRequestBody)
     spec.components.schema("CreateBoulderResponse",
                            schema=CreateBoulderResponseBody)
-    spec.components.schema("CreateBoulderErrorResponse",
-                           schema=CreateBoulderErrorResponse)
     spec.components.schema("GymIDParameter", schema=GymIDParameter)
     spec.components.schema("BoulderIDParameter", schema=BoulderIDParameter)
     spec.components.schema("BoulderNameParameter", schema=BoulderNameParameter)
@@ -64,40 +54,27 @@ def generate_api_docs(app) -> None:
                            schema=AuthenticationRequestBody)
     spec.components.schema("AuthenticationResponseBody",
                            schema=AuthenticationResponseBody)
-    spec.components.schema("AuthenticationErrorResponse",
-                           schema=AuthenticationErrorResponse)
     spec.components.schema("SignUpRequestBody", schema=SignUpRequestBody)
     spec.components.schema("SignUpResponseBody", schema=SignUpResponseBody)
-    spec.components.schema("SignUpErrorResponse", schema=SignUpErrorResponse)
     spec.components.schema("TestTokenResponseBody",
                            schema=TestTokenResponseBody)
-    spec.components.schema("TestTokenErrorResponse",
-                           schema=TestTokenErrorResponse)
     spec.components.schema("TicklistBoulder",
                            schema=TicklistBoulderSchema)
-    spec.components.schema("TicklistError",
-                           schema=TicklistError)
     spec.components.schema("TicklistResponseBody",
                            schema=TicklistResponseBody)
     spec.components.schema("RateBoulderRequestBody",
                            schema=RateBoulderRequestBody)
     spec.components.schema("RateBoulderResponseBody",
                            schema=RateBoulderResponseBody)
-    spec.components.schema("RateBoulderErrorResponse",
-                           schema=RateBoulderErrorResponse)
     spec.components.schema("MarkDoneBoulderRequestBody",
                            schema=MarkDoneBoulderRequestBody)
     spec.components.schema("MarkDoneBoulderResponseBody",
                            schema=MarkDoneBoulderResponseBody)
-    spec.components.schema("MarkDoneBoulderErrorResponse",
-                           schema=MarkDoneBoulderErrorResponse)
     spec.components.schema("UserPreferencesResponseBody",
                            schema=UserPreferencesResponseBody)
-    spec.components.schema("UserPreferencesErrorResponse",
-                           schema=UserPreferencesErrorResponse)
+    spec.components.schema("ErrorResponse",
+                           schema=ErrorResponse)
 
-    spec.components.schema("NotFoundError",
-                           schema=NotFoundError)
     with app.test_request_context():
         spec.path(view=get_gyms)
         spec.path(view=get_gym_walls)
