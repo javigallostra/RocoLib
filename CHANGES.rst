@@ -60,3 +60,9 @@ Fixes
 - #99 Increase max length of boulder name and creator
 - #98 Fix visualization of dates climbed
 - #73 Ignore gyms without location when searching for nearest gym
+
+
+Changes
+-------
+
+- #173 Use same error schema for all API endpoints & errors 
