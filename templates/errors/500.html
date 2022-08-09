@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="theme-color" content="#ffffff">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32"
+    href="{{ url_for('static', filename='images/favicon//favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16"
+    href="{{ url_for('static', filename='images/favicon//favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='images/favicon//site.webmanifest') }}">
+  <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon//safari-pinned-tab.svg') }}"
+    color="#5bbad5">
+  <!-- Navigation bar title-->
+  <title>404</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" media="screen" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="container nav-mob">
+      <ul class="nav user-info-s">
+          {% if current_user.is_anonymous %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">{{ login }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('show_signup_form') }}">{{ sign_up }}</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('tick_list') }}">{{ ticklist }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="#">{{ current_user.name }}</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">{{ logout }}</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('show_contact') }}">{{ contact }}</a>
+          </li>
+      </ul>
+    </div>
+    <div class="row text-center">
+      <div class="col" style="display: flex; justify-content:center;">
+        <div>
+          <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:center; margin-top: 2rem;">
+       500 - Internal server error - There was a problem processing your request
+    </div>
+  </div>
+</body>
+
+</html>
+
+<style>
+  .user-info-s {
+    padding-left: 0;
+}
+
+.nav-mob {
+    padding-left: 0;
+}
+
+@media (max-width: 767px) {
+    .user-info-s {
+        padding-left: 0;
+        justify-content: center;
+    }
+
+    .user-info-s li a {
+        padding: 0.8rem 0.5rem;
+    }
+
+    .nav-mob {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+}
+</style>
