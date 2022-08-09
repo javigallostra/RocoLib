@@ -445,6 +445,12 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
     # boulders = list(database[f'{gym}_boulders'].find({ '_id': {'$lt' : ObjectId(boulder_id) } }).sort('_id', -1).limit(1))
     return boulders[0] if boulders else {}
 
+@serializable
+@postprocess_boulder_data
+def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
+    # find user list and query next boulder
+    pass
+
 
 @serializable
 @postprocess_boulder_data

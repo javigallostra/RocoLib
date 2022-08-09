@@ -1,6 +1,8 @@
 import ast
+from csv import list_dialects
 import datetime
 import json
+from typing import Tuple
 from src.models import User
 import src.ticklist_handler as ticklist_handler
 import db.mongodb_controller as db_controller
@@ -142,6 +144,12 @@ def process_rate_boulder_request(request, session, db):
 
 def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
+        # get additional request params: list_id, is_user_list
+        request_data = utils.load_data(request)
+        
+        if isinstance(request_data, Tuple):
+            req_data = req_data[0]
+
         boulder, wall_image = utils.get_boulder_from_request(
             request,
             db,
@@ -155,6 +163,8 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             static_folder
         )
 
+        import pdb; pdb.set_trace()
+
         return render_template(
             'load_boulder.html',
             boulder_name=boulder.get('name', ''),
@@ -163,16 +173,23 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             scroll=request.args.get('scroll', 0),
             origin=request.form.get('origin', 'explore_boulders'),
             hold_data=hold_data,
-            hold_detection=utils.get_hold_detection_active(current_user)
+            hold_detection=utils.get_hold_detection_active(current_user),
+            list_id = req_data.get('list_id'),
+            is_user_list = req_data.get('is_user_list'),
         )
     except Exception:
         return abort(404)
 
 
 def process_load_next_problem_request(request, session, db, current_user, static_folder):
+    user_id = None
+    if request.args.get('is_user_list', '').lower() == 'true' and current_user.is_authenticated:
+        user_id = current_user.id
+
     boulder, wall_image = utils.load_next_or_current(
-        request.args.get('id'),
-        request.args.get('gym'),
+        request.args.get('id'), # problem_id
+        request.args.get('list_id'), # list from which to get next problem
+        user_id, # pass user id in case we need to retrieve the list for a user
         utils.get_show_only_latest_wall_sets(current_user),
         db,
         session
@@ -193,7 +210,9 @@ def process_load_next_problem_request(request, session, db, current_user, static
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=boulder['gym'], # default values atm
+        is_user_list=False
     )
 
 
@@ -221,7 +240,9 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         scroll=request.args.get('scroll', 0),
         origin=request.form.get('origin', 'explore_boulders'),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=boulder['gym'],
+        is_user_list=False
     )
 
 
@@ -251,9 +272,12 @@ def process_random_problem_request(request, session, db, current_user, static_fo
         boulder_name=boulder_data['name'],
         wall_image=wall_image,
         boulder_data=boulder,
+        scroll=0,
         origin=request.form.get('origin', ''),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=boulder['gym'],
+        is_user_list=False
     )
 
 

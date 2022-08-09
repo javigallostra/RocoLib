@@ -79,6 +79,10 @@
               <form action="/load_boulder" method="post">
                 <input type="hidden" name="boulder_data" value="{{boulder}}" />
                 <input type="hidden" name="origin" value="tick_list" />
+                <input type="hidden" name="list_id" id="{{ 'list_id' + boulder['_id'] }}"
+                       value="ticklist" />
+                <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + boulder['_id'] }}"
+                       value="True" />
                 <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
                   <h5>{{boulder['name']}}</h5>
                 </button>

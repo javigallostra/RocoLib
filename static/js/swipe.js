@@ -1,3 +1,5 @@
+const { full } = require("acorn-walk");
+
 var touchstartX = 0
 var touchendX = 0
 var touchstartY = 0
@@ -33,17 +35,35 @@ function swipeInit(swipe_left, swipe_right, current_id, gym_code) {
     });
 };
 
-function loadNext(problem_id, gym_code) {
-    loadProblem(problem_id, gym_code, "load_next");
-}
+// function loadNext(problem_id, gym_code) {
+//     loadProblem(problem_id, gym_code, "load_next");
+// }
 
 function loadPrevious(problem_id, gym_code) {
     loadProblem(problem_id, gym_code, "load_previous");
 }
 
+function newLoadNext(problem_id, list_id, is_user_list) {
+    newLoadProblem(problem_id, list_id, is_user_list, "load_next");
+}
+
+function newLoadProblem(problem_id, list_id, is_user_list, endpoint) {
+    var path = endpoint + "?list_id=" + list_id + "&is_user_list=" + is_user_list + "&id=" + problem_id + "&scroll=" + window.scrollY.toFixed(2);
+    // Add more params to query: list_id, and any filter options
+    fetch(path, {})
+        .then(resp => resp.text())
+        .then(body => {
+            // Hacky Whacky
+            document.open();
+            document.write(body);
+            document.close();
+        });
+
+}
+
 function loadProblem(problem_id, gym_code, endpoint) {
     // Add more params to query: list_id, and any filter options
-    fetch(endpoint + "?gym=" + gym_code + "&id=" + problem_id + "&scroll=" + +window.scrollY.toFixed(2), {})
+    fetch(endpoint + "?gym=" + gym_code + "&id=" + problem_id + "&scroll=" + window.scrollY.toFixed(2), {})
         .then(resp => resp.text())
         .then(body => {
             // Hacky Whacky
@@ -58,5 +78,6 @@ window.touchendX = touchendX;
 window.touchstartY = touchstartY;
 window.touchendY = touchendY;
 window.swipeInit = swipeInit;
-window.loadNext = loadNext;
+// window.loadNext = loadNext;
 window.loadPrevious = loadPrevious;
+window.newLoadNext = newLoadNext;

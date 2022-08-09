@@ -259,6 +259,8 @@ def load_data(request: Request) -> Tuple[dict, bool]:
         except json.JSONDecodeError:
             # try to load from query string
             return urlparse.parse_qs(request.data), False
+  elif request.args:
+    return request.args, False
   else:
     return dict(), False
 
@@ -297,7 +299,6 @@ def get_time_since_creation(time: str) -> str:
         nb, name = seconds, 'seconds' if seconds != 1 else 'second'
 
     return f'{nb} {name}'
-
 
 def get_boulder_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
     """
@@ -418,14 +419,22 @@ def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: 
 
 def load_next_or_current(
     boulder_id: str,
-    gym_code: str,
+    # gym_code: str,
+    list_id: str,
+    user_id: str,
     latest_wall_set: bool,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
-    next_boulder = db_controller.get_next_boulder(
-        boulder_id, gym_code, latest_wall_set, database)
-    return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
+    # here we should derive the query to the appropriate ddbb handler
+    if user_id:
+        next_boulder = db_controller.get_next_boulder_from_user_list(
+            boulder_id, list_id, user_id, latest_wall_set, database            
+        )
+    else: 
+        next_boulder = db_controller.get_next_boulder(
+            boulder_id, list_id, latest_wall_set, database)
+    return load_boulder_to_show(next_boulder, list_id, boulder_id, database, session)
 
 
 def load_previous_or_current(
