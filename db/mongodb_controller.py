@@ -448,7 +448,10 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
 @serializable
 @postprocess_boulder_data
 def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
-    # find user list and query next boulder
+    # TODO: find user list and query next boulder.
+    query_builder = QueryBuilder().equal('_id', ObjectId(user_id))
+    boulders = list(database['users'].find(query_builder.query, {list_id : 1}))
+    import pdb; pdb.set_trace()
     pass
 
 

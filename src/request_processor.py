@@ -148,7 +148,7 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
         request_data = utils.load_data(request)
         
         if isinstance(request_data, Tuple):
-            req_data = req_data[0]
+            request_data = request_data[0]
 
         boulder, wall_image = utils.get_boulder_from_request(
             request,
@@ -156,14 +156,16 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             session,
             utils.get_current_gym(session, db)
         )
+
+        if not bool(boulder):
+            abort(404)
+
         # get hold data
         hold_data = utils.get_hold_data(
             utils.get_current_gym(session, db),
             boulder['section'],
             static_folder
         )
-
-        import pdb; pdb.set_trace()
 
         return render_template(
             'load_boulder.html',
@@ -174,11 +176,11 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             origin=request.form.get('origin', 'explore_boulders'),
             hold_data=hold_data,
             hold_detection=utils.get_hold_detection_active(current_user),
-            list_id = req_data.get('list_id'),
-            is_user_list = req_data.get('is_user_list'),
+            list_id = request_data.get('list_id'),
+            is_user_list = request_data.get('is_user_list'),
         )
     except Exception:
-        return abort(404)
+        return abort(500) # internal server error
 
 
 def process_load_next_problem_request(request, session, db, current_user, static_folder):
