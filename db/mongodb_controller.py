@@ -1,4 +1,6 @@
 from typing import Optional
+
+from requests import post
 from db import query_builder
 from src.typing import Data
 
@@ -346,6 +348,11 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
         # database[USERS_COLLECTION].update_one({'id': user_id}, {'$set': user})
     return filtered_list
 
+@serializable
+@postprocess_boulder_data
+def get_user_problem_list_by_id(user_id: str, list_id: str, database: Database) -> list:
+    problem_list = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query, {list_id : 1})
+    return problem_list.get(list_id, []) if problem_list else []   
 
 @serializable
 @postprocess_boulder_data
@@ -448,11 +455,18 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
 @serializable
 @postprocess_boulder_data
 def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
-    # TODO: find user list and query next boulder.
-    query_builder = QueryBuilder().equal('_id', ObjectId(user_id))
-    boulders = list(database['users'].find(query_builder.query, {list_id : 1}))
-    import pdb; pdb.set_trace()
-    pass
+    # TODO: implement latest_wall_set flag logic for coherent results, apply sort order (¿?)
+    problems = get_user_problem_list_by_id(user_id, list_id, database)
+    # find next problem - apply flag filter
+    idx = -1
+    gym_code = ''
+    if problems:
+        idx = [b['iden'] for b in problems].index(boulder_id)
+    boulder = {}
+    if idx != -1 and idx != len(problems) - 1:
+        gym_code = problems[idx]['gym'] 
+        boulder = get_boulder_by_id(problems[idx+1]['gym'], problems[idx+1]['iden'], database)
+    return boulder, gym_code
 
 
 @serializable

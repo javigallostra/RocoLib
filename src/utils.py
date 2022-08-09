@@ -427,14 +427,16 @@ def load_next_or_current(
     session: LocalProxy
 ) -> Tuple[dict, str]:
     # here we should derive the query to the appropriate ddbb handler
+    gym_code = list_id
     if user_id:
-        next_boulder = db_controller.get_next_boulder_from_user_list(
+        next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
             boulder_id, list_id, user_id, latest_wall_set, database            
         )
     else: 
         next_boulder = db_controller.get_next_boulder(
             boulder_id, list_id, latest_wall_set, database)
-    return load_boulder_to_show(next_boulder, list_id, boulder_id, database, session)
+    print(next_boulder)
+    return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
