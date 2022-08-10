@@ -460,7 +460,6 @@ def load_next_or_current(
     :return: Data of the boulder that should be shown and the wall image
     :rtype: Tuple[dict, str]
     """
-    # here we should derive the query to the appropriate ddbb handler
     gym_code = list_id
     if user_id:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
@@ -474,7 +473,8 @@ def load_next_or_current(
 
 def load_previous_or_current(
     boulder_id: str,
-    gym_code: str,
+    list_id: str,
+    user_id: str,
     latest_wall_set: bool,
     database: Database,
     session: LocalProxy
@@ -497,8 +497,14 @@ def load_previous_or_current(
     :return: Data of the boulder that should be shown and the wall image
     :rtype: Tuple[dict, str]
     """
-    previous_boulder = db_controller.get_previous_boulder(
-        boulder_id, gym_code, latest_wall_set, database)
+    gym_code = list_id
+    if user_id:
+        previous_boulder, gym_code = db_controller.get_previous_boulder_from_user_list(
+            boulder_id, list_id, user_id, latest_wall_set, database
+        )
+    else:
+        previous_boulder = db_controller.get_previous_boulder(
+            boulder_id, list_id, latest_wall_set, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
