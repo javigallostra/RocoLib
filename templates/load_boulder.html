@@ -220,8 +220,8 @@
     window.onload = () => { 
       loadBoulder();
       swipeInit(
-        loadPrevious, 
-        loadNext,
+        newLoadPrevious, 
+        newLoadNext,
         "{{ boulder_data['_id'] }}",
         "{{ boulder_data['gym'] }}"
       );
