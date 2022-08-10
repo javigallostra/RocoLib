@@ -1,5 +1,3 @@
-const { full } = require("acorn-walk");
-
 var touchstartX = 0
 var touchendX = 0
 var touchstartY = 0
