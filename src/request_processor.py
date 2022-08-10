@@ -210,11 +210,12 @@ def process_load_next_problem_request(request, session, db, current_user, static
         wall_image=wall_image,
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
-        origin=request.form.get('origin', 'explore_boulders'),
+        # TODO: map somehow lists to origin urls? 
+        origin=request.form.get('origin', 'explore_boulders' if not user_id else 'tick_list'),
         hold_data=hold_data,
         hold_detection=utils.get_hold_detection_active(current_user),
-        list_id=boulder['gym'], # default values atm
-        is_user_list=False
+        list_id=request.args.get('list_id'), # default values atm
+        is_user_list=True if user_id else False
     )
 
 
@@ -343,6 +344,7 @@ def process_save_boulder_request(request, current_user):
 
 
 def process_ticklist_request(request, session, db, current_user):
+    # TODO: split into several requests? Too much going on here
     if request.method == 'POST':
         data, _ = utils.load_data(request)
         boulder = db_controller.get_boulder_by_name(

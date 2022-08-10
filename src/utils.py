@@ -435,7 +435,6 @@ def load_next_or_current(
     else: 
         next_boulder = db_controller.get_next_boulder(
             boulder_id, list_id, latest_wall_set, database)
-    print(next_boulder)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 

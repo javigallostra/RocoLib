@@ -455,18 +455,34 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
 @serializable
 @postprocess_boulder_data
 def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
-    # TODO: implement latest_wall_set flag logic for coherent results, apply sort order (¿?)
     problems = get_user_problem_list_by_id(user_id, list_id, database)
-    # find next problem - apply flag filter
+    next_boulder = {}
+    
     idx = -1
-    gym_code = ''
     if problems:
-        idx = [b['iden'] for b in problems].index(boulder_id)
-    boulder = {}
-    if idx != -1 and idx != len(problems) - 1:
-        gym_code = problems[idx]['gym'] 
-        boulder = get_boulder_by_id(problems[idx+1]['gym'], problems[idx+1]['iden'], database)
-    return boulder, gym_code
+        # wrap in try catch ? if not found we can keep showing the current boulder
+        idx = [b['iden'] for b in problems].index(boulder_id) # index of current boulder in list
+    
+    keep_searching = True if problems and idx != -1 and idx != len(problems)-1 else False
+    gym_code = problems[idx]['gym'] if idx != -1 else ''
+    next_idx = 1
+    
+    while keep_searching:
+        next_boulder = get_boulder_by_id(problems[idx+next_idx]['gym'], problems[idx+next_idx]['iden'], database)
+        # check if wall section is latest wall set (wrap in function)
+        valid_gym_sections =  [wall['image'] for wall in get_gym_walls(problems[idx+next_idx]['gym'], database, latest_wall_set)]
+        # valid boulder, if there are more conditions, add here
+        if bool(next_boulder) and next_boulder['section'] in valid_gym_sections:
+            keep_searching = False
+            gym_code = problems[idx+next_idx]['gym']
+        elif next_idx + 1 == len(problems):
+            next_boulder = {}
+            gym_code = problems[idx]['gym']
+            keep_searching = False
+        else:
+            next_idx += 1
+
+    return next_boulder, gym_code
 
 
 @serializable

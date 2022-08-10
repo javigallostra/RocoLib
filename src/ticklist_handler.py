@@ -47,7 +47,15 @@ def load_user_ticklist(current_user, database: Database):
     # get boulders in ticklist and extra required values
     boulder_list = [
         mongodb_controller.get_ticklist_boulder(problem, database) for problem in current_user.ticklist
+        if mongodb_controller.get_ticklist_boulder(problem, database)['section'] in [
+            wall['image'] for wall in mongodb_controller.get_gym_walls(
+                mongodb_controller.get_ticklist_boulder(problem, database)['gym'],
+                database,
+                current_user.preferences.show_latest_walls_only
+            )]
     ]
+    # filter by latest wall sets if flag is set
+
     unique_sections = dict()
     walls_list = []
     for boulder in boulder_list:
