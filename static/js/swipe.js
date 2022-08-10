@@ -8,18 +8,18 @@ function isHorizontalSwipe() {
     return Math.abs(touchendX - touchstartX) > threshold && Math.abs(touchendX - touchstartX) > Math.abs(touchendY - touchstartY);
 }
 
-function changeProblem(swipe_left, swipe_right, current_id, list_id) {
+function changeProblem(swipe_left, swipe_right, current_id, list_id, is_user_list) {
     if (touchendX < touchstartX && isHorizontalSwipe()) {
         // Here we should load previous problem from list
-        swipe_right(current_id, list_id);
+        swipe_right(current_id, list_id, is_user_list);
     }
     if (touchendX > touchstartX && isHorizontalSwipe()) {
         // Here we should load next problem from list
-        swipe_left(current_id, list_id);
+        swipe_left(current_id, list_id, is_user_list);
     }
 };
 
-function swipeInit(swipe_left, swipe_right, current_id, list_id) {
+function swipeInit(swipe_left, swipe_right, current_id, list_id, is_user_list) {
 
     document.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
@@ -29,7 +29,7 @@ function swipeInit(swipe_left, swipe_right, current_id, list_id) {
     document.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
         touchendY = e.changedTouches[0].screenY;
-        changeProblem(swipe_left, swipe_right, current_id, list_id);
+        changeProblem(swipe_left, swipe_right, current_id, list_id, is_user_list);
     });
 };
 
