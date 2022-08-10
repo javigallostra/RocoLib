@@ -48,7 +48,7 @@ function newLoadNext(problem_id, list_id, is_user_list) {
 }
 
 function newLoadPrevious(problem_id, list_id, is_user_list) {
-    newLoadNext(problem_id, list_id, is_user_list, "load_previous");
+    newLoadProblem(problem_id, list_id, is_user_list, "load_previous");
 }
 
 function newLoadProblem(problem_id, list_id, is_user_list, endpoint) {
