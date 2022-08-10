@@ -15,16 +15,32 @@ from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
 from src.config import *
+from src.models import User
 from src.typing import Data
 
 
-def get_hold_detection_active(current_user):
+def get_hold_detection_active(current_user: User):
+    """Get the status of the hold detection flag for a user
+
+    :param current_user: User object for the logged in user
+    :type current_user: User
+    :return: True if the flag is set, False otherwise
+    :rtype: bool
+    """
     hold_detection = True
     if current_user.is_authenticated:
         hold_detection = not current_user.preferences.hold_detection_disabled
     return hold_detection
 
-def get_show_only_latest_wall_sets(current_user):
+
+def get_show_only_latest_wall_sets(current_user: User):
+    """Get the status of the show only latest wall sets flag for a user
+
+    :param current_user: User object for the logged in user
+    :type current_user: User
+    :return: True if the flag is set, False otherwise
+    :rtype: bool
+    """
     latest = True
     if current_user.is_authenticated:
         latest = current_user.preferences.show_latest_walls_only
@@ -300,6 +316,7 @@ def get_time_since_creation(time: str) -> str:
 
     return f'{nb} {name}'
 
+
 def get_boulder_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
     """
     Load boulder data from a given request
@@ -419,20 +436,37 @@ def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: 
 
 def load_next_or_current(
     boulder_id: str,
-    # gym_code: str,
     list_id: str,
     user_id: str,
     latest_wall_set: bool,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
+    """Load the next problem that should be shown when swipping right
+    on the problem view.
+
+    :param boulder_id: The Id of the boulder currently loaded
+    :type boulder_id: str
+    :param list_id: the list from which to get the next boulder
+    :type list_id: str
+    :param user_id: the Id of the logged in user
+    :type user_id: str
+    :param latest_wall_set: Flag to indicate if only the latest versions of the wall should be considered
+    :type latest_wall_set: bool
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: Data of the boulder that should be shown and the wall image
+    :rtype: Tuple[dict, str]
+    """
     # here we should derive the query to the appropriate ddbb handler
     gym_code = list_id
     if user_id:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
-            boulder_id, list_id, user_id, latest_wall_set, database            
+            boulder_id, list_id, user_id, latest_wall_set, database
         )
-    else: 
+    else:
         next_boulder = db_controller.get_next_boulder(
             boulder_id, list_id, latest_wall_set, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
@@ -445,6 +479,24 @@ def load_previous_or_current(
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
+    """Load the next problem that should be shown when swipping right
+    on the problem view.
+
+    :param boulder_id: The Id of the boulder currently loaded
+    :type boulder_id: str
+    :param list_id: the list from which to get the next boulder
+    :type list_id: str
+    :param user_id: the Id of the logged in user
+    :type user_id: str
+    :param latest_wall_set: Flag to indicate if only the latest versions of the wall should be considered
+    :type latest_wall_set: bool
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: Data of the boulder that should be shown and the wall image
+    :rtype: Tuple[dict, str]
+    """
     previous_boulder = db_controller.get_previous_boulder(
         boulder_id, gym_code, latest_wall_set, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
@@ -457,6 +509,21 @@ def load_boulder_to_show(
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
+    """Given the data of a candidate boulder that is desired to load
+
+    :param candidate_boulder: Partial data of the candidate boulder to load
+    :type candidate_boulder: dict
+    :param gym_code: Gym code of the boulder to load. This code is already set to the code of the candidate boulder if it has data or the current boulder elsewhere
+    :type gym_code: str
+    :param current_boulder_id: Id of the boulder that is currently loaded in the client browser
+    :type current_boulder_id: str
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: the final data of the boulder to show and its wall image
+    :rtype: Tuple[dict, str]
+    """
     if candidate_boulder:
         # load boulder
         boulder, wall_image = load_full_boulder_data(
@@ -492,6 +559,10 @@ def choose_language(request, langs) -> str:
 
 
 def update_user_prefs(request, current_user):
+    """
+    Given a request with the user prefs fields and a user object,
+    update the preferences object of a user if required 
+    """
     should_save_user = False
 
     if request.form.get('gym') != current_user.preferences.default_gym:
