@@ -46,8 +46,15 @@ def load_user_ticklist(current_user, database: Database):
     """
     # get boulders in ticklist and extra required values
     walls_cache = dict()
+    wall_name_cache = dict()
+    gym_name_cache = dict()
+
     boulder_list = []
+    unique_sections = dict()
+    walls_list = []
+
     for ticklist_boulder in current_user.ticklist:
+        # replace individual queries by a single group query?
         boulder = mongodb_controller.get_ticklist_boulder(ticklist_boulder, database)
         if boulder:
             # try to get walls from the cache
@@ -64,44 +71,29 @@ def load_user_ticklist(current_user, database: Database):
             walls_cache[boulder['gym']] = walls # update cache
             # filter by valid subset of walls
             if boulder['section'] in walls:
+                boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
+                boulder['safe_name'] = secure_filename(boulder['name'])
+                boulder['radius'] = get_wall_radius(
+                    boulder['gym'] + '/' + boulder['section'], database)
+                boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
+                if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
+                    unique_sections[boulder['gym']] = boulder['section']
+                    gym_name = gym_name_cache.get(boulder['gym'], mongodb_controller.get_gym_pretty_name(boulder['gym'], database))
+                    wall_name = wall_name_cache.get(
+                        f'{boulder["gym"]}-{boulder["section"]}',
+                        mongodb_controller.get_wall_name(boulder['gym'], boulder['section'], database)
+                    )
+                    # update caches
+                    gym_name_cache[boulder['gym']] = gym_name
+                    wall_name_cache[f'{boulder["gym"]}-{boulder["section"]}'] = wall_name
+                    walls_list.append({
+                        'gym_name': gym_name,
+                        'image': boulder['section'],
+                        'name': wall_name
+                    })
+
                 boulder_list.append(boulder)
 
-    # boulder_list = [
-    #     mongodb_controller.get_ticklist_boulder(problem, database) for problem in current_user.ticklist
-    #     if mongodb_controller.get_ticklist_boulder(problem, database)['section'] in [
-    #         wall['image'] for wall in mongodb_controller.get_gym_walls(
-    #             mongodb_controller.get_ticklist_boulder(problem, database)['gym'],
-    #             database,
-    #             current_user.preferences.show_latest_walls_only
-    #         )]
-    # ]
-
-    wall_name_cache = dict()
-    gym_name_cache = dict()
-
-    unique_sections = dict()
-    walls_list = []
-    for boulder in boulder_list:
-        boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
-        boulder['safe_name'] = secure_filename(boulder['name'])
-        boulder['radius'] = get_wall_radius(
-            boulder['gym'] + '/' + boulder['section'], database)
-        boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-        if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
-            unique_sections[boulder['gym']] = boulder['section']
-            gym_name = gym_name_cache.get(boulder['gym'], mongodb_controller.get_gym_pretty_name(boulder['gym'], database))
-            wall_name = wall_name_cache.get(
-                f'{boulder["gym"]}-{boulder["section"]}',
-                mongodb_controller.get_wall_name(boulder['gym'], boulder['section'], database)
-            )
-            # update caches
-            gym_name_cache[boulder['gym']] = gym_name
-            wall_name_cache[f'{boulder["gym"]}-{boulder["section"]}'] = wall_name
-            walls_list.append({
-                'gym_name': gym_name,
-                'image': boulder['section'],
-                'name': wall_name
-            })
     return boulder_list, walls_list
 
 
