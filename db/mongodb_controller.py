@@ -449,7 +449,14 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 
 @serializable
 @postprocess_boulder_data
-def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
+def get_next_boulder(
+    boulder_id: str, 
+    gym: str, 
+    latest_wall_set: bool, 
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str, 
+    database: Database) -> Data:
     """
     Given a boulder id, get the next boulder based on insertion date
 
@@ -473,7 +480,7 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
 
 @serializable
 @postprocess_boulder_data
-def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
+def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
     problems = get_user_problem_list_by_id(user_id, list_id, database)
     next_boulder = {}
     
@@ -505,7 +512,7 @@ def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_se
 
 @serializable
 @postprocess_boulder_data
-def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, database):
+def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
     problems = get_user_problem_list_by_id(user_id, list_id, database)
     next_boulder = {}
     
@@ -537,7 +544,14 @@ def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wal
 
 @serializable
 @postprocess_boulder_data
-def get_previous_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
+def get_previous_boulder(
+    boulder_id: str, 
+    gym: str, 
+    latest_wall_set: bool, 
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str, 
+    database: Database) -> Data:
     """
     Given a boulder id, get the previous boulder based on insertion date
 

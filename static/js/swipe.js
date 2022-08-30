@@ -53,7 +53,7 @@ function loadProblem(problem_id, list_id, is_user_list, endpoint, sort_by, is_as
     );
 
     // Add more params to query: any filter options
-    path = endpoint + "?list_id=" + list_id + "&is_user_list=" + is_user_list + "&id=" + problem_id + "&scroll=" + window.scrollY.toFixed(2);
+    // path = endpoint + "?list_id=" + list_id + "&is_user_list=" + is_user_list + "&id=" + problem_id + "&scroll=" + window.scrollY.toFixed(2);
     
     // TODO: we should keep the state of the filters
     fetch(path, {})
