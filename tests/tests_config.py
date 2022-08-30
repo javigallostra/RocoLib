@@ -10,7 +10,8 @@ TEST_WALL_RADIUS = 0.02
 # Boulder
 TEST_ID = 'aedfaedfaedfaedfaedfaedf'
 TEST_CREATOR = 'test user'
-TEST_DIFFICULTY = 'green'
+TEST_DIFFICULTY_STRING = 'green'
+TEST_DIFFICULTY_INT = 0
 TEST_FEET = 'free'
 TEST_NAME = 'test'
 TEST_NOTES = ''
