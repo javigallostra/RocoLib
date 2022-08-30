@@ -11,7 +11,7 @@ from api.schemas import CreateBoulderRequestValidator, BoulderFields
 from src.config import ITEMS
 from src.models import User, UserPreferences
 
-from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_GYM_CODE, TEST_ID
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY_INT, TEST_GYM_CODE, TEST_ID
 from tests.tests_config import TEST_FEET, TEST_HOLDS, TEST_NAME
 from tests.tests_config import TEST_NOTES, TEST_WALL_SECTION
 from tests.utils import FakeRequest
@@ -41,7 +41,7 @@ def get_fake_boulder_data():
         'rating': random.randint(1, 5),
         'raters': random.randint(1, 10),
         'wall_section': TEST_WALL_SECTION,
-        'difficulty': TEST_DIFFICULTY,
+        'difficulty': TEST_DIFFICULTY_INT,
         'feet': TEST_FEET,
         'holds': TEST_HOLDS,
         'notes': TEST_NOTES,

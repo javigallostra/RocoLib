@@ -6,8 +6,8 @@ from api.schemas import BoulderFields
 from src.config import CREDS, CREDS_LOCAL
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
-from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
-from tests.tests_config import TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY_STRING, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
+from tests.tests_config import TEST_DIFFICULTY_INT, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
 from src.utils import set_creds_file
 from tests.utils import add_user_with_ticklist, drop_users, get_db_connection
@@ -55,7 +55,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
             fields.section: TEST_WALL_SECTION,
             fields.time: datetime.now().isoformat(),
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_INT,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -111,7 +111,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -134,7 +134,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -156,7 +156,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -199,7 +199,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: 123,
             fields.notes: TEST_NOTES,
@@ -377,7 +377,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
