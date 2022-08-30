@@ -72,8 +72,8 @@ def postprocess_boulder_data(func):
                             continue
                         boulder_data[field] = fields_to_check[field]
                     for field in maps_to_apply:
-                        if field in boulder:
-                            boulder[field] = maps_to_apply[field][boulder[field]]                        
+                        if field in boulder_data:
+                            boulder_data[field] = maps_to_apply[field][boulder_data[field]]                        
         return boulder_data
     return wrapper
 
