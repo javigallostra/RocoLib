@@ -28,6 +28,15 @@ BOULDER_COLOR_MAP = {
     'yellow': '#EEE657',
     'red': '#FC6042'
 }
+BOULDER_DIFFICULTY_MAP = {
+    0: 'green',
+    1: 'blue',
+    2: 'yellow',
+    3: 'red'
+}
+FIELDS_TO_MAP = {
+    'difficulty': BOULDER_DIFFICULTY_MAP
+}
 
 # For DB querying
 EQUALS = ['section', 'difficulty']

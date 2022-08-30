@@ -37,6 +37,7 @@ def postprocess_boulder_data(func):
         fields_to_check = {
             'repetitions': 0
         }
+        maps_to_apply = FIELDS_TO_MAP
         if isinstance(boulder_data, list):
             for boulder in boulder_data:
                 # skip if boulder data is empty for some reason
@@ -46,6 +47,9 @@ def postprocess_boulder_data(func):
                     if field in boulder:
                         continue
                     boulder[field] = fields_to_check[field]
+                for field in maps_to_apply:
+                    if field in boulder:
+                        boulder[field] = maps_to_apply[field][boulder[field]]
         elif isinstance(boulder_data, dict) and boulder_data:
             # check if Items is key
             if ITEMS in boulder_data:
@@ -57,6 +61,9 @@ def postprocess_boulder_data(func):
                         if field in boulder:
                             continue
                         boulder[field] = fields_to_check[field]
+                    for field in maps_to_apply:
+                        if field in boulder:
+                            boulder[field] = maps_to_apply[field][boulder[field]]
             else:
                 # skip if boulder data is empty for some reason
                 if boulder_data:
@@ -64,6 +71,9 @@ def postprocess_boulder_data(func):
                         if field in boulder_data:
                             continue
                         boulder_data[field] = fields_to_check[field]
+                    for field in maps_to_apply:
+                        if field in boulder:
+                            boulder[field] = maps_to_apply[field][boulder[field]]                        
         return boulder_data
     return wrapper
 
@@ -223,6 +233,12 @@ def put_boulder(boulder_data: Data, gym: str, database: Database) -> InsertOneRe
     """
     Store a new boulder for the specified gym
     """
+    # inverse maps
+    for field in FIELDS_TO_MAP.keys():
+        if field in boulder_data:
+            inv_map = {v: k for k, v in FIELDS_TO_MAP[field].items()}
+            boulder_data[field] = inv_map[boulder_data[field]]
+
     result = database[f'{gym}_boulders'].insert_one(boulder_data)
     if result is not None:
         return result.inserted_id
