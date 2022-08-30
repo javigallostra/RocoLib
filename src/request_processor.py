@@ -193,6 +193,9 @@ def process_load_next_problem_request(request, session, db, current_user, static
         request.args.get('list_id'), # list from which to get next problem
         user_id, # pass user id in case we need to retrieve the list for a user
         utils.get_show_only_latest_wall_sets(current_user),
+        request.args.get('sort_by'),
+        request.args.get('is_ascending'),
+        request.args.get('to_show'),
         db,
         session
     )
@@ -204,6 +207,7 @@ def process_load_next_problem_request(request, session, db, current_user, static
         static_folder
     )
 
+    # TODO: pass back sorting/visualization parameters
     return render_template(
         'load_boulder.html',
         boulder_name=boulder.get('name', ''),
@@ -225,15 +229,13 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         user_id = current_user.id
 
     boulder, wall_image = utils.load_previous_or_current(
-        # request.args.get('id'),
-        # request.args.get('gym'),
-        # utils.get_show_only_latest_wall_sets(current_user),
-        # db,
-        # session
         request.args.get('id'), # problem_id
         request.args.get('list_id'), # list from which to get next problem
         user_id, # pass user id in case we need to retrieve the list for a user
         utils.get_show_only_latest_wall_sets(current_user),
+        request.args.get('sort_by'),
+        request.args.get('is_ascending'),
+        request.args.get('to_show'),
         db,
         session
         )
@@ -244,7 +246,8 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         boulder['section'],
         static_folder
     )
-
+    
+    # TODO: pass back sorting/visualization parameters
     return render_template(
         'load_boulder.html',
         boulder_name=boulder.get('name', ''),

@@ -439,6 +439,9 @@ def load_next_or_current(
     list_id: str,
     user_id: str,
     latest_wall_set: bool,
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
@@ -461,6 +464,10 @@ def load_next_or_current(
     :rtype: Tuple[dict, str]
     """
     gym_code = list_id
+    # TODO: handle params: 
+    # sort_by: creation date, rating, difficulty, wall_section, repetitions
+    # is_ascending: true/false
+    # to_show: all, done, to do
     if user_id:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
             boulder_id, list_id, user_id, latest_wall_set, database
@@ -476,6 +483,9 @@ def load_previous_or_current(
     list_id: str,
     user_id: str,
     latest_wall_set: bool,
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
