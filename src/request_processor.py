@@ -133,7 +133,7 @@ def process_rate_boulder_request(request, session, db):
         db_controller.update_boulder_by_id(
             gym=gym,
             boulder_id=boulder['_id'],
-            data=boulder,
+            boulder_data=boulder,
             database=db
         )
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
@@ -347,7 +347,7 @@ def process_ticklist_request(request, session, db, current_user):
             db_controller.update_boulder_by_id(
                 gym=data.get('gym'),
                 boulder_id=boulder_id,
-                data=boulder,
+                boulder_data=boulder,
                 database=db
             )
         # if the request origin is the explore boulders page, go back to it
