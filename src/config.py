@@ -14,7 +14,7 @@ DOCKER_ENV = "False"
 if len(argv) > 1 and str(argv[1]) == "docker":
     DOCKER_ENV = "True"
 
-DEBUG = True
+DEBUG = False
 API_VERSION = 'v1'
 SWAGGER_URL = f'/api/{API_VERSION}/docs'
 API_URL = f'/api/{API_VERSION}/docs/swagger.json'

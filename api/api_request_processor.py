@@ -136,7 +136,7 @@ def process_rate_boulder_request(request, db, gym_id, boulder_id):
         db_controller.update_boulder_by_id(
             gym=gym_id,
             boulder_id=boulder_id,
-            data=boulder,
+            boulder_data=boulder,
             database=db
         )
 
