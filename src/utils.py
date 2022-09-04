@@ -596,3 +596,22 @@ def update_user_prefs(request, current_user):
         should_save_user = True
 
     return should_save_user, current_user
+
+def get_field_value(field, request_data):
+    """Map request values to the expected values
+
+    :param field: _description_
+    :type field: _type_
+    :param request_data: _description_
+    :type request_data: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+    if field == 'sort_order':
+        return request_data.get('sort_order')
+    elif field == 'is_ascending':
+        return False if request_data.get('is_ascending') == 'decreasing' else True 
+    elif field == 'to_show':
+        return 'all' if request_data.get('to_show') == 'false' else 'to_do'
+    return ''
+    

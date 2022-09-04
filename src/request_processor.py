@@ -144,9 +144,9 @@ def process_rate_boulder_request(request, session, db):
 
 def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
-        # get additional request params: list_id, is_user_list
+        # get additional request params: list_id, is_user_list, sort_order, is_ascending, to_show
         request_data = utils.load_data(request)
-        
+
         if isinstance(request_data, Tuple):
             request_data = request_data[0]
 
@@ -167,6 +167,11 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             static_folder
         )
 
+        # map fields to appropriate values
+        sort_order = utils.get_field_value('sort_order', request_data)
+        is_ascending = utils.get_field_value('is_ascending', request_data)
+        to_show = utils.get_field_value('to_show', request_data)
+
         return render_template(
             'load_boulder.html',
             boulder_name=boulder.get('name', ''),
@@ -178,6 +183,9 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             hold_detection=utils.get_hold_detection_active(current_user),
             list_id = request_data.get('list_id'),
             is_user_list = request_data.get('is_user_list'),
+            sort_order=sort_order,
+            is_ascending=is_ascending,
+            to_show=to_show
         )
     except Exception:
         return abort(500) # internal server error
