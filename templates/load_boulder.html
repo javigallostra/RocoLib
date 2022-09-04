@@ -162,26 +162,24 @@
     };
 
     function clicked_previous() {
-//      loadPrevious(
-//        "{{ boulder_data['_id'] }}",
-//        "{{ boulder_data['gym'] }}"
-//      );
       loadPrevious(
         "{{ boulder_data['_id'] }}",
         "{{ list_id }}",
-        "{{ is_user_list }}"
-      );
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
+        );
     }
     
     function clicked_next() {
-//      loadNext(
-//        "{{ boulder_data['_id'] }}",
-//        "{{ boulder_data['gym'] }}"
-//      );
       loadNext(
         "{{ boulder_data['_id'] }}",
         "{{ list_id }}",
-        "{{ is_user_list }}"
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"        
       );
     }
 
@@ -224,8 +222,10 @@
         loadNext,
         "{{ boulder_data['_id'] }}",
         "{{ list_id }}",
-        "{{ is_user_list }}"
-        // pass extra params
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
       );
     }
 

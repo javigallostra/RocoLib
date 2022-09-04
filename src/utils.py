@@ -467,7 +467,10 @@ def load_next_or_current(
     # TODO: handle params: 
     # sort_by: creation date, rating, difficulty, wall_section, repetitions
     # is_ascending: true/false
-    # to_show: all, done, to do
+    # to_show: all, done, to_do
+
+    import pdb; pdb.set_trace()
+
     if user_id:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
             boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database
