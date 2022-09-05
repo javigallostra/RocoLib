@@ -464,44 +464,38 @@ def get_next_boulder(
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    # take into account: sort_by, is_ascending & to_show
-    # sort by can be: creation_date, difficulty, wall_section, rating & repetitions
-    # is_ascending can be: True/False
-    # to_show can be: all/to do
-    #
-    # Maps to DDBB fields:
-    # - creation date -> id, difficulty -> difficulty, wall_section -> section, rating -> rating, repetitions -> repetitions
-    # - to do -> not in user ticklist
-
+    # TODO: query can be reworked so that all happens in the DDBB and not all
+    # problems have to be retrieved
     # build the query
     SORTING_FIELD_MAP = {
         'creation_date': '_id', # insertion order is by date
         'difficulty': 'difficulty',
-        'wall_section': 'section',
+        'section': 'section',
         'rating': 'rating',
         'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
     }
     sorting_field = SORTING_FIELD_MAP[sort_by]
     
     query_builder = QueryBuilder()
-    current_boulder = get_boulder_by_id(gym, boulder_id, database)
 
-    if is_ascending: # 
-        query_builder = query_builder.greater(sorting_field, current_boulder[sorting_field])
-    else:
-        query_builder = query_builder.lower(sorting_field, current_boulder[sorting_field])
-
-    # query_builder = QueryBuilder().lower('_id', ObjectId(boulder_id))
-    
     if latest_wall_set:
         walls = get_gym_walls(gym, database, latest_wall_set)
         query_builder.contained_in('section', [wall['image'] for wall in walls])
-        
-    boulders = list(database[f'{gym}_boulders'].find(query_builder.query).sort('_id', -1).limit(1))
 
-    import pdb; pdb.set_trace()
+    boulders = list(
+        database[f'{gym}_boulders'].find(query_builder.query).sort(sorting_field, 1 if is_ascending else -1)
+    )
 
-    return boulders[0] if boulders else {}
+    # TODO: if show only to do, then filter boulders marked as done. 
+
+    next_boulder = {}
+    if boulders:
+        idx = [str(b['_id']) for b in boulders].index(boulder_id)
+        if idx < len(boulders) - 1:
+            next_boulder = boulders[idx+1]
+        else:
+            next_boulder = boulders[idx]
+    return next_boulder
 
 @serializable
 @postprocess_boulder_data

@@ -464,12 +464,6 @@ def load_next_or_current(
     :rtype: Tuple[dict, str]
     """
     gym_code = list_id
-    # TODO: handle params: 
-    # sort_by: creation date, rating, difficulty, wall_section, repetitions
-    # is_ascending: true/false
-    # to_show: all, done, to_do
-
-    import pdb; pdb.set_trace()
 
     if user_id:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
