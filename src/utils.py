@@ -438,6 +438,7 @@ def load_next_or_current(
     boulder_id: str,
     list_id: str,
     user_id: str,
+    is_user_list: bool,
     latest_wall_set: bool,
     sort_by: str, 
     is_ascending: bool, 
@@ -465,19 +466,20 @@ def load_next_or_current(
     """
     gym_code = list_id
 
-    if user_id:
+    if is_user_list:
         next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
             boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database
         )
     else:
         next_boulder = db_controller.get_next_boulder(
-            boulder_id, list_id, latest_wall_set, sort_by, is_ascending, to_show, database)
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
     boulder_id: str,
     list_id: str,
+    is_user_list: bool,
     user_id: str,
     latest_wall_set: bool,
     sort_by: str, 
@@ -505,7 +507,7 @@ def load_previous_or_current(
     :rtype: Tuple[dict, str]
     """
     gym_code = list_id
-    if user_id:
+    if is_user_list:
         previous_boulder, gym_code = db_controller.get_previous_boulder_from_user_list(
             boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database
         )

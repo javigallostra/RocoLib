@@ -446,11 +446,12 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 @postprocess_boulder_data
 def get_next_boulder(
     boulder_id: str, 
-    gym: str, 
+    gym: str,
+    user_id: str,
     latest_wall_set: bool, 
     sort_by: str, 
     is_ascending: bool, 
-    to_show: str, 
+    to_show: str,
     database: Database) -> Data:
     """
     Given a boulder id, get the next boulder based on insertion date
@@ -483,10 +484,16 @@ def get_next_boulder(
         query_builder.contained_in('section', [wall['image'] for wall in walls])
 
     boulders = list(
-        database[f'{gym}_boulders'].find(query_builder.query).sort(sorting_field, 1 if is_ascending else -1)
+        database[f'{gym}_boulders'].find(query_builder.query).sort([
+            (sorting_field, 1 if is_ascending else -1),
+            ('time', -1)
+            ])
     )
 
-    # TODO: if show only to do, then filter boulders marked as done. 
+    if to_show == 'to_do' and user_id:
+        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(user_id, 'ticklist', database) if b['is_done'] == True]
+        boulders = [boulder for boulder in boulders if str(boulder['_id']) not in done_boulders]
+        # [(b['name'], b['difficulty'], b['time']) for b in sorted(a, key=lambda x: (-x['difficulty'], -(datetime.datetime.strptime(x['time'], '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime(1, 1, 1)).total_seconds()))]
 
     next_boulder = {}
     if boulders:

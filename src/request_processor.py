@@ -193,13 +193,17 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
 
 def process_load_next_problem_request(request, session, db, current_user, static_folder):
     user_id = None
-    if request.args.get('is_user_list', '').lower() == 'true' and current_user.is_authenticated:
+    is_user_list = False
+    if request.args.get('is_user_list', '').lower() == 'true':
+        is_user_list = True
+    if current_user.is_authenticated:
         user_id = current_user.id
 
     boulder, wall_image = utils.load_next_or_current(
         request.args.get('id'), # problem_id
         request.args.get('list_id'), # list from which to get next problem
         user_id, # pass user id in case we need to retrieve the list for a user
+        is_user_list,
         utils.get_show_only_latest_wall_sets(current_user),
         request.args.get('sort_by'),
         True if request.args.get('is_ascending') == 'True' else False,
@@ -223,11 +227,11 @@ def process_load_next_problem_request(request, session, db, current_user, static
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
         # TODO: map somehow lists to origin urls?
-        origin=request.form.get('origin', 'explore_boulders' if not user_id else 'tick_list'),
+        origin=request.form.get('origin', 'explore_boulders' if not is_user_list else 'tick_list'),
         hold_data=hold_data,
         hold_detection=utils.get_hold_detection_active(current_user),
         list_id=request.args.get('list_id'), # default values atm
-        is_user_list=True if user_id else False,
+        is_user_list=is_user_list,
         sort_by=request.args.get('sort_by'),
         is_ascending=request.args.get('is_ascending'),
         to_show=request.args.get('to_show'),
@@ -236,20 +240,24 @@ def process_load_next_problem_request(request, session, db, current_user, static
 
 def process_load_previous_problem_request(request, session, db, current_user, static_folder):
     user_id = None
-    if request.args.get('is_user_list', '').lower() == 'true' and current_user.is_authenticated:
+    is_user_list = False
+    if request.args.get('is_user_list', '').lower() == 'true':
+        is_user_list = True
+    if current_user.is_authenticated:
         user_id = current_user.id
 
     boulder, wall_image = utils.load_previous_or_current(
         request.args.get('id'), # problem_id
         request.args.get('list_id'), # list from which to get next problem
         user_id, # pass user id in case we need to retrieve the list for a user
+        is_user_list,
         utils.get_show_only_latest_wall_sets(current_user),
         request.args.get('sort_by'),
         True if request.args.get('is_ascending') == 'True' else False,
         request.args.get('to_show'),
         db,
         session
-        )
+    )
 
     # get hold data
     hold_data = utils.get_hold_data(
@@ -265,11 +273,11 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         wall_image=wall_image,
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
-        origin=request.form.get('origin', 'explore_boulders' if not user_id else 'tick_list'),
+        origin=request.form.get('origin', 'explore_boulders' if not is_user_list else 'tick_list'),
         hold_data=hold_data,
         hold_detection=utils.get_hold_detection_active(current_user),
         list_id=request.args.get('list_id'), # default values atm
-        is_user_list=True if user_id else False,
+        is_user_list=is_user_list,
 
     )
 
