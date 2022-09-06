@@ -45,6 +45,7 @@ Features
 Fixes
 -----
 
+- #185 Fix downloading a problem as an image 
 - #184 Spacing between radio button and text in hold selection options when creating a problem
 - #183 Display correct text in hold detection text label on the problem creation page 
 - #170 Take into account latest wall set flag when swiping problems
