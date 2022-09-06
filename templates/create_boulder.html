@@ -35,7 +35,7 @@
               {% if hold_detection %} checked {%endif %}  
               class="custom-control-input" 
               id="holdDetectionSwitch">
-            <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection }}</label>
+            <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection_ }}</label>
           </div>
           <br />
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
@@ -46,20 +46,20 @@
             <div style="text-align: center;">
               <h6>{{ hold_type }}</h6>
               <div class="row">
-                <div class="col" style="display: flex; align-items:center; justify-content:center;">
-                  <input type="radio" name="hold_type" value="#00ff00" checked />
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#00ff00" style="margin-right: 0.5rem;" checked />
                   {{ start }}<br />
                 </div>
-                <div class="col" style="display: flex; align-items:center; justify-content:center;">
-                  <input type="radio" name="hold_type" value="#0000ff" />
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#0000ff" style="margin-right: 0.5rem;" />
                   {{ normal }}<br />
                 </div>
-                <div class="col" style="display: flex; align-items:center; justify-content:center;">
-                  <input type="radio" name="hold_type" value="#ffa321" />
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#ffa321" style="margin-right: 0.5rem;" />
                   {{ feet_only }}<br />
                 </div>
-                <div class="col" style="display: flex; align-items:center; justify-content:center;">
-                  <input type="radio" name="hold_type" value="#ff0000" />
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#ff0000" style="margin-right: 0.5rem;" />
                   {{ top }}<br />
                 </div>
               </div>

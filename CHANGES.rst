@@ -45,6 +45,8 @@ Features
 Fixes
 -----
 
+- #184 Spacing between radio button and text in hold selection options when creating a problem
+- #183 Display correct text in hold detection text label on the problem creation page 
 - #170 Take into account latest wall set flag when swiping problems
 - #162 Optimize DDBB queries
 - #161 Fix page header on error templates
@@ -65,4 +67,5 @@ Fixes
 Changes
 -------
 
+- #178 Use integers for difficulties instead of strings
 - #173 Use same error schema for all API endpoints & errors 
