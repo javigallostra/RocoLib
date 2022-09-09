@@ -144,7 +144,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 404)
-        self.assertEqual(resp.json['created'], False)
 
     def test_create_boulder_failure_no_wall_section(self):
         """
@@ -166,7 +165,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 404)
-        self.assertEqual(resp.json['created'], False)
 
     def test_create_boulder_failure_no_data(self):
         """
@@ -187,7 +185,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json['created'], False)
         self.assertDictEqual(errors, resp.json['errors'])
 
     def test_create_boulder_failure(self):
@@ -209,7 +206,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json['created'], False)
         self.assertListEqual(resp.json.get('errors').get(
             'name'), ['Not a valid string.'])
 
@@ -227,7 +223,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Username is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['username'])
 
     def test_create_user_no_password(self):
         """
@@ -243,7 +239,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Password is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['password'])
 
     def test_create_user_no_email(self):
         """
@@ -259,7 +255,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Email is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email'])
 
     def test_create_user_no_data(self):
         """
@@ -272,8 +268,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), [
-                             'Username is required', 'Password is required', 'Email is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email', 'password', 'username'])
 
     def test_create_user_invalid_email(self):
         pass
@@ -293,8 +288,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), [
-                             'Username already exists'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['username'])
 
     def test_create_user_repeated_email(self):
         """
@@ -311,7 +305,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Email already exists'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email'])
 
     def test_create_user_valid(self):
         """
