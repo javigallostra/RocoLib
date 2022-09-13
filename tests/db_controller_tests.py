@@ -1,24 +1,15 @@
 import unittest
 from db.query_builder import QueryBuilder
-
-TEST_FIELD = 'test_field'
-TEST_VALUES = [1, 2, 3]
-TEST_INT_VAL = 4
-TEST_VALUE_STR = 'test_val'
-ROOT_KEY = '$and'
-CONTAINED_IN_KEY = '$in'
-NOT_CONTAINED_IN_KEY = '$nin'
-LOWER_KEY = '$lt'
-LOWER_OR_EQUAL_KEY = '$lte'
-GREATER_KEY = '$gt'
-GREATER_OR_EQUAL_KEY = '$gte'
-EQUAL_KEY = '$eq'
-NOT_EQUAL_KEY = '$ne'
-CONTAINS_TEXT_KEY = '$regex'
-
+from tests.tests_config import *
 
 class QueryBuilderTests(unittest.TestCase):
+    """
+    Unittests for mongoDB query builder
+    """
     def setUp(self):
+        """
+        Initialize query
+        """
         self.query_builder = QueryBuilder()
 
     def test_query_repr(self):

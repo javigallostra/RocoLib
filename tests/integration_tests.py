@@ -78,7 +78,9 @@ class BaseIntegrationTestClass(unittest.TestCase):
 
 
 class APITests(BaseIntegrationTestClass):
-
+    """
+    Tests for API endpoints
+    """
     def test_get_gyms(self):
         """
         Get available gyms
@@ -91,6 +93,32 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json['gyms'][0]['name'], TEST_GYM_NAME)
 
+    def test_get_gym_name(self):
+        """
+        Get the gym name 
+        """
+        # Given
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json['name'], TEST_GYM_NAME)
+
+
+    def test_get_gym_name_invalid_gym(self):
+        """
+        Get the gym name of a non existing gym
+        """
+        # Given
+        INVALID_GYM_CODE = 'aaa'
+        route = f'/api/{API_VERSION}/gym/{INVALID_GYM_CODE}/name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn('errors', resp.json.keys())
+
     def test_get_walls(self):
         """
         Get available walls from a gym
@@ -102,6 +130,46 @@ class APITests(BaseIntegrationTestClass):
         # Then
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json['walls'][0]['image'], TEST_WALL_SECTION)
+
+    def test_get_walls_gym_not_found(self):
+        """
+        Test wall retrieval for a non-existing gym
+        """
+        # Given
+        NON_EXISTING_GYM = 'aaa'
+        route = f'/api/{API_VERSION}/gym/{NON_EXISTING_GYM}/walls'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn('errors', resp.json.keys())
+
+    def test_get_gym_wall_name(self):
+        """
+        Get the gym name 
+        """
+        # Given
+        # /gym/<string:gym_id>/<string:wall_section>/name
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json['name'], TEST_WALL_NAME)
+
+
+    def test_get_gym_wall_name_invalid_wall(self):
+        """
+        Get the gym name of a non existing wall section
+        """
+        # Given
+        INVALID_WALL_CODE = 'aaa'
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/{INVALID_WALL_CODE}/name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn('errors', resp.json.keys())
 
     def test_create_boulder_success(self):
         """

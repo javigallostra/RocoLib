@@ -52,6 +52,9 @@ def get_fake_boulder_data():
 
 
 class UtilsTests(unittest.TestCase):
+    """
+    Test utility functions
+    """
     def test_get_credentials(self):
         # Given
         from os.path import exists
