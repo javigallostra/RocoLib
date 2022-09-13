@@ -204,6 +204,113 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 404)
         self.assertIn(key, resp.json.keys())
 
+    def test_get_boulder_by_id(self):
+        # Given
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + new_boulder.json['_id'])
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(all(field in resp.json['boulder'].keys() for field in data.keys()))
+
+    def test_get_boulder_by_id_no_gym(self):
+        # Given
+        FAKE_GYM_CODE = 'aaaa'
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/'
+        key = 'errors'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + new_boulder.json['_id'])
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_id_no_boulder(self):
+        # Given
+        FAKE_BOULDER_ID = 'aaaaaaaaaaaaaaaaaaaaaaaa'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{FAKE_BOULDER_ID}'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_name(self):
+        # /boulders/<string:gym_id>/name/<string:boulder_name>
+        # Given
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/name/'
+        # When
+        self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + TEST_NAME)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(all(field in resp.json['boulder'].keys() for field in data.keys()))
+
+    def test_get_boulder_by_name_no_gym(self):
+        # Given
+        FAKE_GYM_CODE = 'aaaa'
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/name/'
+        key = 'errors'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + TEST_NAME)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_name_no_boulder(self):
+        # Given
+        FAKE_BOULDER_NAME = 'aa'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/name/{FAKE_BOULDER_NAME}'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
     def test_create_boulder_success(self):
         """
         Create a boulder for a given wall in a given gym
