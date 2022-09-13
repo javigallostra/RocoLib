@@ -444,6 +444,43 @@ class APITests(BaseIntegrationTestClass):
         self.assertDictEqual(resp.json.get('errors'), {
                              'boulder_id': 'Boulder id is required', 'gym': 'Gym is required'})
 
+    def test_delete_ticklist_problem(self):
+        pass
+        # # Given
+        # route = f'/api/{API_VERSION}/user/ticklist/boulder/done'
+        # user_data = {
+        #     'username': TEST_USERNAME,
+        #     'password': TEST_PASSWORD
+        # }
+        # # authenticate user and get token
+        # auth_resp = self.client.post(
+        #     f'/api/{API_VERSION}/user/auth', json=user_data)
+        # token = auth_resp.json.get('token')
+
+        # fields = BoulderFields()
+        # data = {
+        #     fields.creator: TEST_CREATOR,
+        #     fields.difficulty: TEST_DIFFICULTY_STRING,
+        #     fields.feet: TEST_FEET,
+        #     fields.name: TEST_NAME,
+        #     fields.notes: TEST_NOTES,
+        #     fields.holds: TEST_HOLDS
+        # }
+        # resp = self.client.post(
+        #     f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
+
+        # boulder_id = resp.json.get('_id')
+
+        # # When
+        # resp = self.client.post(
+        #     route,
+        #     headers={'Authorization': f'Bearer {token}'},
+        #     json={'boulder_id': boulder_id, 'gym': TEST_GYM_CODE}
+        # )
+        # # Then
+        # self.assertEqual(resp.status_code, 200)
+        # self.assertEqual(resp.json.get('boulder_id'), boulder_id)
+        # self.assertTrue(resp.json.get('marked_as_done'))
 
 if __name__ == '__main__':
     unittest.main()

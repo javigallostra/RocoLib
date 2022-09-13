@@ -76,8 +76,6 @@ class UtilsTests(unittest.TestCase):
         def not_a_file(): return ''.join(
             [chr(random.randint(97, 122)) for i in range(5)]) + '.txt'
         non_existing_file = not_a_file()
-        while isfile(non_existing_file):
-            non_existing_file = not_a_file()
         creds = get_creds_file(non_existing_file)
         # Then
         self.assertIsNotNone(creds)

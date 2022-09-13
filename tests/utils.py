@@ -15,8 +15,8 @@ class FakeRequest:
         self.data = data
         self.form = form
         self.json = json
-    def get_data(self):
-        return None
+    # def get_data(self):
+    #     return None
 
 
 def get_creds(file: str = 'creds.local.txt') -> Union[str, None]:
@@ -50,8 +50,8 @@ def create_walls_collection(db, gym_name, gym_code, coordinates):
     Add a test gym to the database if it doesn't exist
     """
     walls_collection = db[WALLS_COLLECTION]
-    if walls_collection.find_one({'id': gym_code}, limit=1) != 0:
-        return
+    # if walls_collection.find_one({'id': gym_code}, limit=1) != 0:
+    #     return
     wall_data = {
         'name': gym_name,
         'id': gym_code,
@@ -64,8 +64,8 @@ def add_wall(db, gym_code, wall_name, wall_section, wall_radius):
     """
     Add a test wall linked to the test gym if it doesn't exist
     """
-    if f'{gym_code}_walls' in db.list_collection_names():
-        return
+    # if f'{gym_code}_walls' in db.list_collection_names():
+    #     return
     gym_collection = db[f'{gym_code}_walls']
     wall_data = {
         'image': wall_section,
@@ -109,17 +109,17 @@ def add_user_with_ticklist(db, username, password, email):
     # Boulder comes in the Fake Request
     # json request data
     json_data = {
-                'gym': TEST_GYM_CODE,
-                'name': TEST_NAME,
-                'iden':
-                mongodb_controller.get_boulder_by_name(
-                    TEST_GYM_CODE,
-                    TEST_NAME,
-                    db
-                ).get('_id', ''),
-                'is_done': True,
-                'section': TEST_WALL_SECTION
-            }
+        'gym': TEST_GYM_CODE,
+        'name': TEST_NAME,
+        'iden':
+        mongodb_controller.get_boulder_by_name(
+            TEST_GYM_CODE,
+            TEST_NAME,
+            db
+        ).get('_id', ''),
+        'is_done': True,
+        'section': TEST_WALL_SECTION
+    }
     data, _ = load_data(FakeRequest(json=json_data))
     boulder = mongodb_controller.get_boulder_by_name(
         data.get('gym'),
