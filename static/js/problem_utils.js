@@ -278,7 +278,7 @@ function downloadProblem(boulder_name, image_wall) {
   var downloadCanvas = document.createElement('canvas');
   var img_ref = document.getElementById('wall-image')
 
-  document.getElementById('wrapper').insertBefore(downloadCanvas, img_ref);
+  document.getElementById('problem-wrapper').insertBefore(downloadCanvas, img_ref);
 
   downloadCanvas.id = "download-canvas";
   downloadCanvas.style.position = "absolute";

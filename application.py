@@ -8,6 +8,7 @@ from flask import session, send_from_directory, _app_ctx_stack, g
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 from werkzeug.wrappers.response import Response
 
@@ -22,6 +23,7 @@ import src.request_processor as request_processor
 
 # create the application object
 app = Flask(__name__)
+cors = CORS(app, resources={f'/api/*': {'origins': '*'}})
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
