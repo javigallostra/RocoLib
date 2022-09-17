@@ -48,7 +48,7 @@ def load_user_ticklist(current_user, database: Database):
     boulder_list = [
         mongodb_controller.get_ticklist_boulder(problem, database) for problem in current_user.ticklist
     ]
-    unique_sections = dict()
+    added_sections = []
     walls_list = []
     for boulder in boulder_list:
         boulder['feet'] = FEET_MAPPINGS[boulder['feet']]
@@ -56,8 +56,8 @@ def load_user_ticklist(current_user, database: Database):
         boulder['radius'] = get_wall_radius(
             boulder['gym'] + '/' + boulder['section'], database)
         boulder['color'] = BOULDER_COLOR_MAP[boulder['difficulty']]
-        if boulder['gym'] not in unique_sections.keys() and boulder['section'] not in unique_sections.values():
-            unique_sections[boulder['gym']] = boulder['section']
+        if boulder['section'] not in added_sections:
+            added_sections += [boulder['section']]
             walls_list.append({
                 'gym_name': mongodb_controller.get_gym_pretty_name(boulder['gym'], database),
                 'image': boulder['section'],

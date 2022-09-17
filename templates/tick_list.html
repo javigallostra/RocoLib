@@ -98,9 +98,9 @@
             <div class="col-8" style="padding-left: 0px; padding-right: 0px;">
               <ul>
                 {%- for wall in walls_list -%}
-                {%- if wall['image'] == boulder['section'] -%}
-                <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
-                {%- endif -%}
+                  {%- if wall['image'] == boulder['section'] -%}
+                    <li>Section: {{ wall['gym_name'] }}, {{ wall['name'] }}</li>
+                  {%- endif -%}
                 {% endfor %}
                 <li>Creator: {{boulder["creator"]}}</li>
                 <li>Feet: {{boulder["feet"]}}</li>
