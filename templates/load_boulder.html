@@ -164,14 +164,22 @@
     function clicked_previous() {
       loadPrevious(
         "{{ boulder_data['_id'] }}",
-        "{{ boulder_data['gym'] }}"
-      );
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
+        );
     }
     
     function clicked_next() {
       loadNext(
         "{{ boulder_data['_id'] }}",
-        "{{ boulder_data['gym'] }}"
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"        
       );
     }
 
@@ -213,7 +221,11 @@
         loadPrevious, 
         loadNext,
         "{{ boulder_data['_id'] }}",
-        "{{ boulder_data['gym'] }}"
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
       );
     }
 

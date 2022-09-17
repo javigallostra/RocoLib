@@ -52,7 +52,7 @@
             <div class="col">
               <div class="form-group" style="margin: inherit;">
                 <select class="form-control row" id="sortCriteria" style="margin-bottom: 0.25rem;">
-                  <option value="date-recent" selected>{{ creation_date }}</option>
+                  <option value="creation_date" selected>{{ creation_date }}</option>
                   <option value="rating">{{ rating }}</option>
                   <option value="difficulty">{{ difficulty }}</option>
                   <option value="section">{{ wall_section }}</option>
@@ -90,8 +90,15 @@
                 <form action="/load_boulder" method="post">
                   <input type="hidden" name="boulder_data" id="{{ 'id_' + boulder['_id'] + boulder['name'] }}"
                     value="{{boulder}}" />
-                  <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
+                    <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
                     value="explore_boulders" />
+                    <input type="hidden" name="list_id" id="{{ 'list_id' + boulder['_id'] }}"
+                    value="{{ selected }}" />
+                    <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + boulder['_id'] }}"
+                    value="False" />
+                    <input type="hidden" name="sort_order" class="boulder_sort_order"/>
+                    <input type="hidden" name="is_ascending" class="boulder_is_ascending"/>
+                    <input type="hidden" name="to_show" class="boulder_to_show"/>
                   <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link" style="width:100%;">
                     <div class="row">
                       <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
@@ -154,6 +161,33 @@
 </div>
 
 <script>
+  // set and update sort order
+  document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = document.getElementById("sortCriteria").value);
+  document.getElementById("sortCriteria").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = this.value);
+    }
+  );
+  // set and update is_ascending
+  document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = document.getElementById("sortAscending").value);
+  document.getElementById("sortAscending").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = this.value);
+    }
+  );
+    // set and update to_show
+    document.getElementsByClassName("boulder_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
+    document.getElementById("hideDoneCheck").addEventListener(
+      "change",
+      function()
+      {
+        document.getElementsByClassName("boulder_to_show").forEach(element => element.value = this.checked);
+      }
+    );
 
   function decodeHtml(html) {
     var doc = new DOMParser().parseFromString(html, "text/html");
@@ -199,7 +233,7 @@
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
 
     // Sort data
-    if (this.value === "date-recent") {
+    if (this.value === "creation_date") {
       function sortBoulders(a, b) {
         var dateA = Date.parse(a["time"]);
         var dateB = Date.parse(b["time"]);

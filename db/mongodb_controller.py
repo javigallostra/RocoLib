@@ -1,4 +1,6 @@
 from typing import Optional
+
+from requests import post
 from db import query_builder
 from src.typing import Data
 
@@ -361,6 +363,11 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
 
     return filtered_list
 
+@serializable
+@postprocess_boulder_data
+def get_user_problem_list_by_id(user_id: str, list_id: str, database: Database) -> list:
+    problem_list = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query, {list_id : 1})
+    return problem_list.get(list_id, []) if problem_list else []   
 
 @serializable
 @postprocess_boulder_data
@@ -370,11 +377,14 @@ def get_ticklist_boulder(boulder: TickListProblem, database: Database) -> Data:
 
     Return a boulder data with 'gym', 'is_done', and 'date_climbed' fields
     """
-    boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
+    boulder_data = database[f'{boulder.gym}_boulders'].find_one(
         boulder.iden)
-    if boulder_data is None:
-        boulder_data: Data = database[f'{boulder.gym}_boulders'].find_one(
+    if not boulder_data:
+        boulder_data = database[f'{boulder.gym}_boulders'].find_one(
             ObjectId(boulder.iden))
+    if not boulder_data:
+        return {}
+
     boulder_data['gym'] = boulder.gym
     boulder_data['is_done'] = boulder.is_done
     # backwards compatibility
@@ -434,7 +444,15 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 
 @serializable
 @postprocess_boulder_data
-def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
+def get_next_boulder(
+    boulder_id: str, 
+    gym: str,
+    user_id: str,
+    latest_wall_set: bool, 
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str,
+    database: Database) -> Data:
     """
     Given a boulder id, get the next boulder based on insertion date
 
@@ -447,18 +465,189 @@ def get_next_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database:
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    query_builder = QueryBuilder().lower('_id', ObjectId(boulder_id))
+    # TODO: query can be reworked so that all happens in the DDBB and not all
+    # problems have to be retrieved
+    # build the query
+    SORTING_FIELD_MAP = {
+        'creation_date': '_id', # insertion order is by date
+        'difficulty': 'difficulty',
+        'section': 'section',
+        'rating': 'rating',
+        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+    }
+    sorting_field = SORTING_FIELD_MAP[sort_by]
+    
+    query_builder = QueryBuilder()
+
     if latest_wall_set:
         walls = get_gym_walls(gym, database, latest_wall_set)
         query_builder.contained_in('section', [wall['image'] for wall in walls])
-        
-    boulders = list(database[f'{gym}_boulders'].find(query_builder.query).sort('_id', -1).limit(1))
-    return boulders[0] if boulders else {}
 
+    boulders = list(
+        database[f'{gym}_boulders'].find(query_builder.query).sort([
+            (sorting_field, 1 if is_ascending else -1),
+            ('time', -1)
+            ])
+    )
+
+    # if show only to do, remove problems present as done in user ticklist 
+    if to_show == 'to_do' and user_id:
+        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(user_id, 'ticklist', database) if b['is_done'] == True]
+        boulders = [boulder for boulder in boulders if str(boulder['_id']) not in done_boulders]
+        # [(b['name'], b['difficulty'], b['time']) for b in sorted(a, key=lambda x: (-x['difficulty'], -(datetime.datetime.strptime(x['time'], '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime(1, 1, 1)).total_seconds()))]
+
+    next_boulder = {}
+    if boulders:
+        idx = [str(b['_id']) for b in boulders].index(boulder_id)
+        if idx < len(boulders) - 1:
+            next_boulder = boulders[idx+1]
+        else:
+            next_boulder = boulders[idx]
+    return next_boulder
 
 @serializable
 @postprocess_boulder_data
-def get_previous_boulder(boulder_id: str, gym: str, latest_wall_set: bool, database: Database) -> Data:
+def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
+    SORTING_FIELD_MAP = {
+        'creation_date': '_id', # insertion order is by date
+        'difficulty': 'difficulty_int',
+        'section': 'section',
+        'rating': 'rating',
+        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+    }
+    REVERSE_MAPS = {
+        'green': 0,
+        'blue': 1,
+        'yellow': 2,
+        'red': 3
+    }
+
+    # What a pain to have to recover all boulders...
+    ticklist_p = get_user_problem_list_by_id(user_id, list_id, database)
+    problems = [get_boulder_by_id(b['gym'], b['iden'], database) for b in ticklist_p]
+    # match fields
+    for p in problems:
+        for t in ticklist_p:
+            if p['_id'] == t['iden']:
+                p['gym'] = t['gym']
+                p['is_done'] = t['is_done']
+                p['difficulty_int'] = REVERSE_MAPS[p['difficulty']]
+
+    # Apply sorting and filtering criteria
+    if to_show == 'done':
+        problems = [p for p in problems if p['is_done']]
+    elif to_show == 'to_do':
+        problems = [p for p in problems if not p['is_done']]
+    # sorted_problem_list = sorted(problems, key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (-1 if not is_ascending else 1) *datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1) * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+
+    next_boulder = {}
+    
+    # print([(b['name'],b[SORTING_FIELD_MAP[sort_by]],datetime.timestamp(datetime.fromisoformat(b['time']))) for b in problems])
+
+    idx = -1
+    if problems:
+        # wrap in try catch ? if not found we can keep showing the current boulder
+        idx = [b['_id'] for b in problems].index(boulder_id) # index of current boulder in list
+    
+    keep_searching = True if problems and idx != -1 and idx != len(problems)-1 else False
+    gym_code = problems[idx]['gym'] if idx != -1 else ''
+    next_idx = 1
+    
+    while keep_searching:
+        next_boulder = get_boulder_by_id(problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
+        # check if wall section is latest wall set (wrap in function)
+        valid_gym_sections =  [wall['image'] for wall in get_gym_walls(problems[idx+next_idx]['gym'], database, latest_wall_set)]
+        # valid boulder, if there are more conditions, add here
+        if bool(next_boulder) and next_boulder['section'] in valid_gym_sections:
+            keep_searching = False
+            gym_code = problems[idx+next_idx]['gym']
+        elif next_idx + 1 == len(problems):
+            next_boulder = {}
+            gym_code = problems[idx]['gym']
+            keep_searching = False
+        else:
+            next_idx += 1
+
+    return next_boulder, gym_code
+
+@serializable
+@postprocess_boulder_data
+def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
+    # problems = get_user_problem_list_by_id(user_id, list_id, database)
+
+    SORTING_FIELD_MAP = {
+        'creation_date': '_id', # insertion order is by date
+        'difficulty': 'difficulty_int',
+        'section': 'section',
+        'rating': 'rating',
+        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+    }
+    REVERSE_MAPS = {
+        'green': 0,
+        'blue': 1,
+        'yellow': 2,
+        'red': 3
+    }
+
+    # What a pain to have to recover all boulders...
+    ticklist_p = get_user_problem_list_by_id(user_id, list_id, database)
+    problems = [get_boulder_by_id(b['gym'], b['iden'], database) for b in ticklist_p]
+    # match fields
+    for p in problems:
+        for t in ticklist_p:
+            if p['_id'] == t['iden']:
+                p['gym'] = t['gym']
+                p['is_done'] = t['is_done']
+                p['difficulty_int'] = REVERSE_MAPS[p['difficulty']]
+
+    # Apply sorting and filtering criteria
+    if to_show == 'done':
+        problems = [p for p in problems if p['is_done']]
+    elif to_show == 'to_do':
+        problems = [p for p in problems if not p['is_done']]
+    # sorted_problem_list = sorted(problems, key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (-1 if not is_ascending else 1) *datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1) * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+
+    next_boulder = {}
+    
+    idx = -1
+    if problems:
+        # wrap in try catch ? if not found we can keep showing the current boulder
+        idx = [b['_id'] for b in problems].index(boulder_id) # index of current boulder in list
+    
+    keep_searching = True if problems and idx != -1 and idx != 0 else False
+    gym_code = problems[idx]['gym'] if idx != -1 else ''
+    next_idx = -1
+    
+    while keep_searching:
+        next_boulder = get_boulder_by_id(problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
+        # check if wall section is latest wall set (wrap in function)
+        valid_gym_sections =  [wall['image'] for wall in get_gym_walls(problems[idx+next_idx]['gym'], database, latest_wall_set)]
+        # valid boulder, if there are more conditions, add here
+        if bool(next_boulder) and next_boulder['section'] in valid_gym_sections:
+            keep_searching = False
+            gym_code = problems[idx+next_idx]['gym']
+        elif next_idx - 1 == 0: # no more problems in list from where to search
+            next_boulder = {}
+            gym_code = problems[idx]['gym']
+            keep_searching = False
+        else:
+            next_idx -= 1
+
+    return next_boulder, gym_code
+
+@serializable
+@postprocess_boulder_data
+def get_previous_boulder(
+    boulder_id: str, 
+    gym: str, 
+    user_id: str,
+    latest_wall_set: bool, 
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str, 
+    database: Database) -> Data:
     """
     Given a boulder id, get the previous boulder based on insertion date
 
@@ -471,13 +660,45 @@ def get_previous_boulder(boulder_id: str, gym: str, latest_wall_set: bool, datab
     :return: next boulder if there is any, empty dict otherwise
     :rtype: Data
     """
-    query_builder = QueryBuilder().greater('_id', ObjectId(boulder_id))
+    # TODO: query can be reworked so that all happens in the DDBB and not all
+    # problems have to be retrieved
+    # build the query
+    SORTING_FIELD_MAP = {
+        'creation_date': '_id', # insertion order is by date
+        'difficulty': 'difficulty',
+        'section': 'section',
+        'rating': 'rating',
+        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+    }
+    sorting_field = SORTING_FIELD_MAP[sort_by]
+    
+    query_builder = QueryBuilder()
+
     if latest_wall_set:
         walls = get_gym_walls(gym, database, latest_wall_set)
         query_builder.contained_in('section', [wall['image'] for wall in walls])
 
-    boulders = list(database[f'{gym}_boulders'].find(query_builder.query).limit(1))
-    return boulders[0] if boulders else {}
+    boulders = list(
+        database[f'{gym}_boulders'].find(query_builder.query).sort([
+            (sorting_field, 1 if is_ascending else -1),
+            ('time', -1)
+            ])
+    )
+
+    # if show only to do, remove problems present as done in user ticklist 
+    if to_show == 'to_do' and user_id:
+        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(user_id, 'ticklist', database) if b['is_done'] == True]
+        boulders = [boulder for boulder in boulders if str(boulder['_id']) not in done_boulders]
+        # [(b['name'], b['difficulty'], b['time']) for b in sorted(a, key=lambda x: (-x['difficulty'], -(datetime.datetime.strptime(x['time'], '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime(1, 1, 1)).total_seconds()))]
+
+    previous_boulder = {}
+    if boulders:
+        idx = [str(b['_id']) for b in boulders].index(boulder_id)
+        if idx > 0:
+            previous_boulder = boulders[idx-1]
+        else:
+            previous_boulder = boulders[idx]
+    return previous_boulder
 
 
 @serializable

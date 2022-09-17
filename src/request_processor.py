@@ -1,6 +1,8 @@
 import ast
+from csv import list_dialects
 import datetime
 import json
+from typing import Tuple
 from src.models import User
 import src.ticklist_handler as ticklist_handler
 import db.mongodb_controller as db_controller
@@ -142,18 +144,33 @@ def process_rate_boulder_request(request, session, db):
 
 def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
+        # get additional request params: list_id, is_user_list, sort_order, is_ascending, to_show
+        request_data = utils.load_data(request)
+
+        if isinstance(request_data, Tuple):
+            request_data = request_data[0]
+
         boulder, wall_image = utils.get_boulder_from_request(
             request,
             db,
             session,
             utils.get_current_gym(session, db)
         )
+
+        if not bool(boulder):
+            abort(404)
+
         # get hold data
         hold_data = utils.get_hold_data(
             utils.get_current_gym(session, db),
             boulder['section'],
             static_folder
         )
+
+        # map fields to appropriate values
+        sort_by = utils.get_field_value('sort_order', request_data)
+        is_ascending = utils.get_field_value('is_ascending', request_data)
+        to_show = utils.get_field_value('to_show', request_data)
 
         return render_template(
             'load_boulder.html',
@@ -163,17 +180,34 @@ def process_load_boulder_request(request, session, db, current_user, static_fold
             scroll=request.args.get('scroll', 0),
             origin=request.form.get('origin', 'explore_boulders'),
             hold_data=hold_data,
-            hold_detection=utils.get_hold_detection_active(current_user)
+            hold_detection=utils.get_hold_detection_active(current_user),
+            list_id = request_data.get('list_id'),
+            is_user_list = request_data.get('is_user_list'),
+            sort_by=sort_by,
+            is_ascending=is_ascending,
+            to_show=to_show
         )
     except Exception:
-        return abort(404)
+        return abort(500) # internal server error
 
 
 def process_load_next_problem_request(request, session, db, current_user, static_folder):
+    user_id = None
+    is_user_list = False
+    if request.args.get('is_user_list', '').lower() == 'true':
+        is_user_list = True
+    if current_user.is_authenticated:
+        user_id = current_user.id
+
     boulder, wall_image = utils.load_next_or_current(
-        request.args.get('id'),
-        request.args.get('gym'),
+        request.args.get('id'), # problem_id
+        request.args.get('list_id'), # list from which to get next problem
+        user_id, # pass user id in case we need to retrieve the list for a user
+        is_user_list,
         utils.get_show_only_latest_wall_sets(current_user),
+        request.args.get('sort_by'),
+        True if request.args.get('is_ascending') == 'True' else False,
+        request.args.get('to_show'),
         db,
         session
     )
@@ -185,23 +219,42 @@ def process_load_next_problem_request(request, session, db, current_user, static
         static_folder
     )
 
+    # TODO: pass back sorting/visualization parameters
     return render_template(
         'load_boulder.html',
         boulder_name=boulder.get('name', ''),
         wall_image=wall_image,
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
-        origin=request.form.get('origin', 'explore_boulders'),
+        # TODO: map somehow lists to origin urls?
+        origin=request.form.get('origin', 'explore_boulders' if not is_user_list else 'tick_list'),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=request.args.get('list_id'), # default values atm
+        is_user_list=is_user_list,
+        sort_by=request.args.get('sort_by'),
+        is_ascending=request.args.get('is_ascending'),
+        to_show=request.args.get('to_show'),
     )
 
 
 def process_load_previous_problem_request(request, session, db, current_user, static_folder):
+    user_id = None
+    is_user_list = False
+    if request.args.get('is_user_list', '').lower() == 'true':
+        is_user_list = True
+    if current_user.is_authenticated:
+        user_id = current_user.id
+
     boulder, wall_image = utils.load_previous_or_current(
-        request.args.get('id'),
-        request.args.get('gym'),
+        request.args.get('id'), # problem_id
+        request.args.get('list_id'), # list from which to get next problem
+        user_id, # pass user id in case we need to retrieve the list for a user
+        is_user_list,
         utils.get_show_only_latest_wall_sets(current_user),
+        request.args.get('sort_by'),
+        True if request.args.get('is_ascending') == 'True' else False,
+        request.args.get('to_show'),
         db,
         session
     )
@@ -212,16 +265,22 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         boulder['section'],
         static_folder
     )
-
+    
+    # TODO: pass back sorting/visualization parameters
     return render_template(
         'load_boulder.html',
         boulder_name=boulder.get('name', ''),
         wall_image=wall_image,
         boulder_data=boulder,
         scroll=request.args.get('scroll', 0),
-        origin=request.form.get('origin', 'explore_boulders'),
+        origin=request.form.get('origin', 'explore_boulders' if not is_user_list else 'tick_list'),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=request.args.get('list_id'), # default values atm
+        is_user_list=is_user_list,
+        sort_by=request.args.get('sort_by'),
+        is_ascending=request.args.get('is_ascending'),
+        to_show=request.args.get('to_show'),
     )
 
 
@@ -251,9 +310,12 @@ def process_random_problem_request(request, session, db, current_user, static_fo
         boulder_name=boulder_data['name'],
         wall_image=wall_image,
         boulder_data=boulder,
+        scroll=0,
         origin=request.form.get('origin', ''),
         hold_data=hold_data,
-        hold_detection=utils.get_hold_detection_active(current_user)
+        hold_detection=utils.get_hold_detection_active(current_user),
+        list_id=boulder['gym'],
+        is_user_list=False
     )
 
 
@@ -317,6 +379,7 @@ def process_save_boulder_request(request, current_user):
 
 
 def process_ticklist_request(request, session, db, current_user):
+    # TODO: split into several requests? Too much going on here
     if request.method == 'POST':
         data, _ = utils.load_data(request)
         boulder = db_controller.get_boulder_by_name(
