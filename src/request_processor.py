@@ -278,7 +278,9 @@ def process_load_previous_problem_request(request, session, db, current_user, st
         hold_detection=utils.get_hold_detection_active(current_user),
         list_id=request.args.get('list_id'), # default values atm
         is_user_list=is_user_list,
-
+        sort_by=request.args.get('sort_by'),
+        is_ascending=request.args.get('is_ascending'),
+        to_show=request.args.get('to_show'),
     )
 
 

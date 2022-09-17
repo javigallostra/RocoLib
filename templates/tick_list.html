@@ -33,7 +33,7 @@
           <div class="row">
             <div class="col-6 col-md-4">
               <select class="form-control" id="sortTickListCriteria">
-                <option value="date-recent" selected>{{ creation_date }}</option>
+                <option value="creation_date" selected>{{ creation_date }}</option>
                 <option value="difficulty">{{ difficulty }}</option>
                 <option value="rating">{{ rating }}</option>
                 <option value="section">{{ wall_section }}</option>
@@ -83,6 +83,9 @@
                        value="ticklist" />
                 <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + boulder['_id'] }}"
                        value="True" />
+                <input type="hidden" name="sort_order" class="boulder_sort_order"/>
+                <input type="hidden" name="is_ascending" class="boulder_is_ascending"/>
+                <input type="hidden" name="to_show" class="boulder_to_show"/>
                 <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link">
                   <h5>{{boulder['name']}}</h5>
                 </button>
@@ -174,6 +177,34 @@
       );
     }, false);
 
+  // set and update sort order
+  document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = document.getElementById("sortTickListCriteria").value);
+  document.getElementById("sortTickListCriteria").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = this.value);
+    }
+  );
+  // set and update is_ascending
+  document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = document.getElementById("sortTickListAscending").value);
+  document.getElementById("sortTickListAscending").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = this.value);
+    }
+  );
+    // set and update to_show
+    document.getElementsByClassName("boulder_to_show").forEach(element => element.value = document.getElementById("hideDone").checked);
+    document.getElementById("hideDone").addEventListener(
+      "change",
+      function()
+      {
+        document.getElementsByClassName("boulder_to_show").forEach(element => element.value = this.checked);
+      }
+    );
+
   function decodeHtml(html) {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
@@ -219,7 +250,7 @@
     boulders = replaceAll(boulders, 'False', 'false');
     var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
     // Sort data
-    if (this.value === "date-recent") {
+    if (this.value === "creation_date") {
       function sortBoulders(a, b) {
         var dateA = Date.parse(a["time"]);
         var dateB = Date.parse(b["time"]);

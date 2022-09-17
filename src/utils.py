@@ -479,8 +479,8 @@ def load_next_or_current(
 def load_previous_or_current(
     boulder_id: str,
     list_id: str,
-    is_user_list: bool,
     user_id: str,
+    is_user_list: bool,
     latest_wall_set: bool,
     sort_by: str, 
     is_ascending: bool, 
@@ -513,7 +513,7 @@ def load_previous_or_current(
         )
     else:
         previous_boulder = db_controller.get_previous_boulder(
-            boulder_id, list_id, latest_wall_set, sort_by, is_ascending, to_show, database)
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
