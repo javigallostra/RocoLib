@@ -45,6 +45,7 @@ Features
 Fixes
 -----
 
+- #189 Fix section and gym not being shown on some ticklist problems
 - Enable CORS on API endpoints
 - #185 Fix downloading a problem as an image 
 - #184 Spacing between radio button and text in hold selection options when creating a problem
