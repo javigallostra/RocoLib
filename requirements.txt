@@ -44,7 +44,7 @@ marshmallow==3.14.0
 mccabe==0.6.1
 msgpack==1.0.0
 Pillow==9.0.1
-protobuf==3.15.0
+protobuf==3.18.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.7.0
