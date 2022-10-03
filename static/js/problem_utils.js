@@ -7,11 +7,6 @@ var wasDragged = false;
 var radius;
 var holdDetectionActive = true; // TODO: this should come from user preferences -> Set value on boulder load function
 
-// >>> a = document.getElementById('holdDetectionSwitch')
-// >>> <input type=​"checkbox" checked class=​"custom-control-input" id=​"holdDetectionSwitch">​
-// >>> a.checked
-// >>> true
-
 function hexToRGBA(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16),
     g = parseInt(hex.slice(3, 5), 16),
