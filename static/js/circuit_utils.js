@@ -1,3 +1,5 @@
+// TODO: jgallostra -> This can be unified with problem utils, there is a lot in common.
+// TODO: jgallostra -> templates can also probably be merged into one.
 var holds = [];
 var polys = [];
 var ratio;
