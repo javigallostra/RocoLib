@@ -325,6 +325,9 @@ def process_wall_section_request(request, session, db, current_user, static_fold
     if request.args.get('options', '') == 'route':
         template = 'create_route.html'
 
+    elif request.args.get('options', '') == 'circuit':
+        template = 'create_circuit.html'
+
     if not session.get('walls_radius', ''):
         session['walls_radius'] = db_controller.get_walls_radius_all(db)
 

@@ -1,0 +1,131 @@
+{% extends "base_template.html" %}
+
+{% block title %}{{ create }}{% endblock %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
+<script src="{{ url_for('static', filename='js/turf.js') }} "></script>
+<script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <br />
+      <div class="row text-center">
+        <div class="col" style="display: flex; margin-left: 8px;">
+          <a class="btn btn-outline-primary" href="/create?options=circuit" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+        </div>
+        <div class="col" style="display: flex; justify-content:end;">
+          <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <!-- <br /> -->
+      <div class="row">
+        <div class="col-sm">
+          <div style="text-align: center;">
+            <h4>
+              {{ wall_name }}
+            </h4>
+          </div>
+          <div class="custom-control custom-switch">
+            <input 
+              type="checkbox" 
+              {% if hold_detection %} checked {%endif %}  
+              class="custom-control-input" 
+              id="holdDetectionSwitch">
+            <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection_ }}</label>
+          </div>
+          <br />
+          <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
+          <canvas id="wall-canvas"></canvas>
+        </div>
+        <br />
+          <div class="col-sm">
+            <div style="text-align: center;">
+              <h6>{{ hold_type }}</h6>
+              <div class="row">
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#00ff00" style="margin-right: 0.5rem;" checked />
+                  {{ start }}<br />
+                </div>
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#0000ff" style="margin-right: 0.5rem;" />
+                  {{ normal }}<br />
+                </div>
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#ffa321" style="margin-right: 0.5rem;" />
+                  {{ feet_only }}<br />
+                </div>
+                <div class="col" style="display: flex; justify-content:center;">
+                  <input type="radio" name="hold_type" value="#ff0000" style="margin-right: 0.5rem;" />
+                  {{ top }}<br />
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="row" style="display: flex;">
+              <div class="col-4" style="display: grid;">
+                <button class="btn btn-outline-primary" onclick="undoMove()">
+                  {{ undo }}
+                </button>
+              </div>
+              <div class="col-4" style="display: grid;">
+                <form action="/save_circuit?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
+                  <input class="btn btn-outline-primary" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
+                    onclick="return setHolds();" />
+                  <input type="hidden" name="holds" id="holds-array" value="" />
+                </form>
+              </div>
+              <div class="col-4" style="display: grid;">
+                <a href="/" class="btn btn-outline-primary">{{ cancel }}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.onload = () => {
+    circuitCreateInit(
+      "holdDetectionSwitch",
+      "wall-image",
+      "wall-canvas",
+      '{{ radius }}',
+      '{{ hold_data | tojson | safe}}'
+    );
+  };
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 90%;
+  }
+  
+  @media (max-width: 767px) {
+    img {
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    h6 {
+      margin-top: 1rem;
+    }
+  }
+
+</style>
+{% endblock %}
