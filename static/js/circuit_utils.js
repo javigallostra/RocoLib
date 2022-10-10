@@ -7,6 +7,7 @@ var dragok = false;
 var wasDragged = false;
 var holdNum = 0;
 const MARGIN = 1;
+const FEET_COLOR = "#ffa321";
 
 var radius;
 var holdDetectionActive = true; // TODO: this should come from user preferences -> Set value on boulder load function
@@ -79,11 +80,11 @@ function drawHold(ctx, x, y, radius, color, holdArray, shouldPush = true) {
     ctx.font = "18px Georgia";
     ctx.fillStyle = "red";
     ctx.fillText(
-        color === "#ffa321" ? '' : holdNum, // revisit conditions
+        color === FEET_COLOR ? '' : holdNum, // revisit conditions
         x + radius + MARGIN,
         y - radius - MARGIN
     );
-    if (color != "#ffa321") {
+    if (color != FEET_COLOR) {
         holdNum += 1;
     }
 

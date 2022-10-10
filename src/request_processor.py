@@ -354,7 +354,7 @@ def process_wall_section_request(request, session, db, current_user, static_fold
     )
 
 
-def process_save_request(request, session, db):
+def process_save_request(request, session, db, is_circuit=False):
     if request.method == 'POST':
         data: Data = {'rating': 0, 'raters': 0, 'repetitions': 0}
         for key, val in request.form.items():
@@ -362,7 +362,10 @@ def process_save_request(request, session, db):
             if key.lower() == 'holds':
                 data[key.lower()] = ast.literal_eval(val)
         data['time'] = datetime.datetime.now().isoformat()
-        db_controller.put_boulder(data, utils.get_current_gym(session, db), db)
+        if is_circuit:
+            db_controller.put_circuit(data, utils.get_current_gym(session, db), db)
+        else:
+            db_controller.put_boulder(data, utils.get_current_gym(session, db), db)
     return redirect('/')
 
 
@@ -373,6 +376,20 @@ def process_save_boulder_request(request, current_user):
             username = current_user.name
         return render_template(
             'save_boulder.html',
+            username=username,
+            holds=request.form.get('holds'),
+            section=request.args.get('section')
+        )
+    else:
+        return abort(400)
+
+def process_save_circuit_request(request, current_user):
+    if request.method == 'POST':
+        username = ''
+        if current_user.is_authenticated:
+            username = current_user.name
+        return render_template(
+            'save_circuit.html',
             username=username,
             holds=request.form.get('holds'),
             section=request.args.get('section')

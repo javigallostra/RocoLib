@@ -247,6 +247,16 @@ def put_boulder(boulder_data: Data, gym: str, database: Database) -> InsertOneRe
 
 
 @serializable
+def put_circuit(circuit_data: Data, gym: str, database: Database) -> InsertOneResult:
+    """
+    Store a new circuit for the specified gym
+    """
+    result = database[f'{gym}_circuits'].insert_one(preprocess_boulder_data(circuit_data))
+    if result is not None:
+        return result.inserted_id
+
+
+@serializable
 def put_route(route_data: Data, gym: str, database: Database) -> InsertOneResult:
     """
     Store a new route for the specified gym
