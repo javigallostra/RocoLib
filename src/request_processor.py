@@ -92,6 +92,8 @@ def handle_explore_boulders(request, session, db, current_user):
         is_authenticated=current_user.is_authenticated
     )
 
+def handle_explore_circuits(request, session, db, current_user):
+    pass
 
 def handle_change_gym_problem_list_request(request, session, db, current_user):
     gym = request.form.get('gym', utils.get_current_gym(session, db))
