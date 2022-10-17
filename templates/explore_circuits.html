@@ -180,14 +180,14 @@
     }
   );
     // set and update to_show
-    document.getElementsByClassName("circuit_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
-    document.getElementById("hideDoneCheck").addEventListener(
-      "change",
-      function()
-      {
-        document.getElementsByClassName("circuit_to_show").forEach(element => element.value = this.checked);
-      }
-    );
+    //document.getElementsByClassName("circuit_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
+    //document.getElementById("hideDoneCheck").addEventListener(
+    //  "change",
+    //  function()
+    //  {
+    //    document.getElementsByClassName("circuit_to_show").forEach(element => element.value = this.checked);
+    //  }
+    //);
 
   function decodeHtml(html) {
     var doc = new DOMParser().parseFromString(html, "text/html");
