@@ -93,7 +93,32 @@ def handle_explore_boulders(request, session, db, current_user):
     )
 
 def handle_explore_circuits(request, session, db, current_user):
-    pass
+    if request.method == 'POST':
+        gym = utils.get_current_gym(session, db)
+
+    elif request.method == 'GET':
+        gym = request.args.get('gym', utils.get_current_gym(session, db))
+
+    circuits = utils.get_circuits_list(
+        gym,
+        db,
+        session,
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
+
+    gym_walls = db_controller.get_gym_walls(gym, db)
+
+    print(circuits)
+
+    return render_template(
+        'explore_circuits.html',
+        gyms=db_controller.get_gyms(db),
+        selected=gym,
+        circuit_list=circuits,
+        walls_list=gym_walls,
+        origin='explore_circuits',
+        is_authenticated=current_user.is_authenticated
+    )
 
 def handle_change_gym_problem_list_request(request, session, db, current_user):
     gym = request.form.get('gym', utils.get_current_gym(session, db))

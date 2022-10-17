@@ -771,6 +771,30 @@ def get_boulders_filtered(
     return {ITEMS: filtered_boulder_data}
 
 
+@serializable
+@postprocess_boulder_data
+def get_circuits_filtered(
+    gym: str,
+    database: Database,
+    latest_walls_only: bool
+) -> dict[str, list[Data]]:
+    """
+    Given a gym and a set of conditions return the list of boulders
+    that fulfill them
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of boulder data.
+    """
+    query_builder = QueryBuilder()
+    # if get only for latest wall, get latest wall name and add to filters
+    # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
+    if latest_walls_only:
+        walls = get_gym_walls(gym, database, True)
+        query_builder.contained_in('section', [wall['image'] for wall in walls])
+
+    return {ITEMS: list(database[f'{gym}_circuits'].find(query_builder.query))}
+
+
 # User related functions
 
 @serializable

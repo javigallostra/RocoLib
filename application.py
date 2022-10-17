@@ -134,6 +134,7 @@ def explore() -> str:
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders() -> str:
     return request_processor.handle_explore_boulders(request, session, g.db, current_user)
+
 @app.route('/explore_circuits', methods=['GET', 'POST'])
 def explore_circuits() -> str:
     return request_processor.handle_explore_circuits(request, session, g.db, current_user)

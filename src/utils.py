@@ -180,6 +180,22 @@ def get_wall_radius(session: SessionMixin, database: Database, wall_path=None) -
         return session['walls_radius'][wall_path]
     return db_controller.get_walls_radius_all(database)[wall_path]
 
+def get_circuits_list(gym: str, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
+    """
+    Given a gym and a set of filters return the list of
+    circuits that match the specified criteria.
+    """
+    # if user is authenticated, check preferences to add query modifiers
+    data = db_controller.get_circuits_filtered(
+        gym=gym,
+        database=database,
+        latest_walls_only=latest_walls_only
+    )
+
+    sections = set([b['section'] for b in data[ITEMS]])
+    radius = {section: get_wall_radius(
+        session, database, gym + '/' + section) for section in sections}
+    return map_and_complete_boulder_data(data[ITEMS], radius)
 
 def get_boulders_list(gym: str, filters: Data, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
     """
