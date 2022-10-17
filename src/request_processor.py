@@ -108,8 +108,6 @@ def handle_explore_circuits(request, session, db, current_user):
 
     gym_walls = db_controller.get_gym_walls(gym, db)
 
-    print(circuits)
-
     return render_template(
         'explore_circuits.html',
         gyms=db_controller.get_gyms(db),
