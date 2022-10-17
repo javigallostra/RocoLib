@@ -1,0 +1,326 @@
+{% extends "base_template.html" %}
+
+{% block title %}{{ circuit_name }}{% endblock %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
+<script src="{{ url_for('static', filename='js/turf.js') }} "></script>
+<script src="{{ url_for('static', filename='js/circuit_utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/swipe.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<br />
+<div id="holder">
+  <div id="body">
+    <div id="wrapper" class="container">
+      <div class="row text-center">
+        <div class="col" style="display: flex; margin-left: 8px;">
+          <div>
+            <a class="btn btn-outline-primary" href="/{{ origin }}" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+          </div>
+          <!-- <p><a href="/{{ origin }}">Back</a></p> -->
+        </div>
+        <div class="col" style="display: flex; justify-content: center; align-self: center;">
+          <div style="text-align: center;">
+            <h5 style="margin-bottom: 0;">{{ circuit_name }}</h5>
+          </div>        
+        </div>
+        <div class="col" style="display: flex; justify-content:end;">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
+          <!-- <p><a href="/">Home</a></p> -->
+        </div>
+      </div>
+      <!-- <div style="text-align: center;">
+        <h5>{{ circuit_name }}</h5>
+      </div> -->
+      <div style="text-align: center;">
+        {{ circuit_data['feet'] }}
+      </div>
+      <div class="custom-control custom-switch" style="margin-left:2rem;">
+        <input  
+          type="checkbox" 
+          {% if hold_detection %} checked {%endif %} 
+          class="custom-control-input" 
+          id="holdDetectionSwitch">
+        <label class="custom-control-label" for="holdDetectionSwitch">{{ hold_detection_ }}</label>
+      </div>
+      <br />
+      <div class="row" id="problem-wrapper" style="padding-left: 15px; padding-right: 15px;">
+          <!-- <div class="pc-arrow-left">
+            <a class="btn btn-outline-primary" href="#" onclick="clicked_previous()" role="button">
+              <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
+          </div> -->
+          <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
+          <canvas id="wall-canvas"></canvas>
+          <!-- <div class="pc-arrow-right">
+            <a class="btn btn-outline-primary" href="#" onclick="clicked_next()" role="button">
+              <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </a>
+          </div> -->
+      </div>
+      {% if circuit_data.get('notes', '') %}
+      <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
+      <div class="container">
+        <div class="row d-flex justify-content-center">
+          <p style="margin-top: 0; margin-bottom: 0.5rem;">
+            <b>{{ notes }}:</b>
+          </p>
+          <div class="col-lg-12 d-flex justify-content-center">
+            {{ circuit_data.get('notes', '') }}
+          </div>
+        </div>
+      </div>
+      <hr width=50% style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
+      {% else %}
+        <div style="margin-bottom: 0.75rem;"></div>
+      {% endif %}
+      <!-- <div class="container">
+        <div class="row d-flex justify-content-center">
+          <div class="col d-flex justify-content-center" style="align-items: center;">
+            <p style="margin-top: 5px; margin-right: 10px; margin-bottom:6px;">
+              Rate this circuit:
+            </p>
+            <div class="star-rating">
+              <span class="fa fa-star" data-rating="1"></span>
+              <span class="fa fa-star" data-rating="2"></span>
+              <span class="fa fa-star" data-rating="3"></span>
+              <span class="fa fa-star" data-rating="4"></span>
+              <span class="fa fa-star" data-rating="5"></span>
+              <form id="bForm" action="/rate_circuit" method="post">
+                <input type="hidden" name="circuit_rating" class="rating-value" value="0" />
+                <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
+              </form>
+            </div>
+            <button onclick="$('#bForm').submit();" class="btn btn-outline-dark mbl-size" style="margin-left:1.5rem;">Rate</button>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center act-btn-container" style="align-items:center;">
+            {% if not current_user.is_anonymous %}
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
+              <!-- TODO: Add safename field to circuit -->
+              <form id="addForm" action="/tick_list" method="post">
+                  <button type="submit" name="add_circuit_to_tick_list" value="add-circuit" style="width: 100%;" class="btn btn-outline-primary cstm-button">
+                    {{ add_to_ticklist }}!
+                  </button>
+                  <!-- Required fields -->
+                  <input type="hidden" name="origin" value="{{ origin }}" />
+                  <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
+                  <input type="hidden" name="section" value="{{ circuit_data['section'] }}" />
+                  <input type="hidden" name="name" value="{{ circuit_data['name'] }}" />
+              </form>
+            </div>
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
+              <form id="markAsDoneForm" action="/tick_list" method="post">
+                  <button type="submit" name="mark_circuit_as_done" value="done" style="width: 100%;" class="btn btn-outline-primary cstm-button">
+                    {{ done }}!
+                  </button>
+                  <!-- Required fields -->
+                  <input type="hidden" name="is_done" value="true" />
+                  <input type="hidden" name="origin" value="{{ origin }}" />
+                  <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
+                  <input type="hidden" name="section" value="{{ circuit_data['section'] }}" />
+                  <input type="hidden" name="name" value="{{ circuit_data['name'] }}" />
+              </form>
+            </div>
+            {% endif %}
+            <div class="col-lg-4" style="margin-bottom: 0.3rem;">
+                <button type="button" onclick="downloadProblemAsImage()" style="width: 100%;" class="btn btn-outline-primary cstm-button">
+                  {{ export_as_image }}
+                </button>
+              </form>
+            </div>
+        </div>
+      </div> -->
+      <br />
+    </div>
+  </div>
+
+  <script>
+    // It is important that this is wrapped in single quotes ('')
+    var rawData = '{{ circuit_data | tojson | safe}}';
+    var circuitData = JSON.parse(rawData);
+    holds = circuitData.holds;
+    radius = circuitData.radius;
+    window.scrollTo(0, '{{ scroll }}')
+
+    function loadCircuit() {
+      circuitLoadInit(
+        'holdDetectionSwitch',
+        "wall-image",
+        "wall-canvas",
+        circuitData.radius,
+        '{{ hold_data | tojson | safe}}'
+      );
+    };
+
+    function downloadProblemAsImage() {
+      downloadProblem("{{ circuit_data['name'] }}", '{{ wall_image }}');
+    };
+
+    function clicked_previous() {
+      loadPrevious(
+        "{{ circuit_data['_id'] }}",
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
+        );
+    }
+    
+    function clicked_next() {
+      loadNext(
+        "{{ circuit_data['_id'] }}",
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"        
+      );
+    }
+
+    var $star_rating = $(".star-rating .fa");
+
+    var SetRatingStar = function () {
+      return $star_rating.each(function () {
+        if (
+          parseInt($star_rating.siblings("form").children("input.rating-value").val()) >=
+          parseInt($(this).data("rating"))
+        ) {
+          return $(this).removeClass("fa").removeClass("fa-star").addClass("fas").addClass("fa-star");
+        } else {
+          return $(this).removeClass("fas").removeClass("fa-star").addClass("fa").addClass("fa-star");
+        }
+      });
+    };
+
+    $star_rating.on("click", function () {
+      $star_rating.siblings("form").children("input.rating-value").val($(this).data("rating"));
+      // Update ratings
+      SetRatingStar();
+    });
+
+    $("#bForm").submit(function (e) {
+      $("<input />")
+        .attr("type", "hidden")
+        .attr("id", "circuit-name")
+        .attr("name", "circuit_name")
+        .attr("value", "{{ circuit_data['name'] }}")
+        .appendTo("#bForm");
+      return true;
+    });
+
+    window.onresize = loadCircuit;
+    window.onload = () => { 
+      loadCircuit();
+      swipeInit(
+        loadPrevious, 
+        loadNext,
+        "{{ circuit_data['_id'] }}",
+        "{{ list_id }}",
+        "{{ is_user_list }}",
+        "{{ sort_by }}",
+        "{{ is_ascending }}",
+        "{{ to_show }}"
+      );
+    }
+
+    SetRatingStar();
+
+  </script>
+  {% endblock %}
+
+  {% block styles %}
+  <style>
+    .custom-switch {
+      display: flex;
+      justify-content: center;
+      margin-left: auto;
+    }
+
+    img {
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      width: 45%;
+    }
+
+    @media (max-width: 767px) {
+      img {
+        width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    .star-rating {
+      line-height: 32px;
+      font-size: 1.25em;
+      min-width: 6rem;
+    }
+
+    .star-rating .fas {
+      color: yellow;
+    }
+
+    /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
+    /*.custom-link {
+      border: none;
+      outline: none;
+      background: none;
+      cursor: pointer;
+      color: #007bff;
+      padding: 0;
+      font-family: inherit;
+      font-size: inherit;
+    }*/
+
+.mbl-size {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.act-btn-container {
+  margin-top: 3rem;
+}
+
+.pc-arrow-left {
+  display: flex; 
+  align-items: center; 
+  padding-left:15px;
+}
+.pc-arrow-right {
+  display: flex; 
+  align-items: center; 
+  padding-right:15px;
+}
+
+    @media (max-width: 767px) {
+      .pc-arrow-left,
+      .pc-arrow-right {
+        display: none;
+      }
+
+      .star-rating {
+        /* line-height: 15px; */
+        font-size: 0.8em;
+      }
+
+      hr {
+        width: 95%;
+      }
+      .mbl-size {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .act-btn-container {
+        margin-top: 2rem;
+      }
+      
+    }
+  </style>
+  {% endblock %}

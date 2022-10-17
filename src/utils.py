@@ -333,6 +333,70 @@ def get_time_since_creation(time: str) -> str:
     return f'{nb} {name}'
 
 
+def get_circuit_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Load circuit data from a given request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :param gym_code: the gym code of the circuit
+    :type gym_code: str
+    :return: the circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    if request.method == 'POST':
+        return get_circuit_from_post_request(request, gym_code)
+    return get_circuit_from_get_request(request, db, session)
+
+
+def get_circuit_from_get_request(request: LocalProxy, db: Database, session: LocalProxy) -> Tuple[dict, str]:
+    """
+    Get circuit data from a GET request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :return: the circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    circuit = db_controller.get_circuit_by_name(
+        gym=request.args.get('gym'),
+        name=request.args.get('name'),
+        database=db
+    )
+    return load_full_boulder_data(
+        circuit,
+        request.args.get('gym'),
+        db,
+        session
+    )
+
+
+def get_circuit_from_post_request(request: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Get circuit data from a POST request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param gym_code: code of the gym the circuit belongs to
+    :type gym_code: str
+    :return: The circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    circuit = make_boulder_data_valid_js(request.form.get('circuit_data'))
+    if not circuit.get('gym', ''):
+        circuit['gym'] = gym_code
+    wall_image = get_wall_image(
+        circuit['gym'], circuit['section'], WALLS_PATH)
+    return circuit, wall_image
+
 def get_boulder_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
     """
     Load boulder data from a given request

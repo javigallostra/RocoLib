@@ -167,6 +167,54 @@ def process_rate_boulder_request(request, session, db):
     return abort(400)
 
 
+def process_load_circuit_request(request, session, db, current_user, static_folder):
+    try:
+        # get additional request params: list_id, is_user_list, sort_order, is_ascending, to_show
+        request_data = utils.load_data(request)
+
+        if isinstance(request_data, Tuple):
+            request_data = request_data[0]
+
+        circuit, wall_image = utils.get_circuit_from_request(
+            request,
+            db,
+            session,
+            utils.get_current_gym(session, db)
+        )
+
+        if not bool(circuit):
+            abort(404)
+
+        # get hold data
+        hold_data = utils.get_hold_data(
+            utils.get_current_gym(session, db),
+            circuit['section'],
+            static_folder
+        )
+
+        # map fields to appropriate values
+        sort_by = utils.get_field_value('sort_order', request_data)
+        is_ascending = utils.get_field_value('is_ascending', request_data)
+        to_show = utils.get_field_value('to_show', request_data)
+
+        return render_template(
+            'load_circuit.html',
+            circuit_name=circuit.get('name', ''),
+            wall_image=wall_image,
+            circuit_data=circuit,
+            scroll=request.args.get('scroll', 0),
+            origin=request.form.get('origin', 'explore_circuit'),
+            hold_data=hold_data,
+            hold_detection=utils.get_hold_detection_active(current_user),
+            list_id = request_data.get('list_id'),
+            is_user_list = request_data.get('is_user_list'),
+            sort_by=sort_by,
+            is_ascending=is_ascending,
+            to_show=to_show
+        )
+    except Exception:
+        return abort(500) # internal server error
+
 def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
         # get additional request params: list_id, is_user_list, sort_order, is_ascending, to_show

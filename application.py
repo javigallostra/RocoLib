@@ -150,6 +150,18 @@ def rate_boulder() -> Union[Response, NoReturn]:
     return request_processor.process_rate_boulder_request(request, session, g.db)
 
 
+@app.route('/load_circuit', methods=['POST', 'GET'])
+# @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
+def load_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_load_circuit_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder
+    )
+
+
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:

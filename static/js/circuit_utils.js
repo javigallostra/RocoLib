@@ -10,7 +10,7 @@ const MARGIN = 1;
 const FEET_COLOR = "#ffa321";
 
 var radius;
-var holdDetectionActive = true; // TODO: this should come from user preferences -> Set value on boulder load function
+var holdDetectionActive = true; // TODO: this should come from user preferences -> Set value on circuit load function
 
 function hexToRGBA(hex, alpha) {
     var r = parseInt(hex.slice(1, 3), 16),
@@ -281,13 +281,13 @@ function setHolds() {
 
 function validateForm() {
     if (holds.length === 0) {
-        alert("Boulder cannot be empty");
+        alert("circuit cannot be empty");
         return false;
     }
     return true;
 }
 
-function downloadProblem(boulder_name, image_wall) {
+function downloadProblem(circuit_name, image_wall) {
     // create canvas, load image, add holds, and set to download
     var downloadCanvas = document.createElement('canvas');
     var img_ref = document.getElementById('wall-image')
@@ -334,7 +334,7 @@ function downloadProblem(boulder_name, image_wall) {
 
         var link = document.createElement('a');
         link.id = "download-a";
-        link.download = boulder_name + ".png";
+        link.download = circuit_name + ".png";
         link.href = document.getElementById('download-canvas').toDataURL()
         link.click();
         $("#download-canvas").remove();
@@ -407,7 +407,7 @@ function circuitCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius,
     cnvs.onmousemove = myMove;
 };
 
-function boulderLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
+function circuitLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
     addHoldDetectionCallback(holdDetectionSwitchId);
     setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId);
 
@@ -430,7 +430,7 @@ window.radius = radius;
 // window.holdNum = holdNum;
 window.holdDetectionActive = holdDetectionActive;
 window.circuitCreateInit = circuitCreateInit;
-window.boulderLoadInit = boulderLoadInit;
+window.circuitLoadInit = circuitLoadInit;
 window.hexToRGBA = hexToRGBA;
 window.draw = draw;
 window.fillCanvasWithGray = fillCanvasWithGray;
