@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #195 Enable circuit creation
 - #172 Add left/right arrow buttons on PC to indicate that the user can change the problem by clicking
 - #168 Add a query builder to ease the handling of MongoDB queries
 - #168 Add API endpoint to get logged in user preferences

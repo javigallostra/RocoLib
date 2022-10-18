@@ -150,10 +150,10 @@ def rate_boulder() -> Union[Response, NoReturn]:
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:
     return request_processor.process_load_boulder_request(
-        request, 
-        session, 
-        g.db, 
-        current_user, 
+        request,
+        session,
+        g.db,
+        current_user,
         app.static_folder
     )
 
@@ -186,11 +186,11 @@ def render_about_us() -> str:
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section) -> str:
     return request_processor.process_wall_section_request(
-        request, 
-        session, 
-        g.db, 
-        current_user, 
-        app.static_folder, 
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder,
         wall_section
     )
 
@@ -200,9 +200,19 @@ def save() -> Response:
     return request_processor.process_save_request(request, session, g.db)
 
 
+@app.route('/circuit_save', methods=['POST'])
+def circuit_save() -> Response:
+    return request_processor.process_save_request(request, session, g.db, is_circuit=True)
+
+
 @app.route('/save_boulder', methods=['POST'])
 def save_boulder() -> Union[str, NoReturn]:
     return request_processor.process_save_boulder_request(request, current_user)
+
+
+@app.route('/save_circuit', methods=['POST'])
+def save_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_save_circuit_request(request, current_user)
 
 
 @app.route('/add_gym', methods=['GET', 'POST'])
