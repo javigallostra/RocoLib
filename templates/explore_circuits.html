@@ -1,0 +1,354 @@
+{% extends "base_template.html" %}
+
+{% block title %}{{ explore }}{% endblock %}
+
+{% block content %}
+<br />
+<div id="holder">
+  <div id="body">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col" style="display: flex; margin-left: 8px;">
+          <div>
+            <a class="btn btn-outline-primary" href="/explore" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="col">
+          <div>
+            <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <div class="col" style="display: flex; justify-content:end;">
+          <button style="margin-right: 8px;" class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fa fa-cog"></i>
+          </button>
+        </div>
+      </div>
+      <div class="collapse" id="collapseExample" style="margin-bottom: 0.5rem;">
+        <div class="card card-body" style="padding-top: 1.5rem; padding-bottom:1.5rem; border: 0.1em solid lightslategray;">
+          <div class="row text-left">
+            <div class="col mt-1 mb-1">
+              {{ select_gym }}:
+            </div>
+            <div class="col">
+              <div class="gym-selector">
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                  <form action="/change_gym" method="POST">
+                    <select class="form-control row" onchange="this.form.submit()" name="gym" id="gym">
+                      {% for gym in gyms %}
+                      <option onclick="this.form.submit()" value="{{ gym['id'] }}" {% if gym['id']==selected %} selected {%
+                        endif %}>{{ gym['name'] }}</option>
+                        {% endfor %}
+                      </select>
+                    </form>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="row text-left">
+            <div class="col mt-1 mb-1">
+              {{ sort_by }}:
+            </div>
+            <div class="col">
+              <div class="form-group" style="margin: inherit;">
+                <select class="form-control row" id="sortCriteria" style="margin-bottom: 0.25rem;">
+                  <option value="creation_date" selected>{{ creation_date }}</option>
+                  <option value="rating">{{ rating }}</option>
+                  <option value="difficulty">{{ difficulty }}</option>
+                  <option value="section">{{ wall_section }}</option>
+                  <option value="repetitions">{{ repetitions }}</option>
+                </select>
+                <select class="form-control row" id="sortAscending">
+                  <option value="increasing">{{ increasing }}</option>
+                  <option value="decreasing" selected>{{ decreasing }}</option>
+                </select>
+              </div>
+            </div>
+          </div>  
+          {% if is_authenticated %}
+          <div class="row text-left mt-3" style="padding-left: 2.2rem;">
+            <input type="checkbox" class="form-check-input pl-2" id="hideDoneCheck">
+            <label class="form-check-label" for="hideDoneCheck">{{ hide_done }}</label>
+          </div>
+          {% endif %}  
+        </div>
+      </div>
+      {% if not circuit_list %}
+      <br />
+      <br />
+      <div class="d-flex justify-content-center">
+        <h5>{{ no_circuit }}</h5>
+      </div>
+      {% endif %}
+      <div id="circuitsList" class="accordion">
+        {% for circuit in circuit_list %}
+        <div class="card" id="{{ 'id_' + circuit['safe_name'] }}" style="border: 0.1em solid lightgrey; border-radius: 0rem;">
+          <div class="card-header" id="{{ 'id_' + circuit['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
+            <div class="row">
+              <div class="col-11 col-md-4" style="padding-right: 0px;">
+                <!-- TODO: Add safename field to circuit -->
+                <form action="/load_circuit" method="post">
+                  <input type="hidden" name="circuit_data" id="{{ 'id_' + circuit['_id'] + circuit['name'] }}"
+                    value="{{circuit}}" />
+                    <input type="hidden" name="origin" id="{{ 'id_' + circuit['name'] + circuit['_id'] }}"
+                    value="explore_circuits" />
+                    <input type="hidden" name="list_id" id="{{ 'list_id' + circuit['_id'] }}"
+                    value="{{ selected }}" />
+                    <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + circuit['_id'] }}"
+                    value="False" />
+                    <input type="hidden" name="sort_order" class="circuit_sort_order"/>
+                    <input type="hidden" name="is_ascending" class="circuit_is_ascending"/>
+                    <input type="hidden" name="to_show" class="circuit_to_show"/>
+                  <button type="submit" name="circuit" value="{{ circuit['name'] }}" class="btn-link" style="width:100%;">
+                    <div class="row">
+                      <div class="dot" style="background-color: {{ circuit['color'] }};"></div>
+                      <h5 style="padding-left: 0.5rem;">{{circuit['name']}}</h5>
+                    </div>
+                  </button>
+                </form>
+              </div>
+              <div class="col-1 col-md-8" style="padding-left: 0px;">
+                <button class="btn btn-link" 
+                        style="width: 100%; padding-left: 1rem; display: flex; justify-content: end; text-decoration: none;" 
+                        type="button" 
+                        data-toggle="collapse" 
+                        data-target="#{{ 'id_' + circuit['safe_name'] + '-collapse' }}" 
+                        aria-expanded="true" 
+                        aria-controls="{{ 'id_' + circuit['safe_name'] + '-collapse' }}">
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="{{ 'id_' + circuit['safe_name'] + '-collapse' }}" class="collapse" aria-labelledby="{{ 'id_' + circuit['safe_name'] + '-heading' }}" data-parent="#circuitsList">
+            <div class="card-body" style="padding: 0px;">
+              <ul>
+              {%- for wall in walls_list -%}
+              {%- if wall['image'] == circuit['section'] -%}
+              <li>Section: {{ wall['name'] }}</li>
+              {%- endif -%}
+              {% endfor %}
+              <li>{{ creator }}: {{circuit["creator"]}}</li>
+              <li>{{ feet }}: {{circuit["feet"]}}</li>
+              <li>{{ added }} {{circuit["age"]}} {{ ago }}</li>
+              <li>{{ repetitions }} : {{circuit['repetitions'] }}</li>
+              <li>
+                <div class="container">
+                  <div class="row d-flex justify-content-left">
+                    <div class="col-lg-12 d-flex justify-content-left" style="padding-left: 0px;">
+                      <div class="star-rating-fixed">
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 0.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 1.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 2.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 3.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 4.5 else 'fas fa-star' }}"></span>
+                      </div>
+                      <p style="margin-left: 10px; margin-top: 0px;">
+                        {{ circuit.get('raters', 0) }} {{ 'ratings' if circuit.get('raters', 0) != 1 else 'rating' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // set and update sort order
+  document.getElementsByClassName("circuit_sort_order").forEach(element => element.value = document.getElementById("sortCriteria").value);
+  document.getElementById("sortCriteria").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("circuit_sort_order").forEach(element => element.value = this.value);
+    }
+  );
+  // set and update is_ascending
+  document.getElementsByClassName("circuit_is_ascending").forEach(element => element.value = document.getElementById("sortAscending").value);
+  document.getElementById("sortAscending").addEventListener(
+    "change",
+    function()
+    {
+      document.getElementsByClassName("circuit_is_ascending").forEach(element => element.value = this.value);
+    }
+  );
+    // set and update to_show
+    //document.getElementsByClassName("circuit_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
+    //document.getElementById("hideDoneCheck").addEventListener(
+    //  "change",
+    //  function()
+    //  {
+    //    document.getElementsByClassName("circuit_to_show").forEach(element => element.value = this.checked);
+    //  }
+    //);
+
+  function decodeHtml(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.documentElement.textContent;
+  }
+
+  function replaceAll(string, search, replace) {
+    return string.split(search).join(replace);
+  }
+
+  const checkbox = document.getElementById('hideDoneCheck');
+  if (checkbox != null) {
+    checkbox.addEventListener('change', (event) => {
+      if (event.currentTarget.checked) {
+        UpdateList(true);
+      } else {
+        UpdateList(false);
+      }
+    });
+  }
+  
+  function UpdateList(checked) {
+    var circuits = replaceAll(decodeHtml("{{ circuit_list }}"), "'", '"');
+    var circuits_data = JSON.parse('{"circuits": ' + circuits + "}");
+    circuits_data["circuits"].forEach((circuit) => {
+      $("#id_" + circuit["safe_name"])
+        .css(
+          'display',
+          (circuit.is_done && checked) ? 'none' : 'flex'
+        );
+    });
+  }
+
+  $("#sortAscending").on("change", function () {
+    var list = $("#circuitsList");
+    var listItems = list.children('div');
+    list.append(listItems.get().reverse());
+  });
+
+  $("#sortCriteria").on("change", function () {
+    // Some hackery to turn data into valid JS JSON
+    var circuits = replaceAll(decodeHtml("{{ circuit_list }}"), "'", '"');
+    var circuits_data = JSON.parse('{"circuits": ' + circuits + "}");
+
+    // Sort data
+    if (this.value === "creation_date") {
+      function sortcircuits(a, b) {
+        var dateA = Date.parse(a["time"]);
+        var dateB = Date.parse(b["time"]);
+        return dateB - dateA;
+      }
+    } 
+    else if (this.value === "difficulty") {
+      function sortcircuits(a, b) {
+        var difficulties = ["red", "yellow", "blue", "green"];
+        return (
+          difficulties.indexOf(a["difficulty"]) -
+          difficulties.indexOf(b["difficulty"])
+        );
+      }
+    } 
+    else if (this.value === "section") {
+      function sortcircuits(a, b) {
+        return a["section"] < b["section"]
+          ? 1
+          : b["section"] < a["section"]
+            ? -1
+            : 0;
+      }
+    } 
+    else if (this.value === "rating") {
+      function sortcircuits(a, b) {
+        return b["rating"] - a["rating"];
+      }
+    }
+    else if (this.value === "repetitions") {
+      function sortcircuits(a, b) {
+        return b["repetitions"] - a["repetitions"];
+      }
+    }
+
+    circuits_data["circuits"] = circuits_data["circuits"].sort(sortcircuits);
+
+    if ($("#sortAscending").val() === "increasing") {
+      circuits_data["circuits"].reverse();
+    }
+
+    circuits_data["circuits"].forEach((circuit) => {
+      // Reorder divs according to criteria
+      $("#circuitsList")
+        .find("#id_" + circuit["safe_name"])
+        .each(function () {
+          $(this).parent().append(this);
+        });
+    });
+  });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  /* https://stackoverflow.com/questions/47702879/bootstrap-4-hex-colors-for-rails-app */
+  .btn-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    color: #007bff;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .btn-link:hover {
+    text-decoration: underline;
+  }
+
+  .dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    border: 1px solid rgb(104, 104, 104);
+    position: relative;
+    display: inline-block;
+  }
+
+  .card {
+    border: 0.1em solid dimgray;
+    padding: 0.5em;
+    padding-left: 1.2em;
+    margin: 0.5em;
+  }
+
+  .star-rating-fixed .fas {
+    color: yellow;
+  }
+
+  .form-group {
+    padding-left: 0;
+  }
+
+  @media (max-width: 767px) {
+    .star-rating-fixed {
+      line-height: 15px;
+      font-size: 0.8em;
+      margin-top: 4px;
+    }
+    .col-1 {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    .col-11 {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+    h5 {
+      font-size: 1.1rem;
+      margin-bottom: 0rem;
+      align-self: center;
+
+    }
+  }
+</style>
+{% endblock %}

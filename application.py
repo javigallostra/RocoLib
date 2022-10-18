@@ -135,6 +135,10 @@ def explore() -> str:
 def explore_boulders() -> str:
     return request_processor.handle_explore_boulders(request, session, g.db, current_user)
 
+@app.route('/explore_circuits', methods=['GET', 'POST'])
+def explore_circuits() -> str:
+    return request_processor.handle_explore_circuits(request, session, g.db, current_user)
+
 
 @app.route('/change_gym', methods=['POST'])
 def change_gym_problem_list() -> str:
@@ -144,6 +148,18 @@ def change_gym_problem_list() -> str:
 @app.route('/rate_boulder', methods=['POST'])
 def rate_boulder() -> Union[Response, NoReturn]:
     return request_processor.process_rate_boulder_request(request, session, g.db)
+
+
+@app.route('/load_circuit', methods=['POST', 'GET'])
+# @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
+def load_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_load_circuit_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder
+    )
 
 
 @app.route('/load_boulder', methods=['POST', 'GET'])

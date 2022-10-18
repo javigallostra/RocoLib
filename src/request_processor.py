@@ -92,6 +92,31 @@ def handle_explore_boulders(request, session, db, current_user):
         is_authenticated=current_user.is_authenticated
     )
 
+def handle_explore_circuits(request, session, db, current_user):
+    if request.method == 'POST':
+        gym = utils.get_current_gym(session, db)
+
+    elif request.method == 'GET':
+        gym = request.args.get('gym', utils.get_current_gym(session, db))
+
+    circuits = utils.get_circuits_list(
+        gym,
+        db,
+        session,
+        utils.get_show_only_latest_wall_sets(current_user)
+    )
+
+    gym_walls = db_controller.get_gym_walls(gym, db)
+
+    return render_template(
+        'explore_circuits.html',
+        gyms=db_controller.get_gyms(db),
+        selected=gym,
+        circuit_list=circuits,
+        walls_list=gym_walls,
+        origin='explore_circuits',
+        is_authenticated=current_user.is_authenticated
+    )
 
 def handle_change_gym_problem_list_request(request, session, db, current_user):
     gym = request.form.get('gym', utils.get_current_gym(session, db))
@@ -141,6 +166,54 @@ def process_rate_boulder_request(request, session, db):
         return redirect(url_for('load_boulder', gym=gym, name=boulder_name))
     return abort(400)
 
+
+def process_load_circuit_request(request, session, db, current_user, static_folder):
+    try:
+        # get additional request params: list_id, is_user_list, sort_order, is_ascending, to_show
+        request_data = utils.load_data(request)
+
+        if isinstance(request_data, Tuple):
+            request_data = request_data[0]
+
+        circuit, wall_image = utils.get_circuit_from_request(
+            request,
+            db,
+            session,
+            utils.get_current_gym(session, db)
+        )
+
+        if not bool(circuit):
+            abort(404)
+
+        # get hold data
+        hold_data = utils.get_hold_data(
+            utils.get_current_gym(session, db),
+            circuit['section'],
+            static_folder
+        )
+
+        # map fields to appropriate values
+        sort_by = utils.get_field_value('sort_order', request_data)
+        is_ascending = utils.get_field_value('is_ascending', request_data)
+        to_show = utils.get_field_value('to_show', request_data)
+
+        return render_template(
+            'load_circuit.html',
+            circuit_name=circuit.get('name', ''),
+            wall_image=wall_image,
+            circuit_data=circuit,
+            scroll=request.args.get('scroll', 0),
+            origin=request.form.get('origin', 'explore_circuit'),
+            hold_data=hold_data,
+            hold_detection=utils.get_hold_detection_active(current_user),
+            list_id = request_data.get('list_id'),
+            is_user_list = request_data.get('is_user_list'),
+            sort_by=sort_by,
+            is_ascending=is_ascending,
+            to_show=to_show
+        )
+    except Exception:
+        return abort(500) # internal server error
 
 def process_load_boulder_request(request, session, db, current_user, static_folder):
     try:
