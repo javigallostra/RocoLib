@@ -247,6 +247,7 @@ function myMove(e) {
 
 function undoMove() {
     holds.pop(); // Remove last selected hold
+    holdNum = 0; // Reset numbering
     // Clear canvas
     var cnvs = document.getElementById("wall-canvas");
     const ctx = cnvs.getContext("2d");

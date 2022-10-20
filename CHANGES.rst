@@ -9,7 +9,7 @@ Changelog
 Features
 --------
 
-- #195 Enable circuit creation
+- #195 #196 Enable circuit creation and visualization
 - #172 Add left/right arrow buttons on PC to indicate that the user can change the problem by clicking
 - #168 Add a query builder to ease the handling of MongoDB queries
 - #168 Add API endpoint to get logged in user preferences
@@ -46,6 +46,7 @@ Features
 Fixes
 -----
 
+- #198 Fix hole numbering when undoing a circuit move
 - #189 Fix section and gym not being shown on some ticklist problems
 - Enable CORS on API endpoints
 - #185 Fix downloading a problem as an image 
