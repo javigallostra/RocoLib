@@ -15,15 +15,17 @@ from db.query_builder import QueryBuilder
 from src.models import TICKLIST, TickListProblem
 from src.config import *
 
-USERS_COLLECTION = 'users' 
+USERS_COLLECTION = 'users'
+
 
 def preprocess_boulder_data(boulder):
     # inverse maps
     for field in FIELDS_TO_MAP.keys():
         if field in boulder:
             inv_map = {v: k for k, v in FIELDS_TO_MAP[field].items()}
-            boulder[field] = inv_map[boulder[field]]    
+            boulder[field] = inv_map[boulder[field]]
     return boulder
+
 
 def postprocess_boulder_data(func):
     """
@@ -49,7 +51,7 @@ def postprocess_boulder_data(func):
         if isinstance(boulder_data, list):
             for boulder in boulder_data:
                 # skip if boulder data is empty for some reason
-                if not boulder: 
+                if not boulder:
                     continue
                 for field in fields_to_check:
                     if field in boulder:
@@ -81,7 +83,7 @@ def postprocess_boulder_data(func):
                         boulder_data[field] = fields_to_check[field]
                     for field in maps_to_apply:
                         if field in boulder_data:
-                            boulder_data[field] = maps_to_apply[field][boulder_data[field]]                        
+                            boulder_data[field] = maps_to_apply[field][boulder_data[field]]
         return boulder_data
     return wrapper
 
@@ -165,7 +167,8 @@ def get_gym_pretty_name(gym: str, database: Database) -> str:
 
     IF the gym cannot be found, return an empty string
     """
-    data = database['walls'].find_one({'id': gym}, {'name': 1}) # move this cases to query builder?
+    data = database['walls'].find_one(
+        {'id': gym}, {'name': 1})  # move this cases to query builder?
     return data.get('name', '') if data else ''
 
 
@@ -213,6 +216,19 @@ def get_walls_radius_all(database: Database) -> dict[str, float]:
 
 @serializable
 @postprocess_boulder_data
+def get_circuits(gym: str, database: Database) -> dict[str, list[Data]]:
+    """
+    Get the whole list of circuits for the specified gym
+
+    The returned dictionary has one key-value pair.
+    The key is 'Items' and the value is a list of raw boulder data.
+    """
+    raw_circuit_data = list(database[f'{gym}_circuits'].find())
+    return {ITEMS: raw_circuit_data}
+
+
+@serializable
+@postprocess_boulder_data
 def get_boulders(gym: str, database: Database) -> dict[str, list[Data]]:
     """
     Get the whole list of boulders for the specified gym
@@ -241,7 +257,8 @@ def put_boulder(boulder_data: Data, gym: str, database: Database) -> InsertOneRe
     """
     Store a new boulder for the specified gym
     """
-    result = database[f'{gym}_boulders'].insert_one(preprocess_boulder_data(boulder_data))
+    result = database[f'{gym}_boulders'].insert_one(
+        preprocess_boulder_data(boulder_data))
     if result is not None:
         return result.inserted_id
 
@@ -251,7 +268,8 @@ def put_circuit(circuit_data: Data, gym: str, database: Database) -> InsertOneRe
     """
     Store a new circuit for the specified gym
     """
-    result = database[f'{gym}_circuits'].insert_one(preprocess_boulder_data(circuit_data))
+    result = database[f'{gym}_circuits'].insert_one(
+        preprocess_boulder_data(circuit_data))
     if result is not None:
         return result.inserted_id
 
@@ -280,7 +298,8 @@ def put_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Database
     # TICKLIST = 'ticklist'
     # USERS = 'users'
     # user = database[USERS].find_one({'id': user_id})
-    user = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query)
+    user = database[USERS_COLLECTION].find_one(
+        QueryBuilder().equal('id', user_id).query)
     # get ticklist
     ticklist = user.get(TICKLIST, [])
     # check if problem is already in the user's ticklist
@@ -310,7 +329,8 @@ def update_user_ticklist(database: Database, ticklist: list[Data], user: Data, u
     Update a user's ticklist, both DDBB and in memory projections
     """
     user[TICKLIST] = ticklist
-    database[USERS_COLLECTION].update_one(QueryBuilder().equal('id', user_id).query, {'$set': user})
+    database[USERS_COLLECTION].update_one(
+        QueryBuilder().equal('id', user_id).query, {'$set': user})
 
 
 def find_boulder_index(boulder_data: Data, boulders: list[Data]) -> int:
@@ -360,7 +380,8 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
 
     Return the filtered list of boulders with the given one removed
     """
-    user = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query)
+    user = database[USERS_COLLECTION].find_one(
+        QueryBuilder().equal('id', user_id).query)
     filtered_list = []
     if user:
         # get ticklist
@@ -369,15 +390,19 @@ def delete_boulder_in_ticklist(boulder_data: Data, user_id: str, database: Datab
         filtered_list = list(
             filter(lambda x: x['iden'] != boulder_data['iden'], ticklist))
         user['ticklist'] = filtered_list
-        database[USERS_COLLECTION].update_one(QueryBuilder().equal('id', user_id).query, {'$set': user})
+        database[USERS_COLLECTION].update_one(
+            QueryBuilder().equal('id', user_id).query, {'$set': user})
 
     return filtered_list
+
 
 @serializable
 @postprocess_boulder_data
 def get_user_problem_list_by_id(user_id: str, list_id: str, database: Database) -> list:
-    problem_list = database[USERS_COLLECTION].find_one(QueryBuilder().equal('id', user_id).query, {list_id : 1})
-    return problem_list.get(list_id, []) if problem_list else []   
+    problem_list = database[USERS_COLLECTION].find_one(
+        QueryBuilder().equal('id', user_id).query, {list_id: 1})
+    return problem_list.get(list_id, []) if problem_list else []
+
 
 @serializable
 @postprocess_boulder_data
@@ -413,7 +438,8 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
     Given a boulder name and a Gym, return the boulder data
     Return an empty dictionary if the boulder is not found
     """
-    boulder = database[f'{gym}_boulders'].find_one(QueryBuilder().equal('name', name).query)
+    boulder = database[f'{gym}_boulders'].find_one(
+        QueryBuilder().equal('name', name).query)
 
     return boulder if boulder else {}
 
@@ -455,14 +481,14 @@ def get_random_boulder(gym: str, database: Database) -> Data:
 @serializable
 @postprocess_boulder_data
 def get_next_boulder(
-    boulder_id: str, 
-    gym: str,
-    user_id: str,
-    latest_wall_set: bool, 
-    sort_by: str, 
-    is_ascending: bool, 
-    to_show: str,
-    database: Database) -> Data:
+        boulder_id: str,
+        gym: str,
+        user_id: str,
+        latest_wall_set: bool,
+        sort_by: str,
+        is_ascending: bool,
+        to_show: str,
+        database: Database) -> Data:
     """
     Given a boulder id, get the next boulder based on insertion date
 
@@ -479,31 +505,35 @@ def get_next_boulder(
     # problems have to be retrieved
     # build the query
     SORTING_FIELD_MAP = {
-        'creation_date': '_id', # insertion order is by date
+        'creation_date': '_id',  # insertion order is by date
         'difficulty': 'difficulty',
         'section': 'section',
         'rating': 'rating',
-        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+        # Here we might have problems if not all boulders have repetitions
+        'repetitions': 'repetitions'
     }
     sorting_field = SORTING_FIELD_MAP[sort_by]
-    
+
     query_builder = QueryBuilder()
 
     if latest_wall_set:
         walls = get_gym_walls(gym, database, latest_wall_set)
-        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        query_builder.contained_in(
+            'section', [wall['image'] for wall in walls])
 
     boulders = list(
         database[f'{gym}_boulders'].find(query_builder.query).sort([
             (sorting_field, 1 if is_ascending else -1),
             ('time', -1)
-            ])
+        ])
     )
 
-    # if show only to do, remove problems present as done in user ticklist 
+    # if show only to do, remove problems present as done in user ticklist
     if to_show == 'to_do' and user_id:
-        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(user_id, 'ticklist', database) if b['is_done'] == True]
-        boulders = [boulder for boulder in boulders if str(boulder['_id']) not in done_boulders]
+        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(
+            user_id, 'ticklist', database) if b['is_done'] == True]
+        boulders = [boulder for boulder in boulders if str(
+            boulder['_id']) not in done_boulders]
         # [(b['name'], b['difficulty'], b['time']) for b in sorted(a, key=lambda x: (-x['difficulty'], -(datetime.datetime.strptime(x['time'], '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime(1, 1, 1)).total_seconds()))]
 
     next_boulder = {}
@@ -515,15 +545,17 @@ def get_next_boulder(
             next_boulder = boulders[idx]
     return next_boulder
 
+
 @serializable
 @postprocess_boulder_data
 def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
     SORTING_FIELD_MAP = {
-        'creation_date': '_id', # insertion order is by date
+        'creation_date': '_id',  # insertion order is by date
         'difficulty': 'difficulty_int',
         'section': 'section',
         'rating': 'rating',
-        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+        # Here we might have problems if not all boulders have repetitions
+        'repetitions': 'repetitions'
     }
     REVERSE_MAPS = {
         'green': 0,
@@ -534,7 +566,8 @@ def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_se
 
     # What a pain to have to recover all boulders...
     ticklist_p = get_user_problem_list_by_id(user_id, list_id, database)
-    problems = [get_boulder_by_id(b['gym'], b['iden'], database) for b in ticklist_p]
+    problems = [get_boulder_by_id(b['gym'], b['iden'], database)
+                for b in ticklist_p]
     # match fields
     for p in problems:
         for t in ticklist_p:
@@ -549,25 +582,30 @@ def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_se
     elif to_show == 'to_do':
         problems = [p for p in problems if not p['is_done']]
     # sorted_problem_list = sorted(problems, key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (-1 if not is_ascending else 1) *datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
-    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1) * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1)
+                  * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
 
     next_boulder = {}
-    
+
     # print([(b['name'],b[SORTING_FIELD_MAP[sort_by]],datetime.timestamp(datetime.fromisoformat(b['time']))) for b in problems])
 
     idx = -1
     if problems:
         # wrap in try catch ? if not found we can keep showing the current boulder
-        idx = [b['_id'] for b in problems].index(boulder_id) # index of current boulder in list
-    
-    keep_searching = True if problems and idx != -1 and idx != len(problems)-1 else False
+        idx = [b['_id'] for b in problems].index(
+            boulder_id)  # index of current boulder in list
+
+    keep_searching = True if problems and idx != - \
+        1 and idx != len(problems)-1 else False
     gym_code = problems[idx]['gym'] if idx != -1 else ''
     next_idx = 1
-    
+
     while keep_searching:
-        next_boulder = get_boulder_by_id(problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
+        next_boulder = get_boulder_by_id(
+            problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
         # check if wall section is latest wall set (wrap in function)
-        valid_gym_sections =  [wall['image'] for wall in get_gym_walls(problems[idx+next_idx]['gym'], database, latest_wall_set)]
+        valid_gym_sections = [wall['image'] for wall in get_gym_walls(
+            problems[idx+next_idx]['gym'], database, latest_wall_set)]
         # valid boulder, if there are more conditions, add here
         if bool(next_boulder) and next_boulder['section'] in valid_gym_sections:
             keep_searching = False
@@ -581,17 +619,19 @@ def get_next_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_se
 
     return next_boulder, gym_code
 
+
 @serializable
 @postprocess_boulder_data
 def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database):
     # problems = get_user_problem_list_by_id(user_id, list_id, database)
 
     SORTING_FIELD_MAP = {
-        'creation_date': '_id', # insertion order is by date
+        'creation_date': '_id',  # insertion order is by date
         'difficulty': 'difficulty_int',
         'section': 'section',
         'rating': 'rating',
-        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+        # Here we might have problems if not all boulders have repetitions
+        'repetitions': 'repetitions'
     }
     REVERSE_MAPS = {
         'green': 0,
@@ -602,7 +642,8 @@ def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wal
 
     # What a pain to have to recover all boulders...
     ticklist_p = get_user_problem_list_by_id(user_id, list_id, database)
-    problems = [get_boulder_by_id(b['gym'], b['iden'], database) for b in ticklist_p]
+    problems = [get_boulder_by_id(b['gym'], b['iden'], database)
+                for b in ticklist_p]
     # match fields
     for p in problems:
         for t in ticklist_p:
@@ -617,28 +658,32 @@ def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wal
     elif to_show == 'to_do':
         problems = [p for p in problems if not p['is_done']]
     # sorted_problem_list = sorted(problems, key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (-1 if not is_ascending else 1) *datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
-    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1) * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
+    problems.sort(key=lambda p: (p[SORTING_FIELD_MAP[sort_by]], (1 if not is_ascending else -1)
+                  * datetime.timestamp(datetime.fromisoformat(p['time']))), reverse=not is_ascending)
 
     next_boulder = {}
-    
+
     idx = -1
     if problems:
         # wrap in try catch ? if not found we can keep showing the current boulder
-        idx = [b['_id'] for b in problems].index(boulder_id) # index of current boulder in list
-    
+        idx = [b['_id'] for b in problems].index(
+            boulder_id)  # index of current boulder in list
+
     keep_searching = True if problems and idx != -1 and idx != 0 else False
     gym_code = problems[idx]['gym'] if idx != -1 else ''
     next_idx = -1
-    
+
     while keep_searching:
-        next_boulder = get_boulder_by_id(problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
+        next_boulder = get_boulder_by_id(
+            problems[idx+next_idx]['gym'], problems[idx+next_idx]['_id'], database)
         # check if wall section is latest wall set (wrap in function)
-        valid_gym_sections =  [wall['image'] for wall in get_gym_walls(problems[idx+next_idx]['gym'], database, latest_wall_set)]
+        valid_gym_sections = [wall['image'] for wall in get_gym_walls(
+            problems[idx+next_idx]['gym'], database, latest_wall_set)]
         # valid boulder, if there are more conditions, add here
         if bool(next_boulder) and next_boulder['section'] in valid_gym_sections:
             keep_searching = False
             gym_code = problems[idx+next_idx]['gym']
-        elif next_idx - 1 == 0: # no more problems in list from where to search
+        elif next_idx - 1 == 0:  # no more problems in list from where to search
             next_boulder = {}
             gym_code = problems[idx]['gym']
             keep_searching = False
@@ -647,17 +692,18 @@ def get_previous_boulder_from_user_list(boulder_id, list_id, user_id, latest_wal
 
     return next_boulder, gym_code
 
+
 @serializable
 @postprocess_boulder_data
 def get_previous_boulder(
-    boulder_id: str, 
-    gym: str, 
-    user_id: str,
-    latest_wall_set: bool, 
-    sort_by: str, 
-    is_ascending: bool, 
-    to_show: str, 
-    database: Database) -> Data:
+        boulder_id: str,
+        gym: str,
+        user_id: str,
+        latest_wall_set: bool,
+        sort_by: str,
+        is_ascending: bool,
+        to_show: str,
+        database: Database) -> Data:
     """
     Given a boulder id, get the previous boulder based on insertion date
 
@@ -674,31 +720,35 @@ def get_previous_boulder(
     # problems have to be retrieved
     # build the query
     SORTING_FIELD_MAP = {
-        'creation_date': '_id', # insertion order is by date
+        'creation_date': '_id',  # insertion order is by date
         'difficulty': 'difficulty',
         'section': 'section',
         'rating': 'rating',
-        'repetitions': 'repetitions' # Here we might have problems if not all boulders have repetitions
+        # Here we might have problems if not all boulders have repetitions
+        'repetitions': 'repetitions'
     }
     sorting_field = SORTING_FIELD_MAP[sort_by]
-    
+
     query_builder = QueryBuilder()
 
     if latest_wall_set:
         walls = get_gym_walls(gym, database, latest_wall_set)
-        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        query_builder.contained_in(
+            'section', [wall['image'] for wall in walls])
 
     boulders = list(
         database[f'{gym}_boulders'].find(query_builder.query).sort([
             (sorting_field, 1 if is_ascending else -1),
             ('time', -1)
-            ])
+        ])
     )
 
-    # if show only to do, remove problems present as done in user ticklist 
+    # if show only to do, remove problems present as done in user ticklist
     if to_show == 'to_do' and user_id:
-        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(user_id, 'ticklist', database) if b['is_done'] == True]
-        boulders = [boulder for boulder in boulders if str(boulder['_id']) not in done_boulders]
+        done_boulders = [b['iden'] for b in get_user_problem_list_by_id(
+            user_id, 'ticklist', database) if b['is_done'] == True]
+        boulders = [boulder for boulder in boulders if str(
+            boulder['_id']) not in done_boulders]
         # [(b['name'], b['difficulty'], b['time']) for b in sorted(a, key=lambda x: (-x['difficulty'], -(datetime.datetime.strptime(x['time'], '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime(1, 1, 1)).total_seconds()))]
 
     previous_boulder = {}
@@ -719,7 +769,7 @@ def update_boulder_by_id(gym: str, boulder_id: str, boulder_data: Data, database
     """
     boulder_data.pop('_id', None)
     return database[f'{gym}_boulders'].update_one(
-        {'_id': ObjectId(boulder_id)}, 
+        {'_id': ObjectId(boulder_id)},
         {'$set': preprocess_boulder_data(boulder_data)}
     )
 
@@ -747,7 +797,8 @@ def get_boulders_filtered(
     # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
     if latest_walls_only:
         walls = get_gym_walls(gym, database, True)
-        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        query_builder.contained_in(
+            'section', [wall['image'] for wall in walls])
 
     # if there are no conditions, return everything
     if not conditions:
@@ -763,8 +814,8 @@ def get_boulders_filtered(
             query_builder.lower(key, int(value) + 0.5)
             query_builder.greater(key, int(value) - 0.5)
 
-
-    filtered_boulder_data = list(database[f'{gym}_boulders'].find(query_builder.query))
+    filtered_boulder_data = list(
+        database[f'{gym}_boulders'].find(query_builder.query))
 
     if not filtered_boulder_data:
         filtered_boulder_data = list(database[f'{gym}_boulders'].find())
@@ -790,7 +841,8 @@ def get_circuits_filtered(
     # add condition to query -> db.collection.find( { field: { $in: [ 'hi' , 'value'] } } )
     if latest_walls_only:
         walls = get_gym_walls(gym, database, True)
-        query_builder.contained_in('section', [wall['image'] for wall in walls])
+        query_builder.contained_in(
+            'section', [wall['image'] for wall in walls])
 
     return {ITEMS: list(database[f'{gym}_circuits'].find(query_builder.query))}
 
@@ -808,8 +860,8 @@ def save_user(user_data: Data, database: Database) -> InsertOneResult:
         return database['users'].insert_one(user_data)
 
     id_query = QueryBuilder().equal('_id', ObjectId(user_data['_id']))
-    user_data = {key: val for key,val in user_data.items() if key != '_id'}
-    updated_data = { "$set": user_data }
+    user_data = {key: val for key, val in user_data.items() if key != '_id'}
+    updated_data = {"$set": user_data}
     database['users'].update_one(id_query.query, updated_data)
 
 
@@ -842,6 +894,7 @@ def get_user_data_by_username(name: str, database: Database) -> Data:
     user = database['users'].find_one(query_builder.query)
     return user if user else {}
 
+
 @serializable
 def get_user_preferences(user_id: str, database: Database) -> Data:
     """
@@ -850,6 +903,7 @@ def get_user_preferences(user_id: str, database: Database) -> Data:
     query_builder = QueryBuilder().equal('user_id', user_id)
     user_prefs = database['user_preferences'].find_one(query_builder.query)
     return user_prefs if user_prefs else {}
+
 
 @serializable
 def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResult:
@@ -862,8 +916,8 @@ def save_user_preferences(user_prefs: Data, database: Database) -> InsertOneResu
 
     if not found_user_prefs:
         return database['user_preferences'].insert_one(user_prefs)
-    
-    new_prefs = {key: val for key,val in user_prefs.items() if key != '_id'}
-    updated_prefs = { "$set": new_prefs }
+
+    new_prefs = {key: val for key, val in user_prefs.items() if key != '_id'}
+    updated_prefs = {"$set": new_prefs}
     id_query = QueryBuilder().equal('_id', ObjectId(user_prefs['_id']))
     database['user_preferences'].update_one(id_query.query, updated_prefs)

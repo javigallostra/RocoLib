@@ -3,7 +3,7 @@ from api.blueprint import get_auth_token, get_boulder_by_id, get_boulder_by_name
 from api.blueprint import get_gym_boulders, get_gym_pretty_name, get_gym_wall_name
 from api.blueprint import get_gyms, get_gym_walls, boulder_create, test_auth, new_user
 from api.blueprint import get_user_ticklist, rate_boulder, mark_boulder_as_done
-from api.blueprint import get_user_preferences
+from api.blueprint import get_user_preferences, get_gym_circuits
 
 
 def generate_api_docs(app) -> None:
@@ -17,6 +17,7 @@ def generate_api_docs(app) -> None:
     from api.schemas import GymNameSchema
     from api.schemas import WallNameSchema
     from api.schemas import GymBoulderListSchema
+    from api.schemas import GymCircuitListSchema
     from api.schemas import BoulderSchema
     from api.schemas import BoulderIDParameter
     from api.schemas import BoulderNameParameter
@@ -41,6 +42,7 @@ def generate_api_docs(app) -> None:
     spec.components.schema("Walls", schema=WallListSchema)
     spec.components.schema("Boulder", schema=BoulderSchema)
     spec.components.schema("Boulders", schema=GymBoulderListSchema)
+    spec.components.schema("Circuits", schema=GymCircuitListSchema)
     spec.components.schema("GymName", schema=GymNameSchema)
     spec.components.schema("WallName", schema=WallNameSchema)
     spec.components.schema(
@@ -81,6 +83,7 @@ def generate_api_docs(app) -> None:
         spec.path(view=get_gym_pretty_name)
         spec.path(view=get_gym_wall_name)
         spec.path(view=get_gym_boulders)
+        spec.path(view=get_gym_circuits)
         spec.path(view=get_boulder_by_id)
         spec.path(view=get_boulder_by_name)
         spec.path(view=boulder_create)

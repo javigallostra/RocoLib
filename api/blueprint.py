@@ -250,6 +250,52 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
     """
     return api_request_processor.process_get_gym_wall_name(g.db, gym_id, wall_section)
 
+@api_blueprint.route('/circuits/<string:gym_id>/list', methods=['GET'])
+def get_gym_circuits(gym_id: str) -> Response:
+    """Circuits associated to the given gym.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      responses:
+        200:
+          description:
+            List of gym circuits
+          content:
+            application/json:
+              schema: GymCircuitListSchema
+            text/plain:
+              schema: GymCircuitListSchema
+            text/json:
+              schema: GymCircuitListSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_gym_circuits_request(g.db, gym_id)
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
 def get_gym_boulders(gym_id: str) -> Response:

@@ -238,6 +238,13 @@ class GymBoulderListSchema(Schema):
     boulders = fields.List(fields.Nested(BoulderSchema))
 
 
+class GymCircuitListSchema(Schema):
+    """
+    Circuit List Data Schema
+    """
+    circuits = fields.List(fields.Nested(BoulderSchema))
+
+
 class TicklistBoulderSchema(BoulderSchema):
     """
     Ticklist Boulder Data Schema
@@ -315,6 +322,10 @@ spec = APISpec(
         dict(
             name="Boulders",
             description="Endpoints related to Boulder Problems"
+        ),
+        dict(
+            name="Circuits",
+            description="Endpoints related to Circuits"
         ),
         dict(
             name="User",

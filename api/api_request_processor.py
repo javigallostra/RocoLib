@@ -39,6 +39,13 @@ def process_get_gym_wall_name(db, gym_id, wall_section):
     return jsonify(dict(name=db_controller.get_wall_name(gym_id, wall_section, db))), 200
 
 
+def process_get_gym_circuits_request(db, gym_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
+    return jsonify(dict(circuits=db_controller.get_circuits(gym_id, db).get(ITEMS, []))), 200
+
+
 def process_get_gym_boulders_request(db, gym_id):
     valid, errors = is_gym_valid(gym_id, db)
     if not valid:
@@ -242,6 +249,7 @@ def process_get_user_ticklist_request(db, user):
 
 def process_test_auth_request(user):
     return jsonify(dict(data=f'Hello {user.name}')), 200
+
 
 def process_get_user_preferences_request(user):
     return jsonify(user.preferences.serialize(ignore_keys=('_id', 'user_id'))), 200
