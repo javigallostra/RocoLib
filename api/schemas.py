@@ -82,9 +82,26 @@ class BoulderSchema(BaseBoulderSchema):
     section = fields.Str()
 
 
+class CircuitSchema(BaseBoulderSchema):
+    """
+    Data Schema of a Circuit Problem
+    """
+    _id = fields.Str()
+    raters = fields.Int()
+    rating = fields.Float()
+    section = fields.Str()
+
+
 class CreateBoulderRequestBody(BaseBoulderSchema):
     """
     Data Schema to create a boulder
+    """
+    pass
+
+
+class CreateCircuitRequestBody(BaseBoulderSchema):
+    """
+    Data Schema to create a circuit
     """
     pass
 
@@ -102,9 +119,26 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
     #     return CreateBoulderRequestValidator(**data)
 
 
+class CreateCircuitRequestValidator(BaseBoulderSchema):
+    """
+    Data Schema to validate a create circuit request
+    """
+    raters = fields.Int(required=True)
+    rating = fields.Float(required=True)
+    section = fields.Str(required=True)
+
+
 class CreateBoulderResponseBody(Schema):
     """
     Data schema of the response to a successful create boulder request
+    """
+    created = fields.Bool()
+    _id = fields.Str()
+
+
+class CreateCircuitResponseBody(Schema):
+    """
+    Data schema of the response to a successful create circuit request
     """
     created = fields.Bool()
     _id = fields.Str()
@@ -203,11 +237,25 @@ class BoulderIDParameter(Schema):
     boulder_id = fields.Str()
 
 
+class CircuitIDParameter(Schema):
+    """
+    Data Schema of a Circuit ID parameter
+    """
+    circuit_id = fields.Str()
+
+
 class BoulderNameParameter(Schema):
     """
-    Data Schema of a Boulder ID parameter
+    Data Schema of a Boulder name parameter
     """
     boulder_name = fields.Str()
+
+
+class CircuitNameParameter(Schema):
+    """
+    Data Schema of a Circuit name parameter
+    """
+    circuit_name = fields.Str()
 
 
 class WallSectionParameter(Schema):

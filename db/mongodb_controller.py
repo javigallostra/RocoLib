@@ -448,7 +448,7 @@ def get_boulder_by_name(gym: str, name: str, database: Database) -> Data:
 @postprocess_boulder_data
 def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     """
-    Given a boulder name and a Gym, return the boulder data
+    Given a boulder id and a Gym, return the boulder data
     Return an empty dictionary if the boulder is not found
     """
     boulder = database[f'{gym}_boulders'].find_one(
@@ -456,6 +456,30 @@ def get_boulder_by_id(gym: str, boulder_id: str, database: Database) -> Data:
     )
     return boulder if boulder else {}
 
+@serializable
+@postprocess_boulder_data
+def get_circuit_by_name(gym: str, name: str, database: Database) -> Data:
+    """
+    Given a circuit name and a Gym, return the circuit data
+    Return an empty dictionary if the circuit is not found
+    """
+    circuit = database[f'{gym}_circuits'].find_one(
+        QueryBuilder().equal('name', name).query)
+
+    return circuit if circuit else {}
+
+
+@serializable
+@postprocess_boulder_data
+def get_circuit_by_id(gym: str, circuit_id: str, database: Database) -> Data:
+    """
+    Given a circuit id and a Gym, return the boulder data
+    Return an empty dictionary if the circuit is not found
+    """
+    circuit = database[f'{gym}_circuits'].find_one(
+        QueryBuilder().equal('_id', ObjectId(circuit_id)).query
+    )
+    return circuit if circuit else {}
 
 @serializable
 @postprocess_boulder_data

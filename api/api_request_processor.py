@@ -45,6 +45,61 @@ def process_get_gym_circuits_request(db, gym_id):
         return jsonify(errors=errors), 404
     return jsonify(dict(circuits=db_controller.get_circuits(gym_id, db).get(ITEMS, []))), 200
 
+def process_get_circuit_by_id_request(db, gym_id, circuit_id):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
+
+    circuit = db_controller.get_circuit_by_id(gym_id, circuit_id, db)
+    if not bool(circuit):
+        return jsonify(errors=dict(circuit_id=f'Circuit with id {circuit_id} not found on gym {gym_id}')), 404
+
+    return jsonify(dict(circuit=circuit)), 200
+
+
+def process_get_circuit_by_name_request(db, gym_id, circuit_name):
+    valid, errors = is_gym_valid(gym_id, db)
+    if not valid:
+        return jsonify(errors=errors), 404
+
+    circuit = db_controller.get_circuit_by_name(gym_id, circuit_name, db)
+    if not bool(circuit):
+        return jsonify(errors=dict(circuit_id=f'circuit with name {circuit_name} not found on gym {gym_id}')), 404
+
+    return jsonify(dict(circuit=circuit)), 200
+
+
+def process_circuit_create_request(request, db, gym_id, wall_section):
+    valid, errors = are_gym_and_section_valid(gym_id, wall_section, db)
+    if not valid:
+        return jsonify(dict(errors=errors)), 404
+
+    if request.method == 'POST':
+        circuit_fields = BoulderFields()
+        # Get circuit data from request
+        base_data = {
+            circuit_fields.rating: 0,
+            circuit_fields.raters: 0,
+            circuit_fields.section: wall_section,
+            circuit_fields.time: datetime.datetime.now().isoformat()}
+
+        request_data, from_form = load_data(request)
+        for key, val in request_data.items():
+          base_data[key.lower()] = val
+          if from_form and key.lower() == circuit_fields.holds:
+            base_data[key.lower()] = ast.literal_eval(val)
+
+        # Validate Circuit Schema
+        try:
+          from api.schemas import CreateCircuitRequestValidator
+          # Will raise ValidationError if not valid
+          _ = CreateCircuitRequestValidator().load(base_data)
+          resp = db_controller.put_circuit(base_data, gym=gym_id, database=db)
+          if resp is None:
+              return jsonify(dict(errors=dict(message='Something went wrong creating the circuit'))), 500
+          return jsonify(dict(created=True, _id=resp)), 201
+        except ValidationError as err:
+          return jsonify(dict(errors=err.normalized_messages())), 400
 
 def process_get_gym_boulders_request(db, gym_id):
     valid, errors = is_gym_valid(gym_id, db)
