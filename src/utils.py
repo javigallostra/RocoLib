@@ -15,16 +15,32 @@ from urllib import parse as urlparse
 
 from db import mongodb_controller as db_controller
 from src.config import *
+from src.models import User
 from src.typing import Data
 
 
-def get_hold_detection_active(current_user):
+def get_hold_detection_active(current_user: User):
+    """Get the status of the hold detection flag for a user
+
+    :param current_user: User object for the logged in user
+    :type current_user: User
+    :return: True if the flag is set, False otherwise
+    :rtype: bool
+    """
     hold_detection = True
     if current_user.is_authenticated:
         hold_detection = not current_user.preferences.hold_detection_disabled
     return hold_detection
 
-def get_show_only_latest_wall_sets(current_user):
+
+def get_show_only_latest_wall_sets(current_user: User):
+    """Get the status of the show only latest wall sets flag for a user
+
+    :param current_user: User object for the logged in user
+    :type current_user: User
+    :return: True if the flag is set, False otherwise
+    :rtype: bool
+    """
     latest = True
     if current_user.is_authenticated:
         latest = current_user.preferences.show_latest_walls_only
@@ -164,6 +180,22 @@ def get_wall_radius(session: SessionMixin, database: Database, wall_path=None) -
         return session['walls_radius'][wall_path]
     return db_controller.get_walls_radius_all(database)[wall_path]
 
+def get_circuits_list(gym: str, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
+    """
+    Given a gym and a set of filters return the list of
+    circuits that match the specified criteria.
+    """
+    # if user is authenticated, check preferences to add query modifiers
+    data = db_controller.get_circuits_filtered(
+        gym=gym,
+        database=database,
+        latest_walls_only=latest_walls_only
+    )
+
+    sections = set([b['section'] for b in data[ITEMS]])
+    radius = {section: get_wall_radius(
+        session, database, gym + '/' + section) for section in sections}
+    return map_and_complete_boulder_data(data[ITEMS], radius)
 
 def get_boulders_list(gym: str, filters: Data, database: Database, session, latest_walls_only: bool = True) -> list[Data]:
     """
@@ -259,6 +291,8 @@ def load_data(request: Request) -> Tuple[dict, bool]:
         except json.JSONDecodeError:
             # try to load from query string
             return urlparse.parse_qs(request.data), False
+  elif request.args:
+    return request.args, False
   else:
     return dict(), False
 
@@ -298,6 +332,70 @@ def get_time_since_creation(time: str) -> str:
 
     return f'{nb} {name}'
 
+
+def get_circuit_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Load circuit data from a given request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :param gym_code: the gym code of the circuit
+    :type gym_code: str
+    :return: the circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    if request.method == 'POST':
+        return get_circuit_from_post_request(request, gym_code)
+    return get_circuit_from_get_request(request, db, session)
+
+
+def get_circuit_from_get_request(request: LocalProxy, db: Database, session: LocalProxy) -> Tuple[dict, str]:
+    """
+    Get circuit data from a GET request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param db: DDBB connection
+    :type db: Database
+    :param session: current session
+    :type session: LocalProxy
+    :return: the circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    circuit = db_controller.get_circuit_by_name(
+        gym=request.args.get('gym'),
+        name=request.args.get('name'),
+        database=db
+    )
+    return load_full_boulder_data(
+        circuit,
+        request.args.get('gym'),
+        db,
+        session
+    )
+
+
+def get_circuit_from_post_request(request: LocalProxy, gym_code: str) -> Tuple[dict, str]:
+    """
+    Get circuit data from a POST request
+
+    :param request: HTTP/S Request
+    :type request: LocalProxy
+    :param gym_code: code of the gym the circuit belongs to
+    :type gym_code: str
+    :return: The circuit data and the path to the wall image
+    :rtype: Tuple[dict, str]
+    """
+    circuit = make_boulder_data_valid_js(request.form.get('circuit_data'))
+    if not circuit.get('gym', ''):
+        circuit['gym'] = gym_code
+    wall_image = get_wall_image(
+        circuit['gym'], circuit['section'], WALLS_PATH)
+    return circuit, wall_image
 
 def get_boulder_from_request(request: LocalProxy, db: Database, session: LocalProxy, gym_code: str) -> Tuple[dict, str]:
     """
@@ -418,25 +516,84 @@ def load_full_boulder_data(boulder: dict, gym_code: str, db: Database, session: 
 
 def load_next_or_current(
     boulder_id: str,
-    gym_code: str,
+    list_id: str,
+    user_id: str,
+    is_user_list: bool,
     latest_wall_set: bool,
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
-    next_boulder = db_controller.get_next_boulder(
-        boulder_id, gym_code, latest_wall_set, database)
+    """Load the next problem that should be shown when swipping right
+    on the problem view.
+
+    :param boulder_id: The Id of the boulder currently loaded
+    :type boulder_id: str
+    :param list_id: the list from which to get the next boulder
+    :type list_id: str
+    :param user_id: the Id of the logged in user
+    :type user_id: str
+    :param latest_wall_set: Flag to indicate if only the latest versions of the wall should be considered
+    :type latest_wall_set: bool
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: Data of the boulder that should be shown and the wall image
+    :rtype: Tuple[dict, str]
+    """
+    gym_code = list_id
+
+    if is_user_list:
+        next_boulder, gym_code = db_controller.get_next_boulder_from_user_list(
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database
+        )
+    else:
+        next_boulder = db_controller.get_next_boulder(
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database)
     return load_boulder_to_show(next_boulder, gym_code, boulder_id, database, session)
 
 
 def load_previous_or_current(
     boulder_id: str,
-    gym_code: str,
+    list_id: str,
+    user_id: str,
+    is_user_list: bool,
     latest_wall_set: bool,
+    sort_by: str, 
+    is_ascending: bool, 
+    to_show: str,
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
-    previous_boulder = db_controller.get_previous_boulder(
-        boulder_id, gym_code, latest_wall_set, database)
+    """Load the next problem that should be shown when swipping right
+    on the problem view.
+
+    :param boulder_id: The Id of the boulder currently loaded
+    :type boulder_id: str
+    :param list_id: the list from which to get the next boulder
+    :type list_id: str
+    :param user_id: the Id of the logged in user
+    :type user_id: str
+    :param latest_wall_set: Flag to indicate if only the latest versions of the wall should be considered
+    :type latest_wall_set: bool
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: Data of the boulder that should be shown and the wall image
+    :rtype: Tuple[dict, str]
+    """
+    gym_code = list_id
+    if is_user_list:
+        previous_boulder, gym_code = db_controller.get_previous_boulder_from_user_list(
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database
+        )
+    else:
+        previous_boulder = db_controller.get_previous_boulder(
+            boulder_id, list_id, user_id, latest_wall_set, sort_by, is_ascending, to_show, database)
     return load_boulder_to_show(previous_boulder, gym_code, boulder_id, database, session)
 
 
@@ -447,6 +604,21 @@ def load_boulder_to_show(
     database: Database,
     session: LocalProxy
 ) -> Tuple[dict, str]:
+    """Given the data of a candidate boulder that is desired to load
+
+    :param candidate_boulder: Partial data of the candidate boulder to load
+    :type candidate_boulder: dict
+    :param gym_code: Gym code of the boulder to load. This code is already set to the code of the candidate boulder if it has data or the current boulder elsewhere
+    :type gym_code: str
+    :param current_boulder_id: Id of the boulder that is currently loaded in the client browser
+    :type current_boulder_id: str
+    :param database: Database connection
+    :type database: Database
+    :param session: Proxy to Flask's session object
+    :type session: LocalProxy
+    :return: the final data of the boulder to show and its wall image
+    :rtype: Tuple[dict, str]
+    """
     if candidate_boulder:
         # load boulder
         boulder, wall_image = load_full_boulder_data(
@@ -482,6 +654,10 @@ def choose_language(request, langs) -> str:
 
 
 def update_user_prefs(request, current_user):
+    """
+    Given a request with the user prefs fields and a user object,
+    update the preferences object of a user if required 
+    """
     should_save_user = False
 
     if request.form.get('gym') != current_user.preferences.default_gym:
@@ -499,3 +675,22 @@ def update_user_prefs(request, current_user):
         should_save_user = True
 
     return should_save_user, current_user
+
+def get_field_value(field, request_data):
+    """Map request values to the expected values
+
+    :param field: _description_
+    :type field: _type_
+    :param request_data: _description_
+    :type request_data: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+    if field == 'sort_order':
+        return request_data.get('sort_order')
+    elif field == 'is_ascending':
+        return False if request_data.get('is_ascending') == 'decreasing' else True 
+    elif field == 'to_show':
+        return 'all' if request_data.get('to_show') == 'false' else 'to_do'
+    return ''
+    

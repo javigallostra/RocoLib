@@ -250,6 +250,213 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
     """
     return api_request_processor.process_get_gym_wall_name(g.db, gym_id, wall_section)
 
+@api_blueprint.route('/circuits/<string:gym_id>/list', methods=['GET'])
+def get_gym_circuits(gym_id: str) -> Response:
+    """Circuits associated to the given gym.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      responses:
+        200:
+          description:
+            List of gym circuits
+          content:
+            application/json:
+              schema: GymCircuitListSchema
+            text/plain:
+              schema: GymCircuitListSchema
+            text/json:
+              schema: GymCircuitListSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_gym_circuits_request(g.db, gym_id)
+
+@api_blueprint.route('/circuits/<string:gym_id>/<string:circuit_id>', methods=['GET'])
+def get_circuit_by_id(gym_id: str, circuit_id: str) -> Response:
+    """Get circuit by id.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: CircuitIDParameter
+      responses:
+        200:
+          description:
+            Circuit data
+          content:
+            application/json:
+              schema: CircuitSchema
+            text/plain:
+              schema: CircuitSchema
+            text/json:
+              schema: CircuitSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_circuit_by_id_request(g.db, gym_id, circuit_id)
+
+
+@api_blueprint.route('/circuits/<string:gym_id>/name/<string:circuit_name>', methods=['GET'])
+def get_circuit_by_name(gym_id: str, circuit_name: str) -> Response:
+    """Get circuit by name.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: CircuitNameParameter
+      responses:
+        200:
+          description:
+            Circuit data
+          content:
+            application/json:
+              schema: CircuitSchema
+            text/plain:
+              schema: CircuitSchema
+            text/json:
+              schema: CircuitSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_circuit_by_name_request(g.db, gym_id, circuit_name)
+
+
+@api_blueprint.route('/circuits/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
+def circuit_create(gym_id: str, wall_section: str) -> Response:
+    """Create a new circuit linked to the given gym and wall section
+    ---
+    post:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: WallSectionParameter
+      requestBody:
+        description: Create circuit request body
+        required: true
+        content:
+          application/json:
+            schema: CreateCircuitRequestBody
+          application/x-www-form-urlencoded:
+            schema: CreateCircuitRequestBody
+          text/json:
+            schema: CreateCircuitRequestBody
+          text/plain:
+            schema: CreateCircuitRequestBody
+      responses:
+        201:
+          description:
+            Creation successful
+          content:
+            text/plain:
+              schema: CreateCircuitResponseBody
+            text/json:
+              schema: CreateCircuitResponseBody
+            application/json:
+              schema: CreateCircuitResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_circuit_create_request(request, g.db, gym_id, wall_section)
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
 def get_gym_boulders(gym_id: str) -> Response:

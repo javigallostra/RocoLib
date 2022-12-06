@@ -8,6 +8,7 @@ from flask import session, send_from_directory, _app_ctx_stack, g
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 from werkzeug.wrappers.response import Response
 
@@ -22,6 +23,7 @@ import src.request_processor as request_processor
 
 # create the application object
 app = Flask(__name__)
+cors = CORS(app, resources={f'/api/*': {'origins': '*'}})
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -134,6 +136,11 @@ def explore_boulders() -> str:
     return request_processor.handle_explore_boulders(request, session, g.db, current_user)
 
 
+@app.route('/explore_circuits', methods=['GET', 'POST'])
+def explore_circuits() -> str:
+    return request_processor.handle_explore_circuits(request, session, g.db, current_user)
+
+
 @app.route('/change_gym', methods=['POST'])
 def change_gym_problem_list() -> str:
     return request_processor.handle_change_gym_problem_list_request(request, session, g.db, current_user)
@@ -144,14 +151,26 @@ def rate_boulder() -> Union[Response, NoReturn]:
     return request_processor.process_rate_boulder_request(request, session, g.db)
 
 
+@app.route('/load_circuit', methods=['POST', 'GET'])
+# @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
+def load_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_load_circuit_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder
+    )
+
+
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:
     return request_processor.process_load_boulder_request(
-        request, 
-        session, 
-        g.db, 
-        current_user, 
+        request,
+        session,
+        g.db,
+        current_user,
         app.static_folder
     )
 
@@ -184,11 +203,11 @@ def render_about_us() -> str:
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section) -> str:
     return request_processor.process_wall_section_request(
-        request, 
-        session, 
-        g.db, 
-        current_user, 
-        app.static_folder, 
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder,
         wall_section
     )
 
@@ -198,9 +217,19 @@ def save() -> Response:
     return request_processor.process_save_request(request, session, g.db)
 
 
+@app.route('/circuit_save', methods=['POST'])
+def circuit_save() -> Response:
+    return request_processor.process_save_request(request, session, g.db, is_circuit=True)
+
+
 @app.route('/save_boulder', methods=['POST'])
 def save_boulder() -> Union[str, NoReturn]:
     return request_processor.process_save_boulder_request(request, current_user)
+
+
+@app.route('/save_circuit', methods=['POST'])
+def save_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_save_circuit_request(request, current_user)
 
 
 @app.route('/add_gym', methods=['GET', 'POST'])

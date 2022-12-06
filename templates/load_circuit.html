@@ -1,11 +1,11 @@
 {% extends "base_template.html" %}
 
-{% block title %}{{ boulder_name }}{% endblock %}
+{% block title %}{{ circuit_name }}{% endblock %}
 
 {% block head %}
 <link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
 <script src="{{ url_for('static', filename='js/turf.js') }} "></script>
-<script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/circuit_utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/swipe.js') }}"></script>
 {% endblock %}
 
@@ -23,7 +23,7 @@
         </div>
         <div class="col" style="display: flex; justify-content: center; align-self: center;">
           <div style="text-align: center;">
-            <h5 style="margin-bottom: 0;">{{ boulder_name }}</h5>
+            <h5 style="margin-bottom: 0;">{{ circuit_name }}</h5>
           </div>        
         </div>
         <div class="col" style="display: flex; justify-content:end;">
@@ -34,10 +34,10 @@
         </div>
       </div>
       <!-- <div style="text-align: center;">
-        <h5>{{ boulder_name }}</h5>
+        <h5>{{ circuit_name }}</h5>
       </div> -->
       <div style="text-align: center;">
-        {{ boulder_data['feet'] }}
+        {{ circuit_data['feet'] }}
       </div>
       <div class="custom-control custom-switch" style="margin-left:2rem;">
         <input  
@@ -49,20 +49,20 @@
       </div>
       <br />
       <div class="row" id="problem-wrapper" style="padding-left: 15px; padding-right: 15px;">
-          <div class="pc-arrow-left">
+          <!-- <div class="pc-arrow-left">
             <a class="btn btn-outline-primary" href="#" onclick="clicked_previous()" role="button">
               <i class="fa fa-chevron-left" aria-hidden="true"></i>
             </a>
-          </div>
+          </div> -->
           <img id="wall-image" src="{{ wall_image }}" alt="wall section" />
           <canvas id="wall-canvas"></canvas>
-          <div class="pc-arrow-right">
+          <!-- <div class="pc-arrow-right">
             <a class="btn btn-outline-primary" href="#" onclick="clicked_next()" role="button">
               <i class="fa fa-chevron-right" aria-hidden="true"></i>
             </a>
-          </div>
+          </div> -->
       </div>
-      {% if boulder_data.get('notes', '') %}
+      {% if circuit_data.get('notes', '') %}
       <hr width="50%" style="margin-bottom: 0.5rem; margin-top: 0.5rem;" />
       <div class="container">
         <div class="row d-flex justify-content-center">
@@ -70,7 +70,7 @@
             <b>{{ notes }}:</b>
           </p>
           <div class="col-lg-12 d-flex justify-content-center">
-            {{ boulder_data.get('notes', '') }}
+            {{ circuit_data.get('notes', '') }}
           </div>
         </div>
       </div>
@@ -78,11 +78,11 @@
       {% else %}
         <div style="margin-bottom: 0.75rem;"></div>
       {% endif %}
-      <div class="container">
+      <!-- <div class="container">
         <div class="row d-flex justify-content-center">
           <div class="col d-flex justify-content-center" style="align-items: center;">
             <p style="margin-top: 5px; margin-right: 10px; margin-bottom:6px;">
-              Rate this boulder:
+              Rate this circuit:
             </p>
             <div class="star-rating">
               <span class="fa fa-star" data-rating="1"></span>
@@ -90,9 +90,9 @@
               <span class="fa fa-star" data-rating="3"></span>
               <span class="fa fa-star" data-rating="4"></span>
               <span class="fa fa-star" data-rating="5"></span>
-              <form id="bForm" action="/rate_boulder" method="post">
-                <input type="hidden" name="boulder_rating" class="rating-value" value="0" />
-                <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
+              <form id="bForm" action="/rate_circuit" method="post">
+                <input type="hidden" name="circuit_rating" class="rating-value" value="0" />
+                <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
               </form>
             </div>
             <button onclick="$('#bForm').submit();" class="btn btn-outline-dark mbl-size" style="margin-left:1.5rem;">Rate</button>
@@ -101,29 +101,29 @@
         <div class="row d-flex justify-content-center act-btn-container" style="align-items:center;">
             {% if not current_user.is_anonymous %}
             <div class="col-lg-4" style="margin-bottom: 0.3rem;">
-              <!-- TODO: Add safename field to boulder -->
+              <!-- TODO: Add safename field to circuit -->
               <form id="addForm" action="/tick_list" method="post">
-                  <button type="submit" name="add_boulder_to_tick_list" value="add-boulder" style="width: 100%;" class="btn btn-outline-primary cstm-button">
+                  <button type="submit" name="add_circuit_to_tick_list" value="add-circuit" style="width: 100%;" class="btn btn-outline-primary cstm-button">
                     {{ add_to_ticklist }}!
                   </button>
                   <!-- Required fields -->
                   <input type="hidden" name="origin" value="{{ origin }}" />
-                  <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
-                  <input type="hidden" name="section" value="{{ boulder_data['section'] }}" />
-                  <input type="hidden" name="name" value="{{ boulder_data['name'] }}" />
+                  <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
+                  <input type="hidden" name="section" value="{{ circuit_data['section'] }}" />
+                  <input type="hidden" name="name" value="{{ circuit_data['name'] }}" />
               </form>
             </div>
             <div class="col-lg-4" style="margin-bottom: 0.3rem;">
               <form id="markAsDoneForm" action="/tick_list" method="post">
-                  <button type="submit" name="mark_boulder_as_done" value="done" style="width: 100%;" class="btn btn-outline-primary cstm-button">
+                  <button type="submit" name="mark_circuit_as_done" value="done" style="width: 100%;" class="btn btn-outline-primary cstm-button">
                     {{ done }}!
                   </button>
                   <!-- Required fields -->
                   <input type="hidden" name="is_done" value="true" />
                   <input type="hidden" name="origin" value="{{ origin }}" />
-                  <input type="hidden" name="gym" value="{{ boulder_data['gym'] }}" />
-                  <input type="hidden" name="section" value="{{ boulder_data['section'] }}" />
-                  <input type="hidden" name="name" value="{{ boulder_data['name'] }}" />
+                  <input type="hidden" name="gym" value="{{ circuit_data['gym'] }}" />
+                  <input type="hidden" name="section" value="{{ circuit_data['section'] }}" />
+                  <input type="hidden" name="name" value="{{ circuit_data['name'] }}" />
               </form>
             </div>
             {% endif %}
@@ -134,36 +134,36 @@
               </form>
             </div>
         </div>
-      </div>
+      </div> -->
       <br />
     </div>
   </div>
 
   <script>
     // It is important that this is wrapped in single quotes ('')
-    var rawData = '{{ boulder_data | tojson | safe}}';
-    var boulderData = JSON.parse(rawData);
-    holds = boulderData.holds;
-    radius = boulderData.radius;
+    var rawData = '{{ circuit_data | tojson | safe}}';
+    var circuitData = JSON.parse(rawData);
+    holds = circuitData.holds;
+    radius = circuitData.radius;
     window.scrollTo(0, '{{ scroll }}')
 
-    function loadBoulder() {
-      boulderLoadInit(
+    function loadCircuit() {
+      circuitLoadInit(
         'holdDetectionSwitch',
         "wall-image",
         "wall-canvas",
-        boulderData.radius,
+        circuitData.radius,
         '{{ hold_data | tojson | safe}}'
       );
     };
 
     function downloadProblemAsImage() {
-      downloadProblem("{{ boulder_data['name'] }}", '{{ wall_image }}');
+      downloadProblem("{{ circuit_data['name'] }}", '{{ wall_image }}');
     };
 
     function clicked_previous() {
       loadPrevious(
-        "{{ boulder_data['_id'] }}",
+        "{{ circuit_data['_id'] }}",
         "{{ list_id }}",
         "{{ is_user_list }}",
         "{{ sort_by }}",
@@ -174,7 +174,7 @@
     
     function clicked_next() {
       loadNext(
-        "{{ boulder_data['_id'] }}",
+        "{{ circuit_data['_id'] }}",
         "{{ list_id }}",
         "{{ is_user_list }}",
         "{{ sort_by }}",
@@ -207,20 +207,20 @@
     $("#bForm").submit(function (e) {
       $("<input />")
         .attr("type", "hidden")
-        .attr("id", "boulder-name")
-        .attr("name", "boulder_name")
-        .attr("value", "{{ boulder_data['name'] }}")
+        .attr("id", "circuit-name")
+        .attr("name", "circuit_name")
+        .attr("value", "{{ circuit_data['name'] }}")
         .appendTo("#bForm");
       return true;
     });
 
-    window.onresize = loadBoulder;
+    window.onresize = loadCircuit;
     window.onload = () => { 
-      loadBoulder();
+      loadCircuit();
       swipeInit(
         loadPrevious, 
         loadNext,
-        "{{ boulder_data['_id'] }}",
+        "{{ circuit_data['_id'] }}",
         "{{ list_id }}",
         "{{ is_user_list }}",
         "{{ sort_by }}",

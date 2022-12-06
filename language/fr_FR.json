@@ -30,6 +30,7 @@
     "explore": "Explorer",
     "hide_done": "Masquer les blocs réalisés",
     "no_boulder": "Aucun bloc trouvé",
+    "no_circuit": "Aucun circuit trouvé",
     "added": "Ajouté il y a",
     "ago": "",
     "feet": "Pieds",
@@ -41,6 +42,7 @@
     "apply": "Appliquer",
     "explore_boulders": "Explorer les blocs",
     "explore_routes": "Explorer les voies",
+    "explore_circuits": "Explorer les circuits",
     "coming_soon": "bientôt disponible",
     "notes": "Remarques",
     "add_to_ticklist": "Ajouter aux projets",
@@ -49,6 +51,7 @@
     "save": "Enregistrer",
     "save_boulder": "Enregistrer le bloc",
     "boulder_name": "Nom du bloc",
+    "circuit_name": "Nom du circuit",
     "suggested_difficulty": "Cotation proposée",
     "feet_follow_hands": "Pieds des mains",
     "free_feet": "Pieds libres",
@@ -73,5 +76,6 @@
     "stats_": "Statistiques",
     "repetitions": "Répétitions",
     "contact": "Contactez",
-    "feet_only": "Pied"
+    "feet_only": "Pied",
+    "create_circuit": "Créer un Circuit"
 }

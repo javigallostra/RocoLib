@@ -9,7 +9,7 @@
       <br />
       <div class="row text-center">
         <div class="col" style="display: flex; margin-left: 8px;">
-          <a class="btn btn-outline-primary" href="/walls/{{ section }}?options=boulder" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+          <a class="btn btn-outline-primary" href="/walls/{{ section }}?options=circuit" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
         </div>
         <div class="col" style="display: flex; justify-content:end;">
           <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
@@ -21,8 +21,8 @@
         <div class="col-sm">
           <h3>{{ save_boulder }}</h3>
 
-          <form action="/save" onsubmit="return validateForm()" method="POST">
-            {{ boulder_name }}:<br />
+          <form action="/circuit_save" onsubmit="return validateForm()" method="POST">
+            {{ circuit_name }}:<br />
             <input id="name-field" type="text" name="name" value="" maxlength="60" required /><br /><br />
             {{ creator }}:<br />
             <input id="creator-field" type="text" name="creator" value="{{ username }}" maxlength="60"

@@ -30,6 +30,7 @@
     "explore": "Explore",
     "hide_done": "Hide done",
     "no_boulder": "No boulders matching the specified criteria",
+    "no_circuit": "No circuits matching the specified criteria",
     "added": "Added",
     "ago": "ago",
     "feet": "Feet",
@@ -41,6 +42,7 @@
     "apply": "Apply",
     "explore_boulders": "Explore boulders",
     "explore_routes": "Explore Routes",
+    "explore_circuits": "Explore circuits",
     "coming_soon": "Coming soon",
     "notes": "Notes",
     "add_to_ticklist": "Add to ticklist",
@@ -49,6 +51,7 @@
     "save": "Save",
     "save_boulder": "Save boulder",
     "boulder_name": "Boulder name",
+    "circuit_name": "Circuit name",
     "suggested_difficulty": "Suggested difficulty",
     "feet_follow_hands": "Feet follow hands",
     "free_feet": "Free feet",
@@ -74,5 +77,6 @@
     "stats": "Stats",
     "repetitions": "Repetitions",
     "contact": "Contact",
-    "feet_only": "Feet"
+    "feet_only": "Feet",
+    "create_circuit": "Create Circuit"
 }
