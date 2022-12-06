@@ -5,7 +5,7 @@
 {% block head %}
 <link href="{{ url_for('static', filename='css/toggle.css') }}" rel="stylesheet" media="screen" />
 <script src="{{ url_for('static', filename='js/turf.js') }} "></script>
-<script src="{{ url_for('static', filename='js/problem_utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/circuit_utils.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
       <br />
       <div class="row text-center">
         <div class="col" style="display: flex; margin-left: 8px;">
-          <a class="btn btn-outline-primary" href="/create?options=boulder" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+          <a class="btn btn-outline-primary" href="/create?options=circuit" role="button"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
         </div>
         <div class="col" style="display: flex; justify-content:end;">
           <a class="btn btn-outline-primary" href="/" role="button"><i class="fa fa-home" aria-hidden="true"></i></a>
@@ -76,7 +76,7 @@
                 </button>
               </div>
               <div class="col-4" style="display: grid;">
-                <form action="/save_boulder?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
+                <form action="/save_circuit?section={{section}}" onsubmit="return validateForm()" method="POST" style="display: grid;">
                   <input class="btn btn-outline-primary" style="width:100%;" type="submit" value="Done" name="{{ submit }}"
                     onclick="return setHolds();" />
                   <input type="hidden" name="holds" id="holds-array" value="" />
@@ -95,7 +95,7 @@
 
 <script>
   window.onload = () => {
-    boulderCreateInit(
+    circuitCreateInit(
       "holdDetectionSwitch",
       "wall-image",
       "wall-canvas",

@@ -5,7 +5,7 @@ var dragok = false;
 var wasDragged = false;
 
 var radius;
-var holdDetectionActive = true;
+var holdDetectionActive = true; // TODO: this should come from user preferences -> Set value on boulder load function
 
 function hexToRGBA(hex, alpha) {
   var r = parseInt(hex.slice(1, 3), 16),
@@ -273,7 +273,7 @@ function downloadProblem(boulder_name, image_wall) {
   var downloadCanvas = document.createElement('canvas');
   var img_ref = document.getElementById('wall-image')
 
-  document.getElementById('wrapper').insertBefore(downloadCanvas, img_ref);
+  document.getElementById('problem-wrapper').insertBefore(downloadCanvas, img_ref);
 
   downloadCanvas.id = "download-canvas";
   downloadCanvas.style.position = "absolute";
@@ -363,6 +363,9 @@ function setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId) {
 };
 
 function boulderCreateInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, holdData) {
+  // Set hold detection state
+  holdDetectionActive = document.getElementById('holdDetectionSwitch').checked
+
   addHoldDetectionCallback(holdDetectionSwitchId);
   setCanvasAndPolygons(holdRadius, holdData, imageId, canvasId);
 
@@ -383,7 +386,8 @@ function boulderLoadInit(holdDetectionSwitchId, imageId, canvasId, holdRadius, h
   for (var i = 0; i < holds.length; i++) {
     holds[i].radius = radius * cnvs.width;
   }
-
+  // Set hold detection state
+  holdDetectionActive = document.getElementById('holdDetectionSwitch').checked
   drawAll();
 };
 

@@ -73,36 +73,36 @@
           {% endif %}  
         </div>
       </div>
-      {% if not boulder_list %}
+      {% if not circuit_list %}
       <br />
       <br />
       <div class="d-flex justify-content-center">
-        <h5>{{ no_boulder }}</h5>
+        <h5>{{ no_circuit }}</h5>
       </div>
       {% endif %}
-      <div id="bouldersList" class="accordion">
-        {% for boulder in boulder_list %}
-        <div class="card" id="{{ 'id_' + boulder['safe_name'] }}" style="border: 0.1em solid lightgrey; border-radius: 0rem;">
-          <div class="card-header" id="{{ 'id_' + boulder['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
+      <div id="circuitsList" class="accordion">
+        {% for circuit in circuit_list %}
+        <div class="card" id="{{ 'id_' + circuit['safe_name'] }}" style="border: 0.1em solid lightgrey; border-radius: 0rem;">
+          <div class="card-header" id="{{ 'id_' + circuit['safe_name'] + '-heading' }}" style="background-color: transparent; border: none;">
             <div class="row">
               <div class="col-11 col-md-4" style="padding-right: 0px;">
-                <!-- TODO: Add safename field to boulder -->
-                <form action="/load_boulder" method="post">
-                  <input type="hidden" name="boulder_data" id="{{ 'id_' + boulder['_id'] + boulder['name'] }}"
-                    value="{{boulder}}" />
-                    <input type="hidden" name="origin" id="{{ 'id_' + boulder['name'] + boulder['_id'] }}"
-                    value="explore_boulders" />
-                    <input type="hidden" name="list_id" id="{{ 'list_id' + boulder['_id'] }}"
+                <!-- TODO: Add safename field to circuit -->
+                <form action="/load_circuit" method="post">
+                  <input type="hidden" name="circuit_data" id="{{ 'id_' + circuit['_id'] + circuit['name'] }}"
+                    value="{{circuit}}" />
+                    <input type="hidden" name="origin" id="{{ 'id_' + circuit['name'] + circuit['_id'] }}"
+                    value="explore_circuits" />
+                    <input type="hidden" name="list_id" id="{{ 'list_id' + circuit['_id'] }}"
                     value="{{ selected }}" />
-                    <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + boulder['_id'] }}"
+                    <input type="hidden" name="is_user_list" id="{{ 'is_user_list' + circuit['_id'] }}"
                     value="False" />
-                    <input type="hidden" name="sort_order" class="boulder_sort_order"/>
-                    <input type="hidden" name="is_ascending" class="boulder_is_ascending"/>
-                    <input type="hidden" name="to_show" class="boulder_to_show"/>
-                  <button type="submit" name="boulder" value="{{ boulder['name'] }}" class="btn-link" style="width:100%;">
+                    <input type="hidden" name="sort_order" class="circuit_sort_order"/>
+                    <input type="hidden" name="is_ascending" class="circuit_is_ascending"/>
+                    <input type="hidden" name="to_show" class="circuit_to_show"/>
+                  <button type="submit" name="circuit" value="{{ circuit['name'] }}" class="btn-link" style="width:100%;">
                     <div class="row">
-                      <div class="dot" style="background-color: {{ boulder['color'] }};"></div>
-                      <h5 style="padding-left: 0.5rem;">{{boulder['name']}}</h5>
+                      <div class="dot" style="background-color: {{ circuit['color'] }};"></div>
+                      <h5 style="padding-left: 0.5rem;">{{circuit['name']}}</h5>
                     </div>
                   </button>
                 </form>
@@ -112,39 +112,39 @@
                         style="width: 100%; padding-left: 1rem; display: flex; justify-content: end; text-decoration: none;" 
                         type="button" 
                         data-toggle="collapse" 
-                        data-target="#{{ 'id_' + boulder['safe_name'] + '-collapse' }}" 
+                        data-target="#{{ 'id_' + circuit['safe_name'] + '-collapse' }}" 
                         aria-expanded="true" 
-                        aria-controls="{{ 'id_' + boulder['safe_name'] + '-collapse' }}">
+                        aria-controls="{{ 'id_' + circuit['safe_name'] + '-collapse' }}">
                   <span>+</span>
                 </button>
               </div>
             </div>
           </div>
-          <div id="{{ 'id_' + boulder['safe_name'] + '-collapse' }}" class="collapse" aria-labelledby="{{ 'id_' + boulder['safe_name'] + '-heading' }}" data-parent="#bouldersList">
+          <div id="{{ 'id_' + circuit['safe_name'] + '-collapse' }}" class="collapse" aria-labelledby="{{ 'id_' + circuit['safe_name'] + '-heading' }}" data-parent="#circuitsList">
             <div class="card-body" style="padding: 0px;">
               <ul>
               {%- for wall in walls_list -%}
-              {%- if wall['image'] == boulder['section'] -%}
+              {%- if wall['image'] == circuit['section'] -%}
               <li>Section: {{ wall['name'] }}</li>
               {%- endif -%}
               {% endfor %}
-              <li>{{ creator }}: {{boulder["creator"]}}</li>
-              <li>{{ feet }}: {{boulder["feet"]}}</li>
-              <li>{{ added }} {{boulder["age"]}} {{ ago }}</li>
-              <li>{{ repetitions }} : {{boulder['repetitions'] }}</li>
+              <li>{{ creator }}: {{circuit["creator"]}}</li>
+              <li>{{ feet }}: {{circuit["feet"]}}</li>
+              <li>{{ added }} {{circuit["age"]}} {{ ago }}</li>
+              <li>{{ repetitions }} : {{circuit['repetitions'] }}</li>
               <li>
                 <div class="container">
                   <div class="row d-flex justify-content-left">
                     <div class="col-lg-12 d-flex justify-content-left" style="padding-left: 0px;">
                       <div class="star-rating-fixed">
-                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 0.5 else 'fas fa-star' }}"></span>
-                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 1.5 else 'fas fa-star' }}"></span>
-                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 2.5 else 'fas fa-star' }}"></span>
-                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 3.5 else 'fas fa-star' }}"></span>
-                        <span class="{{ 'fa fa-star' if boulder.get('rating', 0) < 4.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 0.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 1.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 2.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 3.5 else 'fas fa-star' }}"></span>
+                        <span class="{{ 'fa fa-star' if circuit.get('rating', 0) < 4.5 else 'fas fa-star' }}"></span>
                       </div>
                       <p style="margin-left: 10px; margin-top: 0px;">
-                        {{ boulder.get('raters', 0) }} {{ 'ratings' if boulder.get('raters', 0) != 1 else 'rating' }}
+                        {{ circuit.get('raters', 0) }} {{ 'ratings' if circuit.get('raters', 0) != 1 else 'rating' }}
                       </p>
                     </div>
                   </div>
@@ -162,32 +162,32 @@
 
 <script>
   // set and update sort order
-  document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = document.getElementById("sortCriteria").value);
+  document.getElementsByClassName("circuit_sort_order").forEach(element => element.value = document.getElementById("sortCriteria").value);
   document.getElementById("sortCriteria").addEventListener(
     "change",
     function()
     {
-      document.getElementsByClassName("boulder_sort_order").forEach(element => element.value = this.value);
+      document.getElementsByClassName("circuit_sort_order").forEach(element => element.value = this.value);
     }
   );
   // set and update is_ascending
-  document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = document.getElementById("sortAscending").value);
+  document.getElementsByClassName("circuit_is_ascending").forEach(element => element.value = document.getElementById("sortAscending").value);
   document.getElementById("sortAscending").addEventListener(
     "change",
     function()
     {
-      document.getElementsByClassName("boulder_is_ascending").forEach(element => element.value = this.value);
+      document.getElementsByClassName("circuit_is_ascending").forEach(element => element.value = this.value);
     }
   );
     // set and update to_show
-    document.getElementsByClassName("boulder_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
-    document.getElementById("hideDoneCheck").addEventListener(
-      "change",
-      function()
-      {
-        document.getElementsByClassName("boulder_to_show").forEach(element => element.value = this.checked);
-      }
-    );
+    //document.getElementsByClassName("circuit_to_show").forEach(element => element.value = document.getElementById("hideDoneCheck").checked);
+    //document.getElementById("hideDoneCheck").addEventListener(
+    //  "change",
+    //  function()
+    //  {
+    //    document.getElementsByClassName("circuit_to_show").forEach(element => element.value = this.checked);
+    //  }
+    //);
 
   function decodeHtml(html) {
     var doc = new DOMParser().parseFromString(html, "text/html");
@@ -210,38 +210,38 @@
   }
   
   function UpdateList(checked) {
-    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
-    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
-    boulders_data["boulders"].forEach((boulder) => {
-      $("#id_" + boulder["safe_name"])
+    var circuits = replaceAll(decodeHtml("{{ circuit_list }}"), "'", '"');
+    var circuits_data = JSON.parse('{"circuits": ' + circuits + "}");
+    circuits_data["circuits"].forEach((circuit) => {
+      $("#id_" + circuit["safe_name"])
         .css(
           'display',
-          (boulder.is_done && checked) ? 'none' : 'flex'
+          (circuit.is_done && checked) ? 'none' : 'flex'
         );
     });
   }
 
   $("#sortAscending").on("change", function () {
-    var list = $("#bouldersList");
+    var list = $("#circuitsList");
     var listItems = list.children('div');
     list.append(listItems.get().reverse());
   });
 
   $("#sortCriteria").on("change", function () {
     // Some hackery to turn data into valid JS JSON
-    var boulders = replaceAll(decodeHtml("{{ boulder_list }}"), "'", '"');
-    var boulders_data = JSON.parse('{"boulders": ' + boulders + "}");
+    var circuits = replaceAll(decodeHtml("{{ circuit_list }}"), "'", '"');
+    var circuits_data = JSON.parse('{"circuits": ' + circuits + "}");
 
     // Sort data
     if (this.value === "creation_date") {
-      function sortBoulders(a, b) {
+      function sortcircuits(a, b) {
         var dateA = Date.parse(a["time"]);
         var dateB = Date.parse(b["time"]);
         return dateB - dateA;
       }
     } 
     else if (this.value === "difficulty") {
-      function sortBoulders(a, b) {
+      function sortcircuits(a, b) {
         var difficulties = ["red", "yellow", "blue", "green"];
         return (
           difficulties.indexOf(a["difficulty"]) -
@@ -250,7 +250,7 @@
       }
     } 
     else if (this.value === "section") {
-      function sortBoulders(a, b) {
+      function sortcircuits(a, b) {
         return a["section"] < b["section"]
           ? 1
           : b["section"] < a["section"]
@@ -259,26 +259,26 @@
       }
     } 
     else if (this.value === "rating") {
-      function sortBoulders(a, b) {
+      function sortcircuits(a, b) {
         return b["rating"] - a["rating"];
       }
     }
     else if (this.value === "repetitions") {
-      function sortBoulders(a, b) {
+      function sortcircuits(a, b) {
         return b["repetitions"] - a["repetitions"];
       }
     }
 
-    boulders_data["boulders"] = boulders_data["boulders"].sort(sortBoulders);
+    circuits_data["circuits"] = circuits_data["circuits"].sort(sortcircuits);
 
     if ($("#sortAscending").val() === "increasing") {
-      boulders_data["boulders"].reverse();
+      circuits_data["circuits"].reverse();
     }
 
-    boulders_data["boulders"].forEach((boulder) => {
+    circuits_data["circuits"].forEach((circuit) => {
       // Reorder divs according to criteria
-      $("#bouldersList")
-        .find("#id_" + boulder["safe_name"])
+      $("#circuitsList")
+        .find("#id_" + circuit["safe_name"])
         .each(function () {
           $(this).parent().append(this);
         });

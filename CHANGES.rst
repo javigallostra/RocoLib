@@ -9,6 +9,12 @@ Changelog
 Features
 --------
 
+- #200 API circuit endpoints to create, list and search by id or name
+- #195 #196 Enable circuit creation and visualization
+- #172 Add left/right arrow buttons on PC to indicate that the user can change the problem by clicking
+- #168 Add a query builder to ease the handling of MongoDB queries
+- #168 Add API endpoint to get logged in user preferences
+- #168 Add user preferences (default gym, hold detection, show only latest wall sets) and page to edit them
 - #149 #150 When viewing a problem, swipe left or right to go to next or previous problem  
 - #146 Add endpoint to public API to mark a boulder as done
 - #138 Enable changing gym from problems list page & UI improvements
@@ -41,6 +47,13 @@ Features
 Fixes
 -----
 
+- #198 Fix hole numbering when undoing a circuit move
+- #189 Fix section and gym not being shown on some ticklist problems
+- Enable CORS on API endpoints
+- #185 Fix downloading a problem as an image 
+- #184 Spacing between radio button and text in hold selection options when creating a problem
+- #183 Display correct text in hold detection text label on the problem creation page 
+- #170 Take into account latest wall set flag when swiping problems
 - #162 Optimize DDBB queries
 - #161 Fix page header on error templates
 - #159 Keep scroll status after problem load due to swipe
@@ -55,3 +68,10 @@ Fixes
 - #99 Increase max length of boulder name and creator
 - #98 Fix visualization of dates climbed
 - #73 Ignore gyms without location when searching for nearest gym
+
+
+Changes
+-------
+
+- #178 Use integers for difficulties instead of strings
+- #173 Use same error schema for all API endpoints & errors 

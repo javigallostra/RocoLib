@@ -20,7 +20,7 @@ class GymSchema(Schema):
     id = fields.Str()
     name = fields.Str()
     coordinates = fields.List(
-        fields.Float(), 
+        fields.Float(),
         validate=fields.Length(min=2, max=2)
     )
 
@@ -82,9 +82,26 @@ class BoulderSchema(BaseBoulderSchema):
     section = fields.Str()
 
 
+class CircuitSchema(BaseBoulderSchema):
+    """
+    Data Schema of a Circuit Problem
+    """
+    _id = fields.Str()
+    raters = fields.Int()
+    rating = fields.Float()
+    section = fields.Str()
+
+
 class CreateBoulderRequestBody(BaseBoulderSchema):
     """
     Data Schema to create a boulder
+    """
+    pass
+
+
+class CreateCircuitRequestBody(BaseBoulderSchema):
+    """
+    Data Schema to create a circuit
     """
     pass
 
@@ -102,6 +119,15 @@ class CreateBoulderRequestValidator(BaseBoulderSchema):
     #     return CreateBoulderRequestValidator(**data)
 
 
+class CreateCircuitRequestValidator(BaseBoulderSchema):
+    """
+    Data Schema to validate a create circuit request
+    """
+    raters = fields.Int(required=True)
+    rating = fields.Float(required=True)
+    section = fields.Str(required=True)
+
+
 class CreateBoulderResponseBody(Schema):
     """
     Data schema of the response to a successful create boulder request
@@ -110,17 +136,20 @@ class CreateBoulderResponseBody(Schema):
     _id = fields.Str()
 
 
-class CreateBoulderErrorResponse(Schema):
+class CreateCircuitResponseBody(Schema):
     """
-    Data schema of the response to a unsuccessful create boulder request
+    Data schema of the response to a successful create circuit request
     """
-    errors = fields.Dict()
+    created = fields.Bool()
+    _id = fields.Str()
+
 
 class RateBoulderRequestBody(Schema):
     """
     Data Schema to rate a boulder
     """
     rating = fields.Int(required=True)
+
 
 class RateBoulderResponseBody(Schema):
     """
@@ -130,18 +159,13 @@ class RateBoulderResponseBody(Schema):
     rated = fields.Bool()
 
 
-class RateBoulderErrorResponse(Schema):
-    """
-    Data schema of the response to a unsuccessful boulder rating request
-    """
-    errors = fields.Dict()
-
 class MarkDoneBoulderRequestBody(Schema):
     """
     Data Schema to rate a boulder
     """
     boulder_id = fields.Str(required=True)
     gym = fields.Str(required=True)
+
 
 class MarkDoneBoulderResponseBody(Schema):
     """
@@ -150,11 +174,6 @@ class MarkDoneBoulderResponseBody(Schema):
     boulder_id = fields.Str()
     marked_as_done = fields.Bool()
 
-class MarkDoneBoulderErrorResponse(Schema):
-    """
-    Data schema of the response to a unsuccessful boulder rating request
-    """
-    errors = fields.Dict()
 
 class AuthenticationRequestBody(Schema):
     """
@@ -170,13 +189,6 @@ class AuthenticationResponseBody(Schema):
     Data Schema of the response to a successful authentication request
     """
     token = fields.Str()
-
-
-class AuthenticationErrorResponse(Schema):
-    """
-    Data Schema of the response to an unsuccessful authentication request
-    """
-    errors = fields.Str()
 
 
 class SignUpRequestBody(Schema):
@@ -195,11 +207,13 @@ class SignUpResponseBody(Schema):
     username = fields.Str()
 
 
-class SignUpErrorResponse(Schema):
+class UserPreferencesResponseBody(Schema):
     """
-    Data Schema of the response to an unsuccessful authentication request
     """
-    errors = fields.List(fields.Str())
+    user_id = fields.Str()  # not sure this should be returned
+    default_gym = fields.Str()
+    show_latest_walls_only = fields.Bool()
+    hold_detection_disabled = fields.Bool()
 
 
 class TestTokenResponseBody(Schema):
@@ -207,13 +221,6 @@ class TestTokenResponseBody(Schema):
     Data schema of the response to a successful test token request
     """
     data = fields.Str()
-
-
-class TestTokenErrorResponse(Schema):
-    """
-    Data Schema of the response to an unsuccessful test token request
-    """
-    errors = fields.Str()
 
 
 class GymIDParameter(Schema):
@@ -230,11 +237,25 @@ class BoulderIDParameter(Schema):
     boulder_id = fields.Str()
 
 
+class CircuitIDParameter(Schema):
+    """
+    Data Schema of a Circuit ID parameter
+    """
+    circuit_id = fields.Str()
+
+
 class BoulderNameParameter(Schema):
     """
-    Data Schema of a Boulder ID parameter
+    Data Schema of a Boulder name parameter
     """
     boulder_name = fields.Str()
+
+
+class CircuitNameParameter(Schema):
+    """
+    Data Schema of a Circuit name parameter
+    """
+    circuit_name = fields.Str()
 
 
 class WallSectionParameter(Schema):
@@ -265,6 +286,13 @@ class GymBoulderListSchema(Schema):
     boulders = fields.List(fields.Nested(BoulderSchema))
 
 
+class GymCircuitListSchema(Schema):
+    """
+    Circuit List Data Schema
+    """
+    circuits = fields.List(fields.Nested(BoulderSchema))
+
+
 class TicklistBoulderSchema(BoulderSchema):
     """
     Ticklist Boulder Data Schema
@@ -279,23 +307,13 @@ class TicklistResponseBody(Schema):
     """
     boulders = fields.List(fields.Nested(TicklistBoulderSchema))
 
-class BaseErrorSchema(Schema):
+
+class ErrorResponse(Schema):
     """
     Base error response data schema
     """
     errors = fields.Dict()
 
-class TicklistError(BaseErrorSchema):
-    """
-    Ticklist error response data schema
-    """
-    pass
-
-class NotFoundError(BaseErrorSchema):
-    """
-    Resource not found error response data schema
-    """
-    pass
 
 class BoulderFields:
     raters = 'raters'
@@ -328,7 +346,7 @@ spec = APISpec(
     servers=[
         dict(
             description="Production server",
-            url="https://rocolib.herokuapp.com"
+            url="https://rocolib.onrender.com"
         ),
         dict(
             description="Local Test server",
@@ -352,6 +370,10 @@ spec = APISpec(
         dict(
             name="Boulders",
             description="Endpoints related to Boulder Problems"
+        ),
+        dict(
+            name="Circuits",
+            description="Endpoints related to Circuits"
         ),
         dict(
             name="User",

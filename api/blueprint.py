@@ -76,16 +76,23 @@ def get_gyms() -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -122,16 +129,23 @@ def get_gym_walls(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -163,16 +177,23 @@ def get_gym_pretty_name(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -206,22 +227,236 @@ def get_gym_wall_name(gym_id: str, wall_section: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
     """
     return api_request_processor.process_get_gym_wall_name(g.db, gym_id, wall_section)
 
+@api_blueprint.route('/circuits/<string:gym_id>/list', methods=['GET'])
+def get_gym_circuits(gym_id: str) -> Response:
+    """Circuits associated to the given gym.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      responses:
+        200:
+          description:
+            List of gym circuits
+          content:
+            application/json:
+              schema: GymCircuitListSchema
+            text/plain:
+              schema: GymCircuitListSchema
+            text/json:
+              schema: GymCircuitListSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_gym_circuits_request(g.db, gym_id)
+
+@api_blueprint.route('/circuits/<string:gym_id>/<string:circuit_id>', methods=['GET'])
+def get_circuit_by_id(gym_id: str, circuit_id: str) -> Response:
+    """Get circuit by id.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: CircuitIDParameter
+      responses:
+        200:
+          description:
+            Circuit data
+          content:
+            application/json:
+              schema: CircuitSchema
+            text/plain:
+              schema: CircuitSchema
+            text/json:
+              schema: CircuitSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_circuit_by_id_request(g.db, gym_id, circuit_id)
+
+
+@api_blueprint.route('/circuits/<string:gym_id>/name/<string:circuit_name>', methods=['GET'])
+def get_circuit_by_name(gym_id: str, circuit_name: str) -> Response:
+    """Get circuit by name.
+    ---
+    get:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: CircuitNameParameter
+      responses:
+        200:
+          description:
+            Circuit data
+          content:
+            application/json:
+              schema: CircuitSchema
+            text/plain:
+              schema: CircuitSchema
+            text/json:
+              schema: CircuitSchema
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_circuit_by_name_request(g.db, gym_id, circuit_name)
+
+
+@api_blueprint.route('/circuits/<string:gym_id>/<string:wall_section>/create', methods=['POST'])
+def circuit_create(gym_id: str, wall_section: str) -> Response:
+    """Create a new circuit linked to the given gym and wall section
+    ---
+    post:
+      tags:
+        - Circuits
+      parameters:
+      - in: path
+        schema: GymIDParameter
+      - in: path
+        schema: WallSectionParameter
+      requestBody:
+        description: Create circuit request body
+        required: true
+        content:
+          application/json:
+            schema: CreateCircuitRequestBody
+          application/x-www-form-urlencoded:
+            schema: CreateCircuitRequestBody
+          text/json:
+            schema: CreateCircuitRequestBody
+          text/plain:
+            schema: CreateCircuitRequestBody
+      responses:
+        201:
+          description:
+            Creation successful
+          content:
+            text/plain:
+              schema: CreateCircuitResponseBody
+            text/json:
+              schema: CreateCircuitResponseBody
+            application/json:
+              schema: CreateCircuitResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_circuit_create_request(request, g.db, gym_id, wall_section)
 
 @api_blueprint.route('/boulders/<string:gym_id>/list', methods=['GET'])
 def get_gym_boulders(gym_id: str) -> Response:
@@ -247,16 +482,23 @@ def get_gym_boulders(gym_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -290,16 +532,23 @@ def get_boulder_by_id(gym_id: str, boulder_id: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -333,16 +582,23 @@ def get_boulder_by_name(gym_id: str, boulder_name: str) -> Response:
         400:
           description:
             Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -389,22 +645,22 @@ def boulder_create(gym_id: str, wall_section: str) -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: CreateBoulderErrorResponse
-            text/json:
-              schema: CreateBoulderErrorResponse
             application/json:
-              schema: CreateBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -451,22 +707,22 @@ def rate_boulder(gym_id: str, boulder_id: str) -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: RateBoulderErrorResponse
-            text/json:
-              schema: RateBoulderErrorResponse
             application/json:
-              schema: RateBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -508,32 +764,22 @@ def new_user() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: SignUpErrorResponse
-            text/json:
-              schema: SignUpErrorResponse
             application/json:
-              schema: SignUpErrorResponse
-        401:
-          description:
-            Invalid credentials
-          content:
+              schema: ErrorResponse
             text/plain:
-              schema: SignUpErrorResponse
+              schema: ErrorResponse
             text/json:
-              schema: SignUpErrorResponse
-            application/json:
-              schema: SignUpErrorResponse
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -577,32 +823,22 @@ def get_auth_token() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: AuthenticationErrorResponse
-            text/json:
-              schema: AuthenticationErrorResponse
             application/json:
-              schema: AuthenticationErrorResponse
-        401:
-          description:
-            Invalid credentials
-          content:
+              schema: ErrorResponse
             text/plain:
-              schema: AuthenticationErrorResponse
+              schema: ErrorResponse
             text/json:
-              schema: AuthenticationErrorResponse
-            application/json:
-              schema: AuthenticationErrorResponse
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -647,22 +883,22 @@ def mark_boulder_as_done() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: MarkDoneBoulderErrorResponse
-            text/json:
-              schema: MarkDoneBoulderErrorResponse
             application/json:
-              schema: MarkDoneBoulderErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -696,32 +932,25 @@ def get_user_ticklist() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: TicklistError
-            text/json:
-              schema: TicklistError
             application/json:
-              schema: TicklistError
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         401:
           description:
-            Invalid credentials
-          content:
-            text/plain:
-              schema: TicklistError
-            text/json:
-              schema: TicklistError
-            application/json:
-              schema: TicklistError
+            Unauthorized
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
@@ -755,34 +984,78 @@ def test_auth() -> Response:
           description:
             Bad request
           content:
-            text/plain:
-              schema: TestTokenErrorResponse
-            text/json:
-              schema: TestTokenErrorResponse
             application/json:
-              schema: TestTokenErrorResponse
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
         401:
           description:
-            Invalid credentials
-          content:
-            text/plain:
-              schema: TestTokenErrorResponse
-            text/json:
-              schema: TestTokenErrorResponse
-            application/json:
-              schema: TestTokenErrorResponse
+            Unauthorized
         404:
           description:
             Not found
           content:
             application/json:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/plain:
-              schema: NotFoundError
+              schema: ErrorResponse
             text/json:
-              schema: NotFoundError
+              schema: ErrorResponse
         500:
           description:
             Server Error
     """
     return api_request_processor.process_test_auth_request(g.user)
+
+@api_blueprint.route('/user/preferences', methods=['GET'])
+@auth.login_required
+def get_user_preferences() -> Response:
+    """
+    Gwet user preferences
+    ---
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      responses:
+        200:
+          description:
+            Authentication successful
+          content:
+            text/plain:
+              schema: UserPreferencesResponseBody
+            text/json:
+              schema: UserPreferencesResponseBody
+            application/json:
+              schema: UserPreferencesResponseBody
+        400:
+          description:
+            Bad request
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        401:
+          description:
+            Unauthorized
+        404:
+          description:
+            Not found
+          content:
+            application/json:
+              schema: ErrorResponse
+            text/plain:
+              schema: ErrorResponse
+            text/json:
+              schema: ErrorResponse
+        500:
+          description:
+            Server Error
+    """
+    return api_request_processor.process_get_user_preferences_request(g.user)

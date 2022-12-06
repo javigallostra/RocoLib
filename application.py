@@ -8,6 +8,7 @@ from flask import session, send_from_directory, _app_ctx_stack, g
 from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 from werkzeug.wrappers.response import Response
 
@@ -22,6 +23,7 @@ import src.request_processor as request_processor
 
 # create the application object
 app = Flask(__name__)
+cors = CORS(app, resources={f'/api/*': {'origins': '*'}})
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -42,8 +44,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-def make_cache_key_create() -> str:
-    return (request.path + get_gym()).encode('utf-8')
+# def make_cache_key_create() -> str:
+#     return (request.path + get_gym()).encode('utf-8')
 
 
 @app.before_request
@@ -109,14 +111,14 @@ def home() -> str:
 
 
 @app.route('/create')
-@cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
+# @cache.cached(timeout=60 * 60, key_prefix=make_cache_key_create)
 def create() -> str:
-    return request_processor.handle_create_request(request, session, g.db)
+    return request_processor.handle_create_request(request, session, g.db, current_user)
 
 
 @app.route('/create_boulder')
 def create_boulder() -> str:
-    return render_template('create_boulder.html')
+    return render_template('create_boulder.html', latest_set=utils.get_show_only_latest_wall_sets(current_user))
 
 
 @app.route('/create_route')
@@ -126,12 +128,17 @@ def create_route() -> str:
 
 @app.route('/explore')
 def explore() -> str:
-    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db))
+    return render_template('explore.html', walls=db_controller.get_gym_walls(get_gym(), g.db, utils.get_show_only_latest_wall_sets(current_user)))
 
 
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders() -> str:
     return request_processor.handle_explore_boulders(request, session, g.db, current_user)
+
+
+@app.route('/explore_circuits', methods=['GET', 'POST'])
+def explore_circuits() -> str:
+    return request_processor.handle_explore_circuits(request, session, g.db, current_user)
 
 
 @app.route('/change_gym', methods=['POST'])
@@ -144,20 +151,38 @@ def rate_boulder() -> Union[Response, NoReturn]:
     return request_processor.process_rate_boulder_request(request, session, g.db)
 
 
+@app.route('/load_circuit', methods=['POST', 'GET'])
+# @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
+def load_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_load_circuit_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder
+    )
+
+
 @app.route('/load_boulder', methods=['POST', 'GET'])
 # @cache.cached(timeout=60*60, key_prefix=make_cache_key_boulder)
 def load_boulder() -> Union[str, NoReturn]:
-    return request_processor.process_load_boulder_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_boulder_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder
+    )
 
 
 @app.route('/load_next')
 def load_next_problem():
-    return request_processor.process_load_next_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_next_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/load_previous')
 def load_previous_problem():
-    return request_processor.process_load_previous_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_load_previous_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/explore_routes')
@@ -167,7 +192,7 @@ def explore_routes() -> str:
 
 @app.route('/random_problem')
 def random_problem() -> str:
-    return request_processor.process_random_problem_request(request, session, g.db, app.static_folder)
+    return request_processor.process_random_problem_request(request, session, g.db, current_user, app.static_folder)
 
 
 @app.route('/about_us')
@@ -177,7 +202,14 @@ def render_about_us() -> str:
 
 @app.route('/walls/<string:wall_section>')
 def wall_section(wall_section) -> str:
-    return request_processor.process_wall_section_request(request, session, g.db, app.static_folder, wall_section)
+    return request_processor.process_wall_section_request(
+        request,
+        session,
+        g.db,
+        current_user,
+        app.static_folder,
+        wall_section
+    )
 
 
 @app.route('/save', methods=['POST'])
@@ -185,9 +217,19 @@ def save() -> Response:
     return request_processor.process_save_request(request, session, g.db)
 
 
+@app.route('/circuit_save', methods=['POST'])
+def circuit_save() -> Response:
+    return request_processor.process_save_request(request, session, g.db, is_circuit=True)
+
+
 @app.route('/save_boulder', methods=['POST'])
 def save_boulder() -> Union[str, NoReturn]:
     return request_processor.process_save_boulder_request(request, current_user)
+
+
+@app.route('/save_circuit', methods=['POST'])
+def save_circuit() -> Union[str, NoReturn]:
+    return request_processor.process_save_circuit_request(request, current_user)
 
 
 @app.route('/add_gym', methods=['GET', 'POST'])
@@ -199,7 +241,7 @@ def add_gym() -> str:
 # Login handlers
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> Union[str, Response]:
-    return request_processor.process_login_request(request, g.db, current_user, login_user)
+    return request_processor.process_login_request(request, session, g.db, current_user, login_user)
 
 
 @app.route('/signup/', methods=['GET', 'POST'])
@@ -212,10 +254,18 @@ def logout() -> Response:
     return request_processor.process_logout_request(logout_user)
 
 # User related endpoints
+
+
 @app.route('/tick_list', methods=['GET', 'POST'])
 @login_required
 def tick_list() -> Union[str, Response]:
     return request_processor.process_ticklist_request(request, session, g.db, current_user)
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile() -> Union[str, Response]:
+    return request_processor.process_profile_request(request, g.db, session, current_user)
 
 
 @app.route('/delete_ticklist_problem', methods=['POST'])

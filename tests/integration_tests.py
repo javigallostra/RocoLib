@@ -6,14 +6,15 @@ from api.schemas import BoulderFields
 from src.config import CREDS, CREDS_LOCAL
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
 from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
-from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
-from tests.tests_config import TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
+from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY_STRING, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
+from tests.tests_config import TEST_DIFFICULTY_INT, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
 from src.utils import set_creds_file
 from tests.utils import add_user_with_ticklist, drop_users, get_db_connection
 from tests.utils import create_walls_collection, add_wall, drop_boulders, add_boulder
 
 API_VERSION = 'v1'
+
 
 class BaseIntegrationTestClass(unittest.TestCase):
     """
@@ -54,7 +55,7 @@ class BaseIntegrationTestClass(unittest.TestCase):
             fields.section: TEST_WALL_SECTION,
             fields.time: datetime.now().isoformat(),
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_INT,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -65,7 +66,8 @@ class BaseIntegrationTestClass(unittest.TestCase):
         # drop all users
         drop_users(self.db)
         # add a test user
-        add_user_with_ticklist(self.db, TEST_USERNAME, TEST_PASSWORD, TEST_EMAIL)
+        add_user_with_ticklist(self.db, TEST_USERNAME,
+                               TEST_PASSWORD, TEST_EMAIL)
 
     def tearDown(self):
         """
@@ -109,7 +111,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -132,7 +134,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -154,7 +156,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -197,7 +199,7 @@ class APITests(BaseIntegrationTestClass):
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: 123,
             fields.notes: TEST_NOTES,
@@ -270,7 +272,8 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Username is required', 'Password is required', 'Email is required'])
+        self.assertListEqual(resp.json.get('errors'), [
+                             'Username is required', 'Password is required', 'Email is required'])
 
     def test_create_user_invalid_email(self):
         pass
@@ -290,7 +293,8 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Username already exists'])
+        self.assertListEqual(resp.json.get('errors'), [
+                             'Username already exists'])
 
     def test_create_user_repeated_email(self):
         """
@@ -326,6 +330,14 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.json.get('username'), 'fake_username')
 
+    def test_get_user_preferences(self):
+        # TODO: implement test
+        pass
+
+    def test_set_user_preferences(self):
+        # TODO: implement test
+        pass
+
     def test_get_user_ticklist(self):
         """
         Get the test user's ticklist
@@ -336,10 +348,12 @@ class APITests(BaseIntegrationTestClass):
             'username': TEST_USERNAME,
             'password': TEST_PASSWORD
         }
-        resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
+        resp = self.client.post(
+            f'/api/{API_VERSION}/user/auth', json=user_data)
         token = resp.json.get('token')
         # When
-        resp = self.client.get(route, headers={'Authorization': f'Bearer {token}'})
+        resp = self.client.get(
+            route, headers={'Authorization': f'Bearer {token}'})
         # Then
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json.get('boulders')), 1)
@@ -356,13 +370,14 @@ class APITests(BaseIntegrationTestClass):
             'password': TEST_PASSWORD
         }
         # authenticate user and get token
-        auth_resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
+        auth_resp = self.client.post(
+            f'/api/{API_VERSION}/user/auth', json=user_data)
         token = auth_resp.json.get('token')
-        
+
         fields = BoulderFields()
         data = {
             fields.creator: TEST_CREATOR,
-            fields.difficulty: TEST_DIFFICULTY,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
@@ -396,7 +411,8 @@ class APITests(BaseIntegrationTestClass):
         }
         fake_boulder_id = 'abcd145236acd41763da12a1'
         # authenticate user and get token
-        auth_resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
+        auth_resp = self.client.post(
+            f'/api/{API_VERSION}/user/auth', json=user_data)
         token = auth_resp.json.get('token')
         # When
         resp = self.client.post(
@@ -419,7 +435,8 @@ class APITests(BaseIntegrationTestClass):
             'password': TEST_PASSWORD
         }
         # authenticate user and get token
-        auth_resp = self.client.post(f'/api/{API_VERSION}/user/auth', json=user_data)
+        auth_resp = self.client.post(
+            f'/api/{API_VERSION}/user/auth', json=user_data)
         token = auth_resp.json.get('token')
         # When
         resp = self.client.post(
@@ -430,7 +447,9 @@ class APITests(BaseIntegrationTestClass):
         # Then
         self.assertEqual(resp.status_code, 400)
         self.assertFalse(resp.json.get('marked_as_done'))
-        self.assertDictEqual(resp.json.get('errors'), {'boulder_id': 'Boulder id is required', 'gym': 'Gym is required'})
+        self.assertDictEqual(resp.json.get('errors'), {
+                             'boulder_id': 'Boulder id is required', 'gym': 'Gym is required'})
+
 
 if __name__ == '__main__':
     unittest.main()
