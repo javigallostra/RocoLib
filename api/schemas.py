@@ -346,7 +346,7 @@ spec = APISpec(
     servers=[
         dict(
             description="Production server",
-            url="https://rocolib.herokuapp.com"
+            url="https://rocolib.onrender.com"
         ),
         dict(
             description="Local Test server",
