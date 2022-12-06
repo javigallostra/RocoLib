@@ -23,7 +23,6 @@ import src.request_processor as request_processor
 
 # create the application object
 app = Flask(__name__)
-cors = CORS(app, resources={f'/api/*': {'origins': '*'}})
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -35,6 +34,10 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 
 app.register_blueprint(swaggerui_blueprint)
 app.register_blueprint(api_blueprint)
+
+cors = CORS(app, resources={f'/api/*': {'origins': '*'}})
+CORS(swaggerui_blueprint)
+CORS(api_blueprint)
 
 # app.config.from_pyfile('config.py')
 # Might have to change how this is computed
@@ -134,6 +137,7 @@ def explore() -> str:
 @app.route('/explore_boulders', methods=['GET', 'POST'])
 def explore_boulders() -> str:
     return request_processor.handle_explore_boulders(request, session, g.db, current_user)
+
 
 @app.route('/explore_circuits', methods=['GET', 'POST'])
 def explore_circuits() -> str:
