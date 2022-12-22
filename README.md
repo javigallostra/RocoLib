@@ -5,7 +5,7 @@ Simple Web App to create and share boulders & routes for any climbing wall.
 Check it out at:
 
 - [https://rocolib.onrender.com/](https://rocolib.onrender.com/)
-  
+
 We also offer a public API. Its documentation can be found at:
 
 - [https://rocolib.onrender.com/api/v1/docs](https://rocolib.onrender.com/api/v1/docs)
@@ -18,11 +18,11 @@ Powered by [Flask](https://flask.palletsprojects.com/en/1.1.x/), [Python 3.9.7](
 
 ## Features
 
-* Create problems on any climbing wall, just from an image.
-* Explore and climb problems created by other users.
-* Create your own ticklist, save problems that you want to climb and log your sends.
-* Sort problems by difficulty, rating, creation date or setter and find your ideal climb or project.
-* Rate problems so that other users can get feedback and find the best climbs.
+- Create problems on any climbing wall, just from an image.
+- Explore and climb problems created by other users.
+- Create your own ticklist, save problems that you want to climb and log your sends.
+- Sort problems by difficulty, rating, creation date or setter and find your ideal climb or project.
+- Rate problems so that other users can get feedback and find the best climbs.
 
 Would like to contribute? PRs and feature requests are welcome!
 
@@ -30,17 +30,17 @@ Check the [issue tracker](https://github.com/javigallostra/RocoLib/issues) or [p
 
 ###### Some of the features on our TODO list are
 
-* Public API **WIP**
-* ~~Localize app~~ Thanks to [Pan6ora](https://github.com/Pan6ora)
-* Include a map to locate registered gyms
-* ~~Show the number of repetitions of each problem~~ PR #133
-* For registered users: Include a stats page
-* Enable setting routes as well as problems
-* Enable setting routes that span multiple images
-* Enable to configure each gym independently (difficulties, colors, problem styles, etc.)
-* ~~Enable logging a climb more than once~~ PR #75
-* Add a comments section for each problem
-* Enable users to suggest a difficulty after climbing a problem
+- Public API **WIP**
+- ~~Localize app~~ Thanks to [Pan6ora](https://github.com/Pan6ora)
+- Include a map to locate registered gyms
+- ~~Show the number of repetitions of each problem~~ PR #133
+- For registered users: Include a stats page
+- Enable setting routes as well as problems
+- Enable setting routes that span multiple images
+- Enable to configure each gym independently (difficulties, colors, problem styles, etc.)
+- ~~Enable logging a climb more than once~~ PR #75
+- Add a comments section for each problem
+- Enable users to suggest a difficulty after climbing a problem
 
 ## Screenshots
 
@@ -104,5 +104,5 @@ Once the container is up and running, the app can be accessed at http://localhos
 
 ## Links of interest
 
-* [Yolo Bouldering](https://github.com/yarkhinephyo/yolo_bouldering)
-* [Climbnet](https://github.com/cydivision/climbnet)
+- [Yolo Bouldering](https://github.com/yarkhinephyo/yolo_bouldering)
+- [Climbnet](https://github.com/cydivision/climbnet)
