@@ -10,7 +10,7 @@ We also offer a public API. Its documentation can be found at:
 
 - [https://rocolib.onrender.com/api/v1/docs](https://rocolib.onrender.com/api/v1/docs)
 
-Also, if you have signed up and are a registered user you can check your stats at (login with the same credentials):
+Also, if you have signed up and are a registered user you can check your stats at (login with the same credentials used for the main app):
 
 - [https://rocolib-stats.onrender.com/](https://rocolib-stats.onrender.com/)
 
