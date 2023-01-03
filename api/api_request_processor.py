@@ -250,10 +250,6 @@ def process_mark_boulder_as_done_request(request, db, user):
     if request.method == 'POST':
       data, _ = load_data(request)
 
-      valid, errors = is_gym_valid(data.get('gym', ''), db)
-      if not valid:
-        return jsonify(errors=errors), 404
-
       # detect missing fields and add as errors
       errors = dict()
       if not data.get('boulder_id', ''):
@@ -262,6 +258,10 @@ def process_mark_boulder_as_done_request(request, db, user):
         errors['gym'] = 'Gym is required'
       if bool(errors):
           return jsonify(dict(errors=errors)), 400
+
+      valid, errors = is_gym_valid(data.get('gym', ''), db)
+      if not valid:
+        return jsonify(errors=errors), 404
 
       db_boulder = db_controller.get_boulder_by_id(
           data.get('gym'), data.get('boulder_id'), db)

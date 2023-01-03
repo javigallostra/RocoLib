@@ -10,6 +10,8 @@ def is_gym_valid(gym_id: str, db: Database) -> Tuple[bool, dict]:
     Check if the gym is valid via its id. 
     If contained in the database, it is valid.
     """
+    if not gym_id:
+        return False, dict(gym_id=f'Gym id is required')
     if not gym_id in [gym.get('id', '') for gym in get_gyms(db)]:
         return False, dict(gym_id=f'Gym {gym_id} not found')
     return True, dict()
@@ -20,6 +22,8 @@ def is_section_valid(gym_id: str, wall_section: str, db: Database) -> Tuple[bool
     Check if the section is valid via its image_path.
     If contained in the database, it is valid.
     """
+    if not wall_section:
+        return False, dict(wall_section=f'Wall section is required')        
     if not wall_section in [wall.get('image', '') for wall in get_gym_walls(gym_id, db)]:
         return False, dict(wall_section=f'Wall section {wall_section} not found')
     return True, dict()
@@ -33,13 +37,13 @@ def are_gym_and_section_valid(gym_id: str, wall_section: str, db: Database) -> T
     """
     errors = {}
     
-    valid_gym = is_gym_valid(gym_id, db)
+    valid_gym, gym_errors = is_gym_valid(gym_id, db)
     if not valid_gym:
-        errors['gym_id'] = f'Gym {gym_id} does not exist'
+        errors |= gym_errors
     
-    valid_section = is_section_valid(gym_id, wall_section, db)
+    valid_section, section_errors = is_section_valid(gym_id, wall_section, db)
     if not valid_section:
-        errors['wall_section'] = f'Wall section {wall_section} does not exist in gym {gym_id}'
+        errors |= section_errors
 
     return valid_gym and valid_section, errors
 
@@ -68,6 +72,8 @@ def is_bson_id_valid(id: str) -> Tuple[bool, dict]:
     :return: id validity
     :rtype: bool
     """
+    if not id:
+        return False, dict(bson_id=f'Id is required')
     if not bson.objectid.ObjectId.is_valid(id):
         return False, dict(bson_id=f'Invalid BSON Id format: {id}')
     return True, dict()

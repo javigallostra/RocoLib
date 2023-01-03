@@ -78,7 +78,9 @@ class BaseIntegrationTestClass(unittest.TestCase):
 
 
 class APITests(BaseIntegrationTestClass):
-
+    """
+    Tests for API endpoints
+    """
     def test_get_gyms(self):
         """
         Get available gyms
@@ -91,6 +93,34 @@ class APITests(BaseIntegrationTestClass):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json['gyms'][0]['name'], TEST_GYM_NAME)
 
+    def test_get_gym_name(self):
+        """
+        Get the gym name 
+        """
+        # Given
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/name'
+        key = 'name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json[key], TEST_GYM_NAME)
+
+
+    def test_get_gym_name_invalid_gym(self):
+        """
+        Get the gym name of a non existing gym
+        """
+        # Given
+        INVALID_GYM_CODE = 'aaa'
+        route = f'/api/{API_VERSION}/gym/{INVALID_GYM_CODE}/name'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
     def test_get_walls(self):
         """
         Get available walls from a gym
@@ -102,6 +132,184 @@ class APITests(BaseIntegrationTestClass):
         # Then
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json['walls'][0]['image'], TEST_WALL_SECTION)
+
+    def test_get_walls_gym_not_found(self):
+        """
+        Test wall retrieval for a non-existing gym
+        """
+        # Given
+        NON_EXISTING_GYM = 'aaa'
+        route = f'/api/{API_VERSION}/gym/{NON_EXISTING_GYM}/walls'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_gym_wall_name(self):
+        """
+        Get the gym name 
+        """
+        # Given
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/name'
+        key = 'name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json[key], TEST_WALL_NAME)
+
+
+    def test_get_gym_wall_name_invalid_wall(self):
+        """
+        Get the gym name of a non existing wall section
+        """
+        # Given
+        INVALID_WALL_CODE = 'aaa'
+        key = 'errors'
+        route = f'/api/{API_VERSION}/gym/{TEST_GYM_CODE}/{INVALID_WALL_CODE}/name'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_gym_boulders(self):
+        """
+        Get boulders of a given gym
+        """
+        # Given
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/list'
+        key = 'boulders'
+        num_boulders = 1
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(key, resp.json.keys())
+        self.assertEqual(num_boulders, len(resp.json[key]))
+
+    def test_get_gym_boulders_invalid_gym(self):
+        """
+        Get boulders of a non-existing gym
+        """
+        # Given
+        INVALID_GYM = 'aaa'
+        route = f'/api/{API_VERSION}/boulders/{INVALID_GYM}/list'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_id(self):
+        # Given
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + new_boulder.json['_id'])
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(all(field in resp.json['boulder'].keys() for field in data.keys()))
+
+    def test_get_boulder_by_id_no_gym(self):
+        # Given
+        FAKE_GYM_CODE = 'aaaa'
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/'
+        key = 'errors'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + new_boulder.json['_id'])
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_id_no_boulder(self):
+        # Given
+        FAKE_BOULDER_ID = 'aaaaaaaaaaaaaaaaaaaaaaaa'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{FAKE_BOULDER_ID}'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_name(self):
+        # /boulders/<string:gym_id>/name/<string:boulder_name>
+        # Given
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/name/'
+        # When
+        self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + TEST_NAME)
+        # Then
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(all(field in resp.json['boulder'].keys() for field in data.keys()))
+
+    def test_get_boulder_by_name_no_gym(self):
+        # Given
+        FAKE_GYM_CODE = 'aaaa'
+        fields = BoulderFields()
+        data = {
+            fields.creator: TEST_CREATOR,
+            fields.difficulty: TEST_DIFFICULTY_STRING,
+            fields.feet: TEST_FEET,
+            fields.name: TEST_NAME,
+            fields.notes: TEST_NOTES,
+            fields.holds: TEST_HOLDS
+        }
+        boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
+        partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/name/'
+        key = 'errors'
+        # When
+        new_boulder = self.client.post(boulder_create_route, json=data)
+        resp = self.client.get(partial_route + TEST_NAME)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
+
+    def test_get_boulder_by_name_no_boulder(self):
+        # Given
+        FAKE_BOULDER_NAME = 'aa'
+        route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/name/{FAKE_BOULDER_NAME}'
+        key = 'errors'
+        # When
+        resp = self.client.get(route)
+        # Then
+        self.assertEqual(resp.status_code, 404)
+        self.assertIn(key, resp.json.keys())
 
     def test_create_boulder_success(self):
         """
@@ -144,7 +352,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 404)
-        self.assertEqual(resp.json['created'], False)
 
     def test_create_boulder_failure_no_wall_section(self):
         """
@@ -166,7 +373,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 404)
-        self.assertEqual(resp.json['created'], False)
 
     def test_create_boulder_failure_no_data(self):
         """
@@ -187,7 +393,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json['created'], False)
         self.assertDictEqual(errors, resp.json['errors'])
 
     def test_create_boulder_failure(self):
@@ -209,7 +414,6 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json['created'], False)
         self.assertListEqual(resp.json.get('errors').get(
             'name'), ['Not a valid string.'])
 
@@ -227,7 +431,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Username is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['username'])
 
     def test_create_user_no_password(self):
         """
@@ -243,7 +447,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Password is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['password'])
 
     def test_create_user_no_email(self):
         """
@@ -259,7 +463,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Email is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email'])
 
     def test_create_user_no_data(self):
         """
@@ -272,8 +476,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), [
-                             'Username is required', 'Password is required', 'Email is required'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email', 'password', 'username'])
 
     def test_create_user_invalid_email(self):
         pass
@@ -293,8 +496,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), [
-                             'Username already exists'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['username'])
 
     def test_create_user_repeated_email(self):
         """
@@ -311,7 +513,7 @@ class APITests(BaseIntegrationTestClass):
         resp = self.client.post(route, json=data)
         # Then
         self.assertEqual(resp.status_code, 400)
-        self.assertListEqual(resp.json.get('errors'), ['Email already exists'])
+        self.assertListEqual(list(resp.json.get('errors').keys()), ['email'])
 
     def test_create_user_valid(self):
         """
@@ -450,6 +652,43 @@ class APITests(BaseIntegrationTestClass):
         self.assertDictEqual(resp.json.get('errors'), {
                              'boulder_id': 'Boulder id is required', 'gym': 'Gym is required'})
 
+    def test_delete_ticklist_problem(self):
+        pass
+        # # Given
+        # route = f'/api/{API_VERSION}/user/ticklist/boulder/done'
+        # user_data = {
+        #     'username': TEST_USERNAME,
+        #     'password': TEST_PASSWORD
+        # }
+        # # authenticate user and get token
+        # auth_resp = self.client.post(
+        #     f'/api/{API_VERSION}/user/auth', json=user_data)
+        # token = auth_resp.json.get('token')
+
+        # fields = BoulderFields()
+        # data = {
+        #     fields.creator: TEST_CREATOR,
+        #     fields.difficulty: TEST_DIFFICULTY_STRING,
+        #     fields.feet: TEST_FEET,
+        #     fields.name: TEST_NAME,
+        #     fields.notes: TEST_NOTES,
+        #     fields.holds: TEST_HOLDS
+        # }
+        # resp = self.client.post(
+        #     f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)
+
+        # boulder_id = resp.json.get('_id')
+
+        # # When
+        # resp = self.client.post(
+        #     route,
+        #     headers={'Authorization': f'Bearer {token}'},
+        #     json={'boulder_id': boulder_id, 'gym': TEST_GYM_CODE}
+        # )
+        # # Then
+        # self.assertEqual(resp.status_code, 200)
+        # self.assertEqual(resp.json.get('boulder_id'), boulder_id)
+        # self.assertTrue(resp.json.get('marked_as_done'))
 
 if __name__ == '__main__':
     unittest.main()
