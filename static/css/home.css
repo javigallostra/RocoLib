@@ -1,118 +1,128 @@
 @media screen and (max-width: 767px) {
-    .gym-selector {
-        display: flex;
-        flex-direction: column;
-    }
+  .gym-selector {
+    display: flex;
+    flex-direction: column;
+  }
 
-    .button-row {
-        margin-left: 0.9rem;
-        margin-bottom: 0.5rem;
-    }
+  .button-row {
+    margin-left: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
 
-    .group-button-row {
-        flex-direction: column;
-    }
+  .group-button-row {
+    flex-direction: column;
+  }
 
-    .user-info li {
-        padding: 0 0 0 0;
-        ;
-    }
+  .user-info li {
+    padding: 0 0 0 0;
+  }
 }
 
-
 .stats {
-    padding: 10px 0 10px 0;
+  padding: 10px 0 10px 0;
 }
 
 .stats .counter .number {
-    color: #1789DA;
-    font-size: 3rem;
-    font-weight: 300;
+  color: #1789da;
+  font-size: 3rem;
+  font-weight: 300;
 }
 
 .stats .counter .title {
-    max-width: 200px;
-    font-size: 1.25rem;
-    line-height: 1.2;
-    font-weight: bold;
+  max-width: 200px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: bold;
 }
 
 .btn-center-mobile {
-    min-width: 50%;
-    text-align: left;
-  }
+  min-width: 50%;
+  text-align: left;
+}
 
 .btn-center-mobile-2 {
-    min-width: 48%;
-    text-align: left;
-  
+  min-width: 48%;
+  text-align: left;
+}
+
+.div-btn-center-mobile {
+  margin-bottom: 0.5rem;
+}
+
+@media only screen and (max-width: 768px) {
+  .row.group-button-row {
+    width: inherit;
+  }
+  .div-btn-center-mobile:last-child {
+    margin-left: 0.9rem;
+  }
 }
 
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 700px) {
-    a.mobile {
-        width: 100%;
-    }
-    #logo-img {
-        max-width: 50%;
-    }
-    .btn-center-mobile, .btn-center-mobile-2 {
-      width: 100%;
-      text-align: center;
-    }
-    .div-btn-center-mobile {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1.25rem;
-    }
-    .no-margin-top-mobile {
-        margin-top: 0;
-    }
-
+  a.mobile {
+    width: 100%;
+  }
+  #logo-img {
+    max-width: 50%;
+  }
+  .btn-center-mobile,
+  .btn-center-mobile-2 {
+    width: 100%;
+    text-align: center;
+  }
+  .div-btn-center-mobile {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+  .no-margin-top-mobile {
+    margin-top: 0;
+  }
 }
 
 @media only screen and (min-width: 701px) {
-    #logo-img {
-        max-width: 40%;
-    }
+  #logo-img {
+    max-width: 40%;
+  }
 }
 
 .button-loading .button-text {
-    visibility: hidden;
-    opacity: 0;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .button-loading:hover {
-    background-color: white;
+  background-color: white;
 }
 
 .button-loading::after {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    border: 4px solid transparent;
-    border-top-color: #007bff;
-    border-radius: 50%;
-    animation: button-loading-spinner 1s ease infinite;
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: 4px solid transparent;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: button-loading-spinner 1s ease infinite;
 }
 
 .cstm-button {
-    position: relative;
-    cursor: pointer;
+  position: relative;
+  cursor: pointer;
 }
 
 @keyframes button-loading-spinner {
-    from {
-        transform: rotate(0turn);
-    }
+  from {
+    transform: rotate(0turn);
+  }
 
-    to {
-        transform: rotate(1turn);
-    }
+  to {
+    transform: rotate(1turn);
+  }
 }
