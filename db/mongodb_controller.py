@@ -20,6 +20,14 @@ USERS_COLLECTION = 'users'
 
 def preprocess_boulder_data(boulder):
     # inverse maps
+    # map checkbox
+    for checkbox_field in CHECKBOX_FIELDS:
+        if checkbox_field in boulder:
+            # this means data has been set to true
+            boulder[checkbox_field] = True
+        else:
+            boulder[checkbox_field] = False
+        
     for field in FIELDS_TO_MAP.keys():
         if field in boulder:
             inv_map = {v: k for k, v in FIELDS_TO_MAP[field].items()}

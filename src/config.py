@@ -37,6 +37,7 @@ BOULDER_DIFFICULTY_MAP = {
 FIELDS_TO_MAP = {
     'difficulty': BOULDER_DIFFICULTY_MAP
 }
+CHECKBOX_FIELDS = ('is_project',)
 
 # For DB querying
 EQUALS = ['section', 'difficulty']

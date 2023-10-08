@@ -50,6 +50,7 @@
     "no_account": "Pas de compte?",
     "save": "Enregistrer",
     "save_boulder": "Enregistrer le bloc",
+    "is_project": "Projet",
     "boulder_name": "Nom du bloc",
     "circuit_name": "Nom du circuit",
     "suggested_difficulty": "Cotation proposée",
