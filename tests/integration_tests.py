@@ -5,7 +5,7 @@ from application import app
 from api.schemas import BoulderFields
 from src.config import CREDS, CREDS_LOCAL
 from tests.tests_config import TEST_GYM_NAME, TEST_GYM_CODE, TEST_COORDINATES
-from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS
+from tests.tests_config import TEST_WALL_NAME, TEST_WALL_SECTION, TEST_WALL_RADIUS, TEST_IS_PROJECT
 from tests.tests_config import TEST_CREATOR, TEST_DIFFICULTY_STRING, TEST_FEET, TEST_NAME, TEST_NOTES, TEST_HOLDS
 from tests.tests_config import TEST_DIFFICULTY_INT, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD
 
@@ -59,7 +59,8 @@ class BaseIntegrationTestClass(unittest.TestCase):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         # Add a boulder to the test gym
         add_boulder(self.db, TEST_GYM_CODE, boulder_data)
@@ -213,7 +214,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/'
@@ -234,7 +236,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/'
@@ -267,7 +270,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         partial_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/name/'
@@ -288,7 +292,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         boulder_create_route = f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create'
         partial_route = f'/api/{API_VERSION}/boulders/{FAKE_GYM_CODE}/name/'
@@ -323,7 +328,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         # When
         resp = self.client.post(
@@ -346,7 +352,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         # When
         resp = self.client.post(route, json=data)
@@ -367,7 +374,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         # When
         resp = self.client.post(route, json=data)
@@ -408,7 +416,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: 123,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         # When
         resp = self.client.post(route, json=data)
@@ -583,7 +592,8 @@ class APITests(BaseIntegrationTestClass):
             fields.feet: TEST_FEET,
             fields.name: TEST_NAME,
             fields.notes: TEST_NOTES,
-            fields.holds: TEST_HOLDS
+            fields.holds: TEST_HOLDS,
+            fields.is_project: TEST_IS_PROJECT
         }
         resp = self.client.post(
             f'/api/{API_VERSION}/boulders/{TEST_GYM_CODE}/{TEST_WALL_SECTION}/create', json=data)

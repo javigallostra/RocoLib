@@ -16,6 +16,7 @@ TEST_FEET = 'free'
 TEST_NAME = 'test'
 TEST_NOTES = ''
 TEST_HOLDS = [{'color': '#00ff00', 'x': 0, 'y': 0}]
+TEST_IS_PROJECT = True
 # User
 TEST_USERNAME = 'test_username'
 TEST_EMAIL = 'test_email@email.com'

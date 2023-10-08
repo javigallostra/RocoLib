@@ -70,6 +70,7 @@ class BaseBoulderSchema(Schema):
     time = fields.Str(required=True)
     notes = fields.Str(required=True)
     holds = fields.List(fields.Nested(HoldSchema), required=True)
+    is_project = fields.Bool(required=True)
 
 
 class BoulderSchema(BaseBoulderSchema):
@@ -326,6 +327,7 @@ class BoulderFields:
     time = 'time'
     notes = 'notes'
     holds = 'holds'
+    is_project = "is_project"
 
 
 spec = APISpec(

@@ -297,7 +297,8 @@ class BoulderCreationTests(unittest.TestCase):
             fields.name: 5,
             fields.time: 23,
             fields.notes: None,
-            fields.holds: 'holds'
+            fields.holds: 'holds',
+            fields.is_project: 'a'
         }
         # When
         with self.assertRaises(ValidationError) as context:
@@ -313,6 +314,7 @@ class BoulderCreationTests(unittest.TestCase):
         self.assertIn('time', context.exception.messages)
         self.assertIn('notes', context.exception.messages)
         self.assertIn('holds', context.exception.messages)
+        self.assertIn('is_project', context.exception.messages)
 
 
 class UserModelTests(unittest.TestCase):
