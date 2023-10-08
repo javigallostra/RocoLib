@@ -9,6 +9,7 @@ Changelog
 Features
 --------
 
+- #215 #216 Add `is_project` flag to newly created problems both via form and via API
 - #200 API circuit endpoints to create, list and search by id or name
 - #195 #196 Enable circuit creation and visualization
 - #172 Add left/right arrow buttons on PC to indicate that the user can change the problem by clicking
