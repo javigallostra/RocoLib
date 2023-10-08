@@ -394,6 +394,7 @@ class APITests(BaseIntegrationTestClass):
             'difficulty': ['Missing data for required field.'],
             'feet': ['Missing data for required field.'],
             'holds': ['Missing data for required field.'],
+            'is_project': ['Missing data for required field.'],
             'name': ['Missing data for required field.'],
             'notes': ['Missing data for required field.']
         }
