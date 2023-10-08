@@ -50,6 +50,7 @@
     "no_account": "Don't have an account?",
     "save": "Save",
     "save_boulder": "Save boulder",
+    "is_project": "Project",
     "boulder_name": "Boulder name",
     "circuit_name": "Circuit name",
     "suggested_difficulty": "Suggested difficulty",
