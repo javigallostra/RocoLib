@@ -1,19 +1,21 @@
 from __future__ import annotations
-from typing import Any, Dict, Union
+
 import uuid
-
-from src.typing import Data
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-from db import mongodb_controller
-from datetime import datetime
-from pymongo.database import Database
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any, Dict, Union
 
-TICKLIST = 'ticklist'
-USER_PREFERENCES = 'user_preferences'
+from flask_login import UserMixin
+from itsdangerous import BadSignature, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from pymongo.database import Database
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from db import mongodb_controller
+from src.typing import Data
+
+TICKLIST = "ticklist"
+USER_PREFERENCES = "user_preferences"
 
 
 class BaseModel(ABC):
@@ -36,7 +38,9 @@ class UserPreferences(BaseModel):
 
     def serialize(self, ignore_keys=None):
         if ignore_keys:
-            return { key: val for key, val in self.__dict__.items() if key not in ignore_keys }
+            return {
+                key: val for key, val in self.__dict__.items() if key not in ignore_keys
+            }
         return self.__dict__
 
 
@@ -90,7 +94,9 @@ class User(UserMixin, BaseModel):
 
     def serialize(self, ignore_keys=(USER_PREFERENCES)):
         if ignore_keys:
-            return {key: val for key, val in self.__dict__.items() if key not in ignore_keys}
+            return {
+                key: val for key, val in self.__dict__.items() if key not in ignore_keys
+            }
         return self.__dict__
 
     def save(self, database: Database) -> None:
@@ -104,8 +110,7 @@ class User(UserMixin, BaseModel):
             user_preferences = UserPreferences(user_id=self.id)
         # save user data and user prefs separately
         mongodb_controller.save_user(self.serialize(), database)
-        mongodb_controller.save_user_preferences(
-            user_preferences.serialize(), database)
+        mongodb_controller.save_user_preferences(user_preferences.serialize(), database)
         # deserialize ticklist problems
         self.load_ticklist(self.ticklist)
 
@@ -117,12 +122,13 @@ class User(UserMixin, BaseModel):
         self.ticklist = [TickListProblem(problem) for problem in ticklist_data]
 
     @staticmethod
-    def get_user_preferences(user_id: str, database: Database) -> Union[UserPreferences, None]:
+    def get_user_preferences(
+        user_id: str, database: Database
+    ) -> Union[UserPreferences, None]:
         """
         Get the preferences of a user
         """
-        _user_prefs = mongodb_controller.get_user_preferences(
-            user_id, database)
+        _user_prefs = mongodb_controller.get_user_preferences(user_id, database)
         if not bool(_user_prefs):
             return UserPreferences(user_id=user_id)
         return UserPreferences(**_user_prefs)
@@ -131,7 +137,7 @@ class User(UserMixin, BaseModel):
     def get_by_id(user_id: str, database: Database) -> Union[User, None]:
         """
         Return a User object if the user id is found in the database.
-        
+
         Otherwise, return None.
         """
         user_data = mongodb_controller.get_user_data_by_id(user_id, database)
@@ -152,7 +158,9 @@ class User(UserMixin, BaseModel):
         if not user_data:
             return None
 
-        user_data[USER_PREFERENCES] = User.get_user_preferences(user_data['id'], database)
+        user_data[USER_PREFERENCES] = User.get_user_preferences(
+            user_data["id"], database
+        )
 
         return User(user_data)
 
@@ -162,18 +170,19 @@ class User(UserMixin, BaseModel):
         Return a User object if the user email is found in the database.
         Otherwise, return None.
         """
-        user_data = mongodb_controller.get_user_data_by_username(
-            name, database)
+        user_data = mongodb_controller.get_user_data_by_username(name, database)
         if not user_data:
             return None
 
-        user_data[USER_PREFERENCES] = User.get_user_preferences(user_data['id'], database)
+        user_data[USER_PREFERENCES] = User.get_user_preferences(
+            user_data["id"], database
+        )
 
         return User(user_data)
 
     def generate_auth_token(self, app: Any, expiration: int = 600):
         s = Serializer(app.secret_key, expires_in=expiration)
-        return s.dumps({'id': self.id})
+        return s.dumps({"id": self.id})
 
     @staticmethod
     def verify_auth_token(token: str, app: Any, database: Database) -> User:
@@ -184,15 +193,14 @@ class User(UserMixin, BaseModel):
             return None  # valid token, but expired
         except BadSignature:
             return None  # invalid token
-        user_data = mongodb_controller.get_user_data_by_id(
-            data['id'], database)
-        user_data[USER_PREFERENCES] = User.get_user_preferences(data['id'], database)
+        user_data = mongodb_controller.get_user_data_by_id(data["id"], database)
+        user_data[USER_PREFERENCES] = User.get_user_preferences(data["id"], database)
         if not user_data:
             return None
         return User(user_data)
 
     def __repr__(self):
-        return '<User {} ({})>'.format(self.email, self.name)
+        return "<User {} ({})>".format(self.email, self.name)
 
 
 class TickListProblem(BaseModel):
@@ -217,12 +225,14 @@ class TickListProblem(BaseModel):
         the date_climbed value to the current date
         """
         self.is_done = True
-        self.date_climbed = datetime.today().strftime('%Y-%m-%d')
+        self.date_climbed = datetime.today().strftime("%Y-%m-%d")
 
     def serialize(self, ignore_keys=None) -> Dict[str, Any]:
         """
         Return a serialized version of itself (a dictionary)
         """
         if ignore_keys:
-            return { key:val for key, val in self.__dict__.items() if key not in ignore_keys }
+            return {
+                key: val for key, val in self.__dict__.items() if key not in ignore_keys
+            }
         return self.__dict__
