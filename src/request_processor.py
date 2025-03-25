@@ -520,7 +520,7 @@ def process_login_request(request, session, db, current_user, login_user):
         if user is not None and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get("next")
-            if not next_page or url_parse(next_page).netloc != "":
+            if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("home")
             # set user prefs
             session["user_default_gym"] = user.preferences.default_gym
@@ -554,7 +554,7 @@ def process_signup_request(request, db, current_user, login_user):
             # Keep user logged in
             login_user(user, remember=True)
             next_page = request.args.get("next", None)
-            if not next_page or url_parse(next_page).netloc != "":
+            if not next_page or urlparse(next_page).netloc != "":
                 next_page = url_for("home")
             return redirect(next_page)
     return render_template("signup_form.html", form=form, error=error)
