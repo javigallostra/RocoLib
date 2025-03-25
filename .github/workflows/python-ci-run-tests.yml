@@ -30,7 +30,6 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install
-        eval $(poetry env activate)
     - name: Test with unittest
       run: |
-        python -m tests.tests -v
+        poetry run python -m tests.tests -v
